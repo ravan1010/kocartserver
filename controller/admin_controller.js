@@ -47,8 +47,7 @@ export const adminsignup = async (req, res, next) => {
 
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
-        return res.status(400).json(error)
-        // console.error("Email error:", error);
+        console.error("Email error:", error);
       } else {
         console.log("Email sent: " + info.response);
 
