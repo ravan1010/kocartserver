@@ -67,7 +67,7 @@ export const adminsignup = async (req, res, next) => {
     res.cookie("amogu", token, {
       httpOnly: true,
       secure: true,         // true in production with HTTPS
-      sameSite: 'none',
+      sameSite: "None",       // allow cross-site cookies
       maxAge: 8 * 60 * 1000
     }).status(201).json({ success: true, message: "otp sent" })
 

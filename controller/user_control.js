@@ -26,7 +26,7 @@ console.log(number)
     res.cookie("at", token, {
       httpOnly: true,
       secure: true,
-      sameSite: "none",
+      sameSite: "None",
       maxAge: 100 * 24 * 60 * 60 * 1000
     });
     return res.json({ success: true })

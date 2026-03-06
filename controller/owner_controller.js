@@ -15,7 +15,6 @@ import order_model from '../model/order_model.js';
 
 dotenv.config()
 
-
 export const ownersignup = async (req, res, next) => {
 
     const {number} = req.body;
@@ -66,8 +65,6 @@ export const ownersignupOTPverify = async (req, res, next) => {
             console.log(error)
             res.status(400).json(error)
           }
-
-       
 
 }  
 
@@ -165,7 +162,7 @@ export const otpTObranch = async (req, res) => {
     const branch = await branch_model.findById(id)
     if(!branch) return res.status(400).json({success: false})
 
-const city = branch.city
+    const city = branch.city
     const branchOTP = await adminotpmodel.find({ city: city });
 
 
