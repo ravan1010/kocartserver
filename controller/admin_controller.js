@@ -99,7 +99,7 @@ export const adminsignupOTPverify = async (req, res, next) => {
     res.clearCookie("amogu", {
       httpOnly: true,
       secure: true,
-      sameSite: "none",
+      sameSite: "None",
     });
 
     if (numExistinAdmin) {
@@ -113,7 +113,7 @@ export const adminsignupOTPverify = async (req, res, next) => {
       res.cookie("toa", token, {
         httpOnly: true,
         secure: true,
-        sameSite: "none",
+        sameSite: "None",
         maxAge: 60 * 60 * 1000 * 1000,
       });
 
@@ -130,7 +130,7 @@ export const adminsignupOTPverify = async (req, res, next) => {
       res.cookie("amif", token, {
         httpOnly: true,
         secure: true,
-        sameSite: "none",
+        sameSite: "None",
         maxAge: 5 * 60 * 1000,
       });
 
@@ -196,7 +196,7 @@ export const admininfo = async (req, res, next) => {
     res.clearCookie("amif", {
       httpOnly: true,
       secure: true,
-      sameSite: "none",
+      sameSite: "None",
     });
 
     const adminNumber = number
@@ -206,7 +206,7 @@ export const admininfo = async (req, res, next) => {
     res.cookie('toa', token, {
       httpOnly: true,
       secure: true, // true in production
-      sameSite: 'none',
+      sameSite: 'None', // allow cross-site cookies
       maxAge: 60 * 60 * 1000 * 1000
     });
 
