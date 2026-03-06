@@ -1,5 +1,5 @@
 import express from 'express';
-import { ownersignup, ownersignupOTPverify, getpostdata, postTohomepage, removepostinhomepage, getorderdata, orderpending, orderProcess, ordercancel, getordercancel, afterorderprocess, Tocomplete, ordercomplete, postActive, branchFCMtoken, branchLocation, otpTObranch } from '../controller/owner_controller.js';
+import { ownersignup, ownersignupOTPverify, getpostdata, postTohomepage, removepostinhomepage, getorderdata, orderpending, orderProcess, ordercancel, getordercancel, afterorderprocess, Tocomplete, ordercomplete, postActive, branchFCMtoken, branchLocation, otpTObranch, Branch_dashboard, Branch_openORclose } from '../controller/owner_controller.js';
 import { ownertoken } from '../middleware/owner.js';
 
 const router = express.Router()
@@ -8,6 +8,9 @@ router.route('/owner/log').post(ownersignup)
 router.route('/owner/verify').post(ownersignupOTPverify)
 router.route('/owner/fcmToken').post(ownertoken, branchFCMtoken)
 router.route('/owner/location').post(ownertoken, branchLocation)
+
+router.route('/owner/dashboard').get(ownertoken, Branch_dashboard)
+router.route('/owner/openORclose').post(ownertoken, Branch_openORclose)
 
 
 router.route('/owner/otpTObranch').get(ownertoken, otpTObranch)

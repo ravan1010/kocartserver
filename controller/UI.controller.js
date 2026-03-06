@@ -81,12 +81,24 @@ export const nearby = async (req, res) => {
       },
     }).select("_id");
 
+    const branch = await branch_model.findOne({
+          location: {
+            $near: {
+              $geometry: {
+                type: "Point",
+                coordinates: [parseFloat(lng), parseFloat(lat)],
+              },
+              $maxDistance: 25000, // 25km in meters
+            },
+          },
+        });
+
     const merchantIds = merchants.map(m => m._id);
 
     const grocery = await post_model.find({ author: { $in: merchantIds }, category: "groceryFruitsANDvegetables" });
     const restaurant = await post_model.find({ author: { $in: merchantIds }, category: "foodANDbeverages" });
 
-    res.json({ grocery, restaurant });
+    res.json({ grocery, restaurant, branch });
   } catch (error) {
     res.status(500).json({ message: error.message });
     console.error("Nearby error:", error);
@@ -403,6 +415,7 @@ export const order = async (req, res) => {
 
 
 import axios from "axios";
+import branch_model from '../model/branch_model.js';
 
 const getRoadDistanceKm = async (from, to) => {
   const res = await axios.get(

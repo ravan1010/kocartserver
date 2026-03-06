@@ -118,6 +118,44 @@ export const branchLocation = async (req, res) => {
   }
 }
 
+//dashboard
+
+export const Branch_dashboard = async (req, res, next) => {
+  try {
+    const id = req.owner.id
+    const branch = await branch_model.findById(id)
+
+    res.status(201).json({
+      openORclose: branch.open,
+    })
+
+  } catch (error) {
+    res.json(error)
+  }
+}
+
+export const Branch_openORclose = async (req, res) => {
+  try {
+    const id = req.owner.id
+    const branch = await branch_model.findById(id)
+     if (!branch) {
+    return res.status(404).json({ success: false, message: "Branch not found" });
+  }
+    console.log(branch)
+    // const post = await post_model.findOne({ author: admin._id })
+
+    branch.open = !branch.open;
+    await branch.save();
+    console.log(branch._id)
+    
+    res.json({ success: true })
+
+  } catch (error) {
+    res.json({ message: error })
+  }
+}
+
+
 //otp to branch
 
 export const otpTObranch = async (req, res) => {
@@ -460,3 +498,6 @@ export const postActive = async(req, res) => {
     return res.status(500).json({ message: "Server error" });
   }
 };
+
+
+
