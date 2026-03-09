@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 const variantSchema = new mongoose.Schema({
   name: { type: String, required: true },
   price: { type: Number, required: true },
+  mrp: { type: Number, required: true },
   finalprice: { type: Number },
 });
 

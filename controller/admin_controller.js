@@ -259,7 +259,7 @@ export const EVENTCreate = async (req, res, next) => {
       description,
       image,
       variants,
-      variantname
+      variantname,
     } = req.body
 
     const cityTown = adminuser.city
