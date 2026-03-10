@@ -29,6 +29,7 @@ export const checkout = async (req, res) => {
     res.status(200).json({
       razorOrderId: razorOrder.id,
       totalAmount,
+      razorpayKey: process.env.RAZORPAY_KEY_ID,
 
     });
 
@@ -42,7 +43,7 @@ export const checkout = async (req, res) => {
 export const verifyPayment = async (req, res) => {
   try {
     const { response, items, addressId, delivery, Number, totalAmount } = req.body;
-    let platform = 21;
+    let platform = 11;
 
     const id = req.Atoken.id;
     const user = await user_model.findById(id)

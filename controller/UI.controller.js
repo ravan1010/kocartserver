@@ -105,7 +105,6 @@ export const nearby = async (req, res) => {
   }
 };
 
-
 export const address = async (req, res, next) => {
 
   const id = req.Atoken.id
@@ -235,7 +234,6 @@ export const addtocart = async (req, res) => {
 };
 
 
-
 export const cartdata = async (req, res) => {
 
   const cart = await Cart.findOne({ userId: req.Atoken.id })
@@ -264,8 +262,6 @@ export const updateQuantity = async (req, res) => {
   await cart.save();
   res.json(cart);
 };
-
-
 
 export const removecart = async (req, res) => {
   try {
@@ -335,8 +331,6 @@ export const removecart = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-
-
 
 export const buy = async (req, res) => {
 

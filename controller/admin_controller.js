@@ -299,8 +299,6 @@ export const EVENTCreate = async (req, res, next) => {
 
 }
 
-
-
 export const dashboard = async (req, res, next) => {
   try {
     const id = req.admintoa.adminNumber
