@@ -226,7 +226,7 @@ export const createParcel = async (req, res) => {
 
     console.log("Nearby branches:", nearbyBranches);
 
-    if(nearbyBranches.length > 1){
+    if(nearbyBranches.length > 0){
 
      await sendPushNotification(
         nearbyBranches[0].fcmToken,

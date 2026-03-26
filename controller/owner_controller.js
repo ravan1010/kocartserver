@@ -18,70 +18,70 @@ dotenv.config()
 
 export const ownersignup = async (req, res, next) => {
 
-    const {number} = req.body;
-    try { 
+  const { number } = req.body;
+  try {
 
-      const branch = await branch_model.findOne({number: number})
+    const branch = await branch_model.findOne({ number: number })
 
-      if(branch) return res.json({message: 'already exist'})
-      
+    // if(branch) return res.json({message: 'already exist'})
+
     const otp = otpGenerate.generate(6, { upperCaseAlphabets: false, lowerCaseAlphabets: false, specialChars: false })
 
-    const otpnumber = await branch_otp_model.create({ otp: otp, number: number})
+    const otpnumber = await branch_otp_model.create({ otp: otp, number: number })
     await otpnumber.save()
 
 
-    res.status(201).json({message: "otp sent"})
-        
-    } catch(error) {
-      res.status(401).json({error:error.message})
-    }
+    res.status(201).json({ message: "otp sent" })
+
+  } catch (error) {
+    res.status(401).json({ error: error.message })
+  }
 
 }
 
-export const ownersignupOTPverify = async (req, res, next) => { 
-          const {otp} = req.body
+export const ownersignupOTPverify = async (req, res, next) => {
+  const { otp } = req.body
 
-          const findotp = await branch_otp_model.findOne({ otp })
+  const findotp = await branch_otp_model.findOne({ otp })
 
-          try {
-          if(!findotp){return res.json({message:'no'})}
+  try {
+    if (!findotp) { return res.json({ message: 'no' }) }
 
-          const branch = await branch_model.create({number : findotp.number})
+    const branch = await branch_model.create({ number: findotp.number })
 
-          await branch_otp_model.findByIdAndDelete(findotp._id);
+    await branch_otp_model.findByIdAndDelete(findotp._id);
 
-          const id = branch._id
-          const token = jwt.sign({ id , iat: Math.floor(Date.now() / 1000) - 30 }
-                 ,process.env.ADMINJWTOTPKEY , { expiresIn: '400d' });
+    const id = branch._id
+    const token = jwt.sign({ id, iat: Math.floor(Date.now() / 1000) - 30 }
+      , process.env.ADMINJWTOTPKEY, { expiresIn: '400d' });
 
-          res.cookie('owner', token, {
-              httpOnly: true,
-              secure: true, // true in production
-              sameSite: 'none',
-              maxAge: 400 * 24 * 60 * 60 * 1000
-            })
-            return res.json({message: 'verified'})
-          } catch (error) {
-            console.log(error)
-            res.status(400).json(error)
-          }
+    res.cookie('owner', token, {
+      httpOnly: true,
+      secure: true, // true in production
+      sameSite: 'none',
+      maxAge: 400 * 24 * 60 * 60 * 1000
+    })
+    return res.json({ message: 'verified' })
+  } catch (error) {
+    console.log(error)
+    res.status(400).json(error)
+  }
 
-}  
+}
 
 export const branchFCMtoken = async (req, res) => {
   try {
     const id = req.owner.id
-      const { fcmToken } = req.body;
-      console.log(typeof fcmToken,'id :',id)
+    const { fcmToken } = req.body;
+    console.log(typeof fcmToken, 'id :', id)
 
     if (!fcmToken) {
-    return res.status(400).json({ success: false });
-  }
+      return res.status(400).json({ success: false });
+    }
 
-  await branch_model.findByIdAndUpdate(id, {
-    fcmToken,
-  });
+    await branch_model.findByIdAndUpdate(id, {
+      fcmToken,
+    });
 
   } catch (error) {
     res.status(500).json(error)
@@ -90,27 +90,27 @@ export const branchFCMtoken = async (req, res) => {
 
 export const branchLocation = async (req, res) => {
   try {
-      const id = req.owner.id
-      const { city, latitude, longitude } = req.body;
+    const id = req.owner.id
+    const { city, latitude, longitude } = req.body;
 
-      console.log(city, latitude)
+    console.log(city, latitude)
 
     if (!id) {
-    return res.status(400).json({ success: false });
-  }
+      return res.status(400).json({ success: false });
+    }
 
-  const branch = await branch_model.findByIdAndUpdate(id, {
-    city,
-    location: {
+    const branch = await branch_model.findByIdAndUpdate(id, {
+      city,
+      location: {
         type: "Point",
         coordinates: [
           parseFloat(longitude), // ✅ lng first
           parseFloat(latitude),  // ✅ lat second
         ]
       }
-  });
+    });
 
-  res.status(200).json({success: true, branch})
+    res.status(200).json({ success: true, branch })
   } catch (error) {
     res.json(error)
   }
@@ -136,16 +136,16 @@ export const Branch_openORclose = async (req, res) => {
   try {
     const id = req.owner.id
     const branch = await branch_model.findById(id)
-     if (!branch) {
-    return res.status(404).json({ success: false, message: "Branch not found" });
-  }
+    if (!branch) {
+      return res.status(404).json({ success: false, message: "Branch not found" });
+    }
     console.log(branch)
     // const post = await post_model.findOne({ author: admin._id })
 
     branch.open = !branch.open;
     await branch.save();
     console.log(branch._id)
-    
+
     res.json({ success: true })
 
   } catch (error) {
@@ -161,7 +161,7 @@ export const otpTObranch = async (req, res) => {
     const id = req.owner.id;
 
     const branch = await branch_model.findById(id)
-    if(!branch) return res.status(400).json({success: false})
+    if (!branch) return res.status(400).json({ success: false })
 
     const city = branch.city
     const branchOTP = await adminotpmodel.find({ city: city });
@@ -179,7 +179,7 @@ export const otpTObranch = async (req, res) => {
 //post get, add, remove, home
 
 export const getpostdata = async (req, res, next) => {
-  
+
   const postdata = await post.find()
   res.json(postdata);
 
@@ -230,8 +230,8 @@ export const removepostinhomepage = async (req, res) => {
 //home page posts
 
 export const gethomepostdata = async (req, res, next) => {
-  
-  const homepostdata = await post.find({status: 'home'})
+
+  const homepostdata = await post.find({ status: 'home' })
   res.json(homepostdata);
 
 }
@@ -240,47 +240,47 @@ export const gethomepostdata = async (req, res, next) => {
 
 export const getorderdata = async (req, res, next) => {
 
-      const id = req.owner.id
-      console.log(id)
-      const branch = await branch_model.findById(id)
-      console.log(branch.location.coordinates)
-      if(!branch) return res.status(400).json({success: false})
+  const id = req.owner.id
+  console.log(id)
+  const branch = await branch_model.findById(id)
+  console.log(branch.location.coordinates)
+  if (!branch) return res.status(400).json({ success: false })
 
-   const order = await order_model.find({
-      location: {
-        $near: {
-          $geometry: {
-            type: "Point",
-            coordinates: branch.location.coordinates, // ✅ use branch's coordinates
-          },
-          $maxDistance: 25000, // 25km in meters
+  const order = await order_model.find({
+    location: {
+      $near: {
+        $geometry: {
+          type: "Point",
+          coordinates: branch.location.coordinates, // ✅ use branch's coordinates
         },
+        $maxDistance: 25000, // 25km in meters
       },
-    }).populate("userId", "number location") // ✅ populate user details
-      .populate("shop.admin", "number location companyName")
-      .populate("shop.items.productId")
-      .sort({ createdAt: -1 }) // newest first
-      .exec();
+    },
+  }).populate("userId", "number location") // ✅ populate user details
+    .populate("shop.admin", "number location companyName")
+    .populate("shop.items.productId")
+    .sort({ createdAt: -1 }) // newest first
+    .exec();
 
-    console.log(order)
+  console.log(order)
 
-  
+
   res.json(order);
 
-} 
+}
 
-export const orderpending = async(req, res) => {
+export const orderpending = async (req, res) => {
 
   try {
-      const id = req.owner.id
-      console.log(id)
-      const branch = await branch_model.findById(id)
-      if(!branch) return res.status(400).json({success: false})
+    const id = req.owner.id
+    console.log(id)
+    const branch = await branch_model.findById(id)
+    if (!branch) return res.status(400).json({ success: false })
 
-        console.log("Finding pending orders near branch at coordinates:", branch.location.coordinates);
+    console.log("Finding pending orders near branch at coordinates:", branch.location.coordinates);
 
-   const order = await order_model.find({
-    status: 'pending',
+    const order = await order_model.find({
+      status: 'pending',
       location: {
         $near: {
           $geometry: {
@@ -297,18 +297,18 @@ export const orderpending = async(req, res) => {
 
     console.log(order)
 
-  
-  res.json(order);
-  
+
+    res.json(order);
+
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "server error" });
   }
-   
-  }
 
-export const orderProcess = async(req, res) => {
-   try {
+}
+
+export const orderProcess = async (req, res) => {
+  try {
     const { id } = req.body;
     console.log("post", id);
 
@@ -330,8 +330,8 @@ export const orderProcess = async(req, res) => {
   }
 }
 
-export const ordercancel = async(req, res) => {
-   try {
+export const ordercancel = async (req, res) => {
+  try {
     const { id } = req.body;
     console.log("post", id);
 
@@ -350,18 +350,18 @@ export const ordercancel = async(req, res) => {
   }
 }
 
-export const afterorderprocess = async(req, res) => {
+export const afterorderprocess = async (req, res) => {
 
   try {
-      const id = req.owner.id
-      console.log(id)
-      const branch = await branch_model.findById(id)
-      if(!branch) return res.status(400).json({success: false})
+    const id = req.owner.id
+    console.log(id)
+    const branch = await branch_model.findById(id)
+    if (!branch) return res.status(400).json({ success: false })
 
-        console.log("Finding pending orders near branch at coordinates:", branch.location.coordinates);
+    console.log("Finding pending orders near branch at coordinates:", branch.location.coordinates);
 
-   const order = await order_model.find({
-    status: 'process',
+    const order = await order_model.find({
+      status: 'process',
       location: {
         $near: {
           $geometry: {
@@ -378,16 +378,16 @@ export const afterorderprocess = async(req, res) => {
 
     console.log(order)
 
-  
-  res.json(order);
-  
+
+    res.json(order);
+
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "server error" });
   }
 }
 
-export const Tocomplete = async(req, res) =>{
+export const Tocomplete = async (req, res) => {
   try {
     const { id } = req.body;
     console.log("post", id);
@@ -410,8 +410,8 @@ export const Tocomplete = async(req, res) =>{
   }
 }
 
-export const getordercancel = async(req, res) => {
-  const ordercan = await order.find({status: 'cancel'})
+export const getordercancel = async (req, res) => {
+  const ordercan = await order.find({ status: 'cancel' })
     .sort({ createdAt: -1 }) // newest first
     .populate([
       {
@@ -424,18 +424,18 @@ export const getordercancel = async(req, res) => {
   res.json(ordercan)
 }
 
-export const ordercomplete = async(req, res) => {
+export const ordercomplete = async (req, res) => {
 
   try {
-      const id = req.owner.id
-      console.log(id)
-      const branch = await branch_model.findById(id)
-      if(!branch) return res.status(400).json({success: false})
+    const id = req.owner.id
+    console.log(id)
+    const branch = await branch_model.findById(id)
+    if (!branch) return res.status(400).json({ success: false })
 
-        console.log("Finding pending orders near branch at coordinates:", branch.location.coordinates);
+    console.log("Finding pending orders near branch at coordinates:", branch.location.coordinates);
 
-   const order = await order_model.find({
-    status: 'complete',
+    const order = await order_model.find({
+      status: 'complete',
       location: {
         $near: {
           $geometry: {
@@ -452,9 +452,9 @@ export const ordercomplete = async(req, res) => {
 
     console.log(order)
 
-  
-  res.json(order);
-  
+
+    res.json(order);
+
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "server error" });
@@ -462,15 +462,15 @@ export const ordercomplete = async(req, res) => {
 }
 
 export const getuserdata = async (req, res, next) => {
-  
+
   const userdata = await user.find()
   res.json(userdata);
 
 }
 
 
-export const postActive = async(req, res) => {
-     try {
+export const postActive = async (req, res) => {
+  try {
     const { productId, active } = req.body;
 
     if (!productId) {
@@ -499,27 +499,49 @@ export const postActive = async(req, res) => {
 
 //parcel 
 
-export const parcelData = async (req, res) => {
-try {
-  const id = req.owner.id
-  console.log(id)
-      const branch = await branch_model.findById(id)
-      console.log(branch)
-      if(!branch) return res.status(400).json({success: false})
+export const parcelFromData = async (req, res) => {
+  try {
+    const id = req.owner.id
+    const branch = await branch_model.findById(id)
 
-const parcelData = await Parcel_model
-  .find({ fromCity: branch.city })
-  .sort({ createdAt: -1 });      
-  
-  console.log(  `sua`, parcelData);
+    if (!branch) return res.status(400).json({ success: false })
 
-        res.json(parcelData)
 
-} catch (error) {
-  res.json(error)
-}
+    console.log(branch.city)
+
+    const parcelData = await Parcel_model.find({ fromCity: { $regex: `^${branch.city}$`, $options: "i" } })
+      .sort({ createdAt: -1 });
+
+    console.log(`sua`, parcelData);
+
+    res.json(parcelData)
+
+  } catch (error) {
+    res.json(error)
+  }
 };
 
+export const parcelToData = async (req, res) => {
+  try {
+    const id = req.owner.id
+    const branch = await branch_model.findById(id)
+
+    if (!branch) return res.status(400).json({ success: false })
+
+
+    console.log(branch.city)
+
+    const parcelData = await Parcel_model.find({ toCity: { $regex: `^${branch.city}$`, $options: "i" } })
+      .sort({ createdAt: -1 });
+
+    console.log(`sua`, parcelData);
+
+    res.json(parcelData)
+
+  } catch (error) {
+    res.json(error)
+  }
+};
 
 
 
