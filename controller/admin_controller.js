@@ -78,7 +78,6 @@ export const adminsignup = async (req, res, next) => {
 
 }
 
-
 export const adminsignupOTPverify = async (req, res, next) => {
   const number = req.admingu;
   console.log(number);

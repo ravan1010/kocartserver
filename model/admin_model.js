@@ -35,7 +35,10 @@ const adminSchema = mongoose.Schema({
             default: [0, 0],
         },
     },
-    
+
+    city:{
+        type: String
+    },
     address: {
         FHBCA: {
             type: String,

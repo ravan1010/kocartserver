@@ -6,8 +6,8 @@ import admin_router from './router/admin_router.js';
 import OG_router from './router/OG_router.js';
 import getpost from './router/Ul.router.js';
 import owner from './router/owner_router.js';
+import long from './router/long_route.js'
 import path from 'path';
-import http from "http";
 
 import { fileURLToPath } from "url";
 
@@ -34,21 +34,19 @@ app.use('/api', admin_router)
 app.use('/api', OG_router)
 app.use('/api', getpost)
 app.use('/api', owner)
+app.use('/api', long)
 
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 
-
 app.use(express.static(path.join(__dirname, "../frontend/dist")))
 app.get("/slug", (req, res) => {
   res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
-})
+}) 
 
-
-
-
+ 
 dbconnection().then(() => {
       app.listen(port, () => {
             console.log(`server run at ${port} `)

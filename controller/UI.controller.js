@@ -412,13 +412,15 @@ import axios from "axios";
 import branch_model from '../model/branch_model.js';
 
 const getRoadDistanceKm = async (from, to) => {
+      const apiKey = process.env.GEOAPIFY_KEY;
+
   const res = await axios.get(
     "https://api.geoapify.com/v1/routing",
     {
       params: {
         waypoints: `${from.lat},${from.lng}|${to.lat},${to.lng}`,
         mode: "drive",
-        apiKey: '9101d57bd3a34d2194bb8222a55a6a3f',
+        apiKey: apiKey,
       },
     }
   );

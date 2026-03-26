@@ -12,6 +12,7 @@ import branch_model from '../model/branch_model.js';
 import branch_otp_model from '../model/branch_otp_model.js';
 import user_model from '../model/user_model.js';
 import order_model from '../model/order_model.js';
+import Parcel_model from '../model/Parcel_model.js';
 
 dotenv.config()
 
@@ -495,6 +496,30 @@ export const postActive = async(req, res) => {
     return res.status(500).json({ message: "Server error" });
   }
 };
+
+//parcel 
+
+export const parcelData = async (req, res) => {
+try {
+  const id = req.owner.id
+  console.log(id)
+      const branch = await branch_model.findById(id)
+      console.log(branch)
+      if(!branch) return res.status(400).json({success: false})
+
+const parcelData = await Parcel_model
+  .find({ fromCity: branch.city })
+  .sort({ createdAt: -1 });      
+  
+  console.log(  `sua`, parcelData);
+
+        res.json(parcelData)
+
+} catch (error) {
+  res.json(error)
+}
+};
+
 
 
 
