@@ -4,10 +4,10 @@ import { createParcel, distance, forTo, from } from '../controller/long_controll
 
 const router = express.Router();
 
-router.route("/routes/:from").get(signat, forTo)
-router.route("/cities").get(signat, from)
+router.route("/routes/:from").get(forTo)
+router.route("/cities").get(from)
 
-router.route("/distance").post(signat, distance)
+router.route("/distance").post(distance)
 router.route("/parcel/create").post(signat, createParcel)
 
 

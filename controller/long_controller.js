@@ -14,6 +14,7 @@ export const from = async (req, res) => {
   const fromlon = '77.104185'
   const from = 'kollegal'
   const to = 'mysore'
+  console.log(from, to, fromlat, fromlon, tolat, tolon)
   const amount = 150
 
   // const route = await route_db.create({
