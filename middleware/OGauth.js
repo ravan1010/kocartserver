@@ -45,8 +45,6 @@ export const adu = async (req, res, next) => {
 }
 
 //app auth
-import jwt from "jsonwebtoken";
-
 export const appAuth = (req, res, next) => {
   try {
 
