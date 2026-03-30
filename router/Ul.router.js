@@ -13,6 +13,10 @@ router.route('/home').get( signat, home )
 router.route('/explore').get( signat, explore )
 router.route('/nearby').get( nearby )
 router.route('/setting').get( signat, setting )
+
+//app
+router.route('/app/setting').get( appAuth, setting )
+
 //web
 router.route('/address-list').get(signat, address )
 //app
