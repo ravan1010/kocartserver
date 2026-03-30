@@ -56,12 +56,12 @@ export const appAuth = (req, res, next) => {
     const authHeader6 = req.headers['at'];
 
     console.log("Auth Headers:", {
-      authHeader,
-      authHeader2,
-      authHeader3,
-      authHeader4,
-      authHeader5,
-      authHeader6
+      'at': authHeader,
+      'authorization': authHeader2,
+      'user_id': authHeader3,
+      '[user_id]': authHeader4,
+      '[authorization]': authHeader5,
+      '[at]': authHeader6
     });
 
     if (!authHeader) {
