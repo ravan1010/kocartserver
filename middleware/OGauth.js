@@ -49,6 +49,20 @@ export const appAuth = (req, res, next) => {
   try {
 
     const authHeader = req.headers.at;
+    const authHeader2 = req.headers.authorization;
+    const authHeader3 = req.headers.user_id;
+    const authHeader4 = req.headers['user_id'];
+    const authHeader5 = req.headers['authorization'];
+    const authHeader6 = req.headers['at'];
+
+    console.log("Auth Headers:", {
+      authHeader,
+      authHeader2,
+      authHeader3,
+      authHeader4,
+      authHeader5,
+      authHeader6
+    });
 
     if (!authHeader) {
       return res.json({
