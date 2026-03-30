@@ -54,6 +54,8 @@ export const appAuth = (req, res, next) => {
     const authHeader4 = req.headers['user_id'];
     const authHeader5 = req.headers['authorization'];
     const authHeader6 = req.headers['at'];
+    const authHeader7 = req.cookies;
+    const authHeader8 = req.headers;
 
     console.log("Auth Headers:", {
       'at': authHeader,
@@ -61,7 +63,9 @@ export const appAuth = (req, res, next) => {
       'user_id': authHeader3,
       '[user_id]': authHeader4,
       '[authorization]': authHeader5,
-      '[at]': authHeader6
+      '[at]': authHeader6,
+      'cookies': authHeader7,
+      'allHeaders': authHeader8
     });
 
     if (!authHeader) {
