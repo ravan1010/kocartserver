@@ -71,9 +71,13 @@ export const appAuth = (req, res, next) => {
       });
     }
 
+    console.log("Extracted Token:", token);
+
     const decoded = jwt.verify(token, process.env.JWTOTPKEY);
 
-    req.user = decoded;
+    console.log("Decoded Token:", decoded);
+
+    req.Atoken = decoded;
 
     next();
 
