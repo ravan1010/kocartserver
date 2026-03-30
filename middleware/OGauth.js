@@ -48,24 +48,11 @@ export const adu = async (req, res, next) => {
 export const appAuth = (req, res, next) => {
   try {
 
-    const authHeader = req.headers.at;
-    const authHeader2 = req.headers.authorization;
-    const authHeader3 = req.headers.user_id;
-    const authHeader4 = req.headers['user_id'];
-    const authHeader5 = req.headers['authorization'];
-    const authHeader6 = req.headers['at'];
-    const authHeader7 = req.cookies;
-    const authHeader8 = req.headers;
+    const authHeader = req.headers.authorization;    
 
     console.log("Auth Headers:", {
-      'at': authHeader,
-      'authorization': authHeader2,
-      'user_id': authHeader3,
-      '[user_id]': authHeader4,
-      '[authorization]': authHeader5,
-      '[at]': authHeader6,
-      'cookies': authHeader7,
-      'allHeaders': authHeader8
+      'authorization': authHeader,
+      
     });
 
     if (!authHeader) {
