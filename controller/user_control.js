@@ -29,7 +29,7 @@ console.log(number)
       sameSite: "None",
       maxAge: 100 * 24 * 60 * 60 * 1000
     });
-    return res.json({ success: true })
+    return res.json({ token, success: true })
 
   } catch (error) {
     res.json(error)

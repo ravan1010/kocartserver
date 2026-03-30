@@ -28,7 +28,7 @@ router.get('/authlocation', authLocation, async(req, res) => {
 router.get('/appAuth', appAuth, async(req, res) => {
     try {
 
-        const user = await user_model.findOne({number: req.Atoken.number})
+        const user = await user_model.findOne({_id: req.Atoken.id})
             if(!user) return res.json({massage: 'user not found'})
         
                 res.json({token: req.Atoken, username: user.number})
