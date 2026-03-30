@@ -136,6 +136,8 @@ export const setting = async (req, res, next) => {
 
   const id = req?.Atoken?.id
 
+  console.log('setting', id)
+
   try {
 
     const name = await usermodel.findById(id)
