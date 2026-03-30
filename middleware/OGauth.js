@@ -51,7 +51,7 @@ export const appAuth = (req, res, next) => {
     const authHeader = req.headers.authorization;
 
     if (!authHeader) {
-      return res.status(401).json({
+      return res.json({
         success: false,
         message: "No token provided"
       });
@@ -60,7 +60,7 @@ export const appAuth = (req, res, next) => {
     const token = authHeader.split(" ")[1];
 
     if (!token) {
-      return res.status(401).json({
+      return res.json({
         success: false,
         message: "Malformed token"
       });
