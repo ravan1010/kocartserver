@@ -48,7 +48,7 @@ export const adu = async (req, res, next) => {
 export const appAuth = (req, res, next) => {
   try {
 
-    const authHeader = req.headers.authorization;
+    const authHeader = req.headers.at;
 
     if (!authHeader) {
       return res.json({
