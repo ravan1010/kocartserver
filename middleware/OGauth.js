@@ -45,20 +45,43 @@ export const adu = async (req, res, next) => {
 }
 
 //app auth
+import jwt from "jsonwebtoken";
+
 export const appAuth = (req, res, next) => {
-    try {
-        const authHeader = req.headers["authorization"];
-        if (!authHeader) return res.json({ message: "No token provided" });
+  try {
 
-        const token = authHeader.split(" ")[1]; // remove "Bearer"
-        if (!token) return res.json({ message: "Malformed token" });
+    const authHeader = req.headers.authorization;
 
-        const decoded = jwt.verify(token, process.env.JWTOTPKEY);
-        req.Atoken = decoded;
-        next();
-
-    } catch (error) {
-        res.status(400).json(error)
-        console.log('erro',error)
+    if (!authHeader) {
+      return res.status(401).json({
+        success: false,
+        message: "No token provided"
+      });
     }
-}
+
+    const token = authHeader.split(" ")[1];
+
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        message: "Malformed token"
+      });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWTOTPKEY);
+
+    req.user = decoded;
+
+    next();
+
+  } catch (error) {
+
+    console.log("Auth Error:", error);
+
+    return res.status(401).json({
+      success: false,
+      message: "Invalid or expired token"
+    });
+
+  }
+};
