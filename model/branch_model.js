@@ -6,6 +6,10 @@ const branchSchema = mongoose.Schema({
         type: Number,
         require: true,
     },
+    googleId: String,
+    name: String,
+    email: String,
+    avatar: String,
 
     companyName: {
         type: String,

@@ -4,7 +4,7 @@ import {signat, authLocation, appAuth} from '../middleware/OGauth.js';
 import { home, setting, address, explore, cartdata, removecart, buy, order, addtocart, calculateDeliveryFee, nearby } from '../controller/UI.controller.js';
 // const event_post_model = require('../model/event_post_model.js')
 import user_model from '../model/user_model.js';
-import { checkout, verifyPayment } from '../controller/orderController.js';
+import { checkout, placeCODOrder, verifyPayment } from '../controller/orderController.js';
 import { liveupdate } from '../controller/user_control.js';
 
 router.route('/liveupdate').post(liveupdate)
@@ -40,6 +40,7 @@ router.route("/app/remove/:id").delete(appAuth, removecart )
 router.post("/delivery-fee", signat, calculateDeliveryFee );
 router.route('/order/checkout').post(signat, checkout )
 router.route('/order/verify').post(signat, verifyPayment )
+router.route('/order/cod').post(signat, placeCODOrder )
 // Buy (Checkout)
 router.route("/buy").post(signat, buy ) 
 //app

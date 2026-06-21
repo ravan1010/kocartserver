@@ -21,6 +21,22 @@ export const signat = async (req, res, next) => {
     }
 }
 
+export const deliveryBoyAuth = async (req, res, next) => {
+    const token = req.cookies?.deliveryBoy;
+
+    if (!token) {
+      return res.status(401).json({ message: "No token" });
+    }
+
+    try {
+      const user = jwt.verify(token, process.env.JWT_SECRET);
+      req.deliveryBoy = user;
+      next();
+    } catch (err) {
+      res.status(401).json({ message: "Invalid token" });
+    }
+  }
+
 export const authLocation = (req, res, next) => {
   const token = req.cookies.ln
 
@@ -92,3 +108,4 @@ export const appAuth = (req, res, next) => {
 
   }
 };
+

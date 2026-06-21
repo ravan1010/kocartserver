@@ -4,34 +4,39 @@ import express from 'express';
 
 import { signat } from '../middleware/OGauth.js';
 const router = express.Router();
-import { admincat, admingu, adminif, admintoa } from '../middleware/admin_auth.js';
-import { AdminFCMtoken, Adminid, admininfo, adminsignup, adminsignupOTPverify, bookedlisttoadmin, dashboard, EVENTCreate, EVENTDelete, EVENTUpdate, getSinglePost, open, openORclose, Toadmin } from '../controller/admin_controller.js';
+import { admingu, adminif, admintoa } from '../middleware/admin_auth.js';
+import { AdminFCMtoken, Adminid, admininfo, adminsignup, adminsignupOTPverify, bookedlisttoadmin, dashboard, EVENTCreate, EVENTDelete, EVENTUpdate, getAdminOrders, getSinglePost, open, openORclose, Toadmin, updateOrder } from '../controller/admin_controller.js';
 
 ///admin
 
 router.route('/admin').post(signat, adminsignup)
 router.route('/admin/otp').post(signat, admingu, adminsignupOTPverify)
-router.route('/admin/info').post(signat, adminif, admininfo)
+router.route('/admin/info').post(signat, admingu, admininfo)
 
-router.route('/adminid').get(admintoa, Adminid);
+router.route('/adminid').get(admingu, Adminid);
 
-router.route('/marchent/fcmToken').post(admintoa, AdminFCMtoken)
+router.route('/marchent/fcmToken').post(admingu, AdminFCMtoken)
 
-//product 
-router.route('/admin/post').post(admintoa, EVENTCreate  )
-router.route("/admin/post/:id").put(admintoa, EVENTUpdate);
-router.route("/admin/post/:id").get(admintoa, getSinglePost);
+//product  
+router.route('/admin/post').post(admingu, EVENTCreate  )
+router.route("/admin/post/:id").put(admingu, EVENTUpdate);
+router.route("/admin/post/:id").get(admingu, getSinglePost);
 
-router.route('/admin/post/open/:id').post(admintoa, open)
-
-
-router.route('/admin/dashboard').get(admintoa, dashboard )
-router.route('/admin/door').post(admintoa, openORclose)
-router.route('/admin/:id').delete(admintoa, EVENTDelete)
+router.route('/admin/post/open/:id').post(admingu, open)
 
 
-router.route('/toadmin').get(admintoa, Toadmin)
-router.route('/bookedlist').get(admintoa, bookedlisttoadmin)
+router.route('/admin/dashboard').get(admingu, dashboard )
+router.route('/admin/door').post(admingu, openORclose)
+router.route('/admin/:id').delete(admingu, EVENTDelete)
+
+
+router.route('/toadmin').get(admingu, Toadmin)
+router.route('/bookedlist').get(admingu, bookedlisttoadmin)
+
+
+router.route('/admin/Orders').get(admingu, getAdminOrders)
+router.route('/admin/order/update/:orderId/:orderstatus').put(admingu, updateOrder)
+
 
 //admin auth route for frontend
 router.get('/adminotp', admingu, (req, res) => {

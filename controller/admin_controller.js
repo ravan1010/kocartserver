@@ -9,6 +9,7 @@ import dotenv from 'dotenv'
 import order_model from '../model/order_model.js';
 import branch_model from '../model/branch_model.js';
 import { sendPushNotification } from '../utils/firebase.js';
+import deliveryBoy_model from '../model/deliveryBoy_model.js';
 
 
 dotenv.config();
@@ -37,7 +38,7 @@ export const adminsignup = async (req, res, next) => {
             type: "Point",
             coordinates: [parseFloat(longitude), parseFloat(latitude)],
           },
-          $maxDistance: 25000, // 25km in meters
+            $maxDistance: 3500, // 25km in meters
         },
       },
     });
@@ -142,12 +143,14 @@ export const adminsignupOTPverify = async (req, res, next) => {
   }
 };
 
-export const admininfo = async (req, res, next) => {
-
-
+export const admininfo = async (req, res) => {
   try {
-    const number = req.adminif.adminNumber
-    const { companyName,
+    const id = req.admingu.id;
+
+    console.log("Admin ID:", id);
+
+    const {
+      companyName,
       category,
       FHBCA,
       ASSV,
@@ -157,77 +160,79 @@ export const admininfo = async (req, res, next) => {
       state,
       latitude,
       longitude,
-      city
+      city,
     } = req.body;
 
-    console.log(latitude, longitude)
     if (!latitude || !longitude) {
       return res.status(400).json({
         success: false,
-        message: "Latitude and longitude required"
+        message: "Latitude and longitude required",
       });
     }
-    console.log('near')
-    const admininfo = await adminmodel.create({
-      number: number,
-      companyName: companyName,
-      category: category,
-      city: city,
-      address: {
-        FHBCA: FHBCA,
-        ASSV: ASSV,
-        Landmark: Landmark,
-        pincode: pincode,
-        cityTown: cityTown,
-        state: state,
+
+    const admininfo = await adminmodel.findByIdAndUpdate(
+      id,
+      {
+        companyName,
+        category,
+        city,
+        address: {
+          FHBCA,
+          ASSV,
+          Landmark,
+          pincode,
+          cityTown,
+          state,
+        },
+        location: {
+          type: "Point",
+          coordinates: [
+            parseFloat(longitude), // lng first
+            parseFloat(latitude),  // lat second
+          ],
+        },
       },
-      location: {
-        type: "Point",
-        coordinates: [
-          parseFloat(longitude), // ✅ lng first
-          parseFloat(latitude),  // ✅ lat second
-        ]
+      {
+        new: true,          // return updated document
+        runValidators: true,
       }
-    })
+    );
 
-    console.log(admininfo)
+    if (!admininfo) {
+      return res.status(404).json({
+        success: false,
+        message: "Admin not found",
+      });
+    }
 
-    res.clearCookie("amif", {
-      httpOnly: true,
-      secure: true,
-      sameSite: "None",
+    return res.status(200).json({
+      success: true,
+      message: "Updated successfully",
+      data: admininfo,
     });
-
-    const adminNumber = number
-    const token = jwt.sign({ adminNumber, iat: Math.floor(Date.now() / 1000) - 30 }
-      , process.env.ADMINJWTOTPKEY, { expiresIn: '40d' });
-
-    res.cookie('toa', token, {
-      httpOnly: true,
-      secure: true, // true in production
-      sameSite: 'None', // allow cross-site cookies
-      maxAge: 60 * 60 * 1000 * 1000
-    });
-
-    return res.status(201).json({ message: "ok", success: true })
-
   } catch (error) {
-    res.json(error)
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
-
-}
+};
 
 export const Adminid = async (req, res) => {
 
-  const id = req.admintoa.adminNumber
-  const author = await adminmodel.findOne({ number: id })
+  const id = req.admingu.id
+  console.log(id)
+  const author = await adminmodel.findById(id)
+
+  console.log(  author)
 
   res.json({ id: author._id })
 }
 
 export const AdminFCMtoken = async (req, res) => {
   try {
-    const number = req.admintoa.adminNumber
+    const number = req.admingu.id
     const { fcmToken } = req.body;
     console.log('number :', number)
 
@@ -236,7 +241,7 @@ export const AdminFCMtoken = async (req, res) => {
 
     }
 
-    await adminmodel.updateMany({ number: number }, {
+    await adminmodel.updateMany({ _id: number }, {
       fcmToken: fcmToken
     });
 
@@ -250,8 +255,8 @@ export const EVENTCreate = async (req, res, next) => {
 
   try {
 
-    const number = req.admintoa.adminNumber
-    const adminuser = await adminmodel.findOne({ number })
+    const number = req.admingu.id
+    const adminuser = await adminmodel.findById(number)
 
     console.log('Eventcategory')
     const { name,
@@ -276,7 +281,6 @@ export const EVENTCreate = async (req, res, next) => {
       name: name,
       description: description,
       image: image,
-      category: adminuser.category,
       cityTown: cityTown,
       companyName: companyName,
       variantname: variantname,
@@ -300,14 +304,15 @@ export const EVENTCreate = async (req, res, next) => {
 
 export const dashboard = async (req, res, next) => {
   try {
-    const id = req.admintoa.adminNumber
-    const author = await adminmodel.findOne({ number: id })
+    const id = req.admingu.id
+    const author = await adminmodel.findById(id)
     const post = await post_model.find({ author: author._id })
     res.status(201).json({
       post: post,
       productlist: post.length,
       openORclose: author.open,
-      id: author._id
+      id: author._id,
+      marchent: author,
     })
 
   } catch (error) {
@@ -317,8 +322,8 @@ export const dashboard = async (req, res, next) => {
 
 export const EVENTDelete = async (req, res, next) => {
 
-  const number = req.admintoa.adminNumber
-  const adminuser = await adminmodel.findOne({ number })
+  const number = req.admingu.id
+  const adminuser = await adminmodel.findById(number)
   const id = req.params.id
   try {
     const product = await post_model.findById(id);
@@ -348,9 +353,9 @@ export const getallAdminpost = async (req, res, next) => {
   console.log("suhas")
 
   try {
-    const id = req.admintoa.adminNumber
+    const id = req.admingu.id
 
-    const author = await adminmodel.findOne({ number: id })
+    const author = await adminmodel.findById(id)
 
     const post = await post_model.find({ author: author._id })
     res.json(post)
@@ -364,8 +369,8 @@ export const Toadmin = async (req, res, next) => {
 
 
   try {
-    const number = req.admintoa.adminNumber
-    const admin = await adminmodel.findOne({ number: number })
+    const number = req.admingu.id
+    const admin = await adminmodel.findById(number)
 
     if (!admin) {
       return res.json({ success: false })
@@ -380,11 +385,11 @@ export const Toadmin = async (req, res, next) => {
 }
 
 export const bookedlisttoadmin = async (req, res) => {
-  const number = req.admintoa.adminNumber
+  const number = req.admingu.id
 
   try {
 
-    const admin = await adminmodel.findOne({ number: number })
+    const admin = await adminmodel.findById(number)
     const adminpost = admin.posts
 
     const bookedlist = await order_model.find({ items: adminpost })
@@ -399,9 +404,9 @@ export const bookedlisttoadmin = async (req, res) => {
 
 export const openORclose = async (req, res) => {
   try {
-    const number = req.admintoa.adminNumber
+    const number = req.admingu.id
     console.log(number, req.body)
-    const admin = await adminmodel.findOne({ number: number })
+    const admin = await adminmodel.findById(number)
     // const post = await post_model.findOne({ author: admin._id })
 
     admin.open = !admin.open;
@@ -425,10 +430,10 @@ export const open = async (req, res) => {
   try {
     const { id } = req.params;
     const { open } = req.body;
-    const number = req.admintoa.adminNumber
+    const number = req.admingu.id
 
 
-    const admin = await adminmodel.findOne({ number: number })
+    const admin = await adminmodel.findById(number)
     // const post = await post_model.findOne({ author: admin._id })
 
     if (admin.open === false) {
@@ -458,8 +463,8 @@ export const open = async (req, res) => {
 
 export const EVENTUpdate = async (req, res, next) => {
   try {
-    const adminNumber = req.admintoa.adminNumber;
-    const adminuser = await adminmodel.findOne({ number: adminNumber });
+    const adminNumber = req.admingu.id
+    const adminuser = await adminmodel.findById(adminNumber);
     console.log('update')
 
     if (!adminuser) {
@@ -518,9 +523,9 @@ export const EVENTUpdate = async (req, res, next) => {
 
 export const getSinglePost = async (req, res) => {
   try {
-    const adminNumber = req.admintoa.adminNumber;
+    const adminNumber = req.admingu.id
 
-    const adminuser = await adminmodel.findOne({ number: adminNumber });
+    const adminuser = await adminmodel.findById(adminNumber);
     if (!adminuser) {
       return res.status(401).json({ message: "Admin not found" });
     }
@@ -538,6 +543,8 @@ export const getSinglePost = async (req, res) => {
       return res.status(403).json({ message: "Unauthorized access" });
     }
 
+
+
     res.status(200).json(post);
   } catch (error) {
     console.error(error);
@@ -545,3 +552,122 @@ export const getSinglePost = async (req, res) => {
   }
 };
 
+export const getAdminOrders = async (req, res) => {
+  try {
+    const adminNumber = req.admingu.id
+    const adminuser = await adminmodel.findById(adminNumber);
+
+    if (!adminuser) {
+      return res.status(401).json({ message: "Admin not found" });
+    }
+
+    const orders = await order_model.find({ "shop.admin": adminuser._id })
+      .populate("userId", "name email")
+      .populate("shop.items.productId", "name image price")
+      .populate("shop.items.variantid", "name")
+      .populate("address", "FHBCA ASSV Landmark pincode cityTown state")
+      .populate("deliveryBoy", "name")
+
+    res.status(200).json({ success: true, 
+                           orders, 
+                           pendingOrders: orders.filter(order => order.status === "pending"),
+                           acceptedOrders: orders.filter(order => order.status === "accepted"),
+                           assignedOrders: orders.filter(order => order.status === "assigned"),
+                           completedOrders: orders.filter(order => order.status === "delivered"),
+                           cancelledOrders: orders.filter(order => order.status === "cancelled"),
+                          });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+export const updateOrder = async (req, res) => {
+  try {
+    const adminNumber = req.admingu.id;
+    const adminuser = await adminmodel.findById(adminNumber);
+    const { orderId, orderstatus } = req.params; 
+
+    console.log(orderId, orderstatus)
+
+    if (!adminuser) {
+      return res.status(401).json({ message: "Admin not found" });
+    }
+
+    const order = await order_model.findById(orderId);
+
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    // Update order
+    order.status = orderstatus;
+    await order.save();
+
+    // When accepted, start searching for delivery boy
+    if (orderstatus === "accepted") {
+      const notifyDrivers = async () => {
+        let attempts = 0;
+
+        const interval = setInterval(async () => {
+          attempts++;
+
+          // Check if already assigned
+          const latestOrder = await order_model.findById(orderId);
+
+          if (!latestOrder || latestOrder.deliveryBoy) {
+            clearInterval(interval);
+            return;
+          }
+
+          const nearbyBoys = await deliveryBoy_model.find({
+            isOnline: true,
+            isAvailable: true,
+            currentLocation: {
+              $near: {
+                $geometry: {
+                  type: "Point",
+                  coordinates: latestOrder.location.coordinates,
+                },
+                $maxDistance: 5000,
+              },
+            },
+          });
+
+          for (const boy of nearbyBoys) {
+            if (boy.fcmToken) {
+              await sendPushNotification(
+                boy.fcmToken,
+                "🚚 New Delivery Available",
+                `Order #${latestOrder._id}`,
+                `/delivery/order/${latestOrder._id}`
+              );
+            }
+          }
+
+          console.log(
+            `Notification round ${attempts} sent to ${nearbyBoys.length} drivers`
+          );
+
+          // Stop after 1 minute
+          if (attempts >= 6) {
+            clearInterval(interval);
+          }
+        }, 50000); // every 50 sec
+      };
+
+      notifyDrivers();
+    }
+
+    res.status(200).json({
+      success: true,
+      order,
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "Server error",
+    });
+  }
+};

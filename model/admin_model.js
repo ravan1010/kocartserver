@@ -6,9 +6,17 @@ const adminSchema = mongoose.Schema({
         type: Number,
         require: true,
     },
+    googleId: String,
+    name: String,
+    email: String,
+    avatar: String,
     companyName: {
         type: String,
         require: true,
+    },
+    platformcommission: {
+        type: Number,
+        default: 0,
     },
     fcmToken: {
         type: String,
@@ -35,9 +43,12 @@ const adminSchema = mongoose.Schema({
             default: [0, 0],
         },
     },
-
     city:{
         type: String
+    },
+    active:{
+        type: Boolean,
+        default: false,
     },
     address: {
         FHBCA: {

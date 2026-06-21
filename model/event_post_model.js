@@ -21,6 +21,7 @@ const productSchema = new mongoose.Schema({
     },
     category: {
         type: String,
+        default: "foodANDbeverages",
     },
     description:{
         type:String,

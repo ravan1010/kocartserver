@@ -21,9 +21,10 @@ export const home = async (req, res, next) => {
     if (!id || !user) {
       return res.json('user not found')
     }
-    const post = await post_model.find({ cityTown: user.city, status: 'home' })
+    const post = await post_model.find({ cityTown: user.city })
     const city = user.city
 
+    // status: 'home'
     res.json({ post: post, city: city })
 
   } catch (error) {
@@ -65,6 +66,7 @@ export const nearby = async (req, res) => {
   try {
     const { lat, lng } = req.query;
 
+
     if (!lat || !lng) {
       return res.status(400).json({ message: "Location required" });
     }
@@ -81,6 +83,8 @@ export const nearby = async (req, res) => {
       },
     }).select("_id");
 
+    console.log("Nearby merchants:", merchants);
+
     const branch = await branch_model.findOne({
           location: {
             $near: {
@@ -91,12 +95,14 @@ export const nearby = async (req, res) => {
               $maxDistance: 25000, // 25km in meters
             },
           },
-        });
+    });
 
     const merchantIds = merchants.map(m => m._id);
+    console.log("Merchant IDs:", merchantIds);
 
     const grocery = await post_model.find({ author: { $in: merchantIds }, category: "groceryFruitsANDvegetables" });
     const restaurant = await post_model.find({ author: { $in: merchantIds }, category: "foodANDbeverages" });
+    
 
     res.json({ grocery, restaurant, branch });
   } catch (error) {
@@ -143,7 +149,7 @@ export const setting = async (req, res, next) => {
       return res.status(400).json('user not found')
     }
 
-    res.json({ number: name.number } || null)
+    res.json({ number: name.email } || null)
   } catch (error) {
     res.status(400).json(error)
   }
@@ -400,7 +406,9 @@ export const order = async (req, res) => {
   const order = await order_model.find({ userId: req.Atoken.id })
     .populate("shop.admin", "companyName")
     .populate("shop.items.productId", "image name")
-    .sort()
+    .populate("deliveryBoy","name")
+    .sort({ createdAt: -1 })
+    
 
   res.json(order || null);
 }
@@ -427,7 +435,6 @@ const getRoadDistanceKm = async (from, to) => {
 
   return res.data.features[0].properties.distance / 1000; // meters → km
 };
-
 
 export const calculateDeliveryFee = async (req, res) => {
   try {
@@ -502,8 +509,8 @@ export const calculateDeliveryFee = async (req, res) => {
     }
 
     // 💰 Fee logic
-    let deliveryFee = 10;
-    if (totalDistance > 1) {
+    let deliveryFee = 16;
+    if (totalDistance > 3) {
       deliveryFee += Math.ceil(totalDistance - 1) * 10;
     }
 

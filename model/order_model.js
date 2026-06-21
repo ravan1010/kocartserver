@@ -1,7 +1,6 @@
 // models/Cart.js
 import mongoose from 'mongoose';
 
-
 const orderItemSchema = new mongoose.Schema({
     productId: { type: mongoose.Schema.Types.ObjectId, ref: "Product" },
     quantity: { type: Number, default: 1 },
@@ -14,8 +13,7 @@ const orderItemSchema = new mongoose.Schema({
 const shopId = new mongoose.Schema({
   admin: { type: mongoose.Schema.Types.ObjectId, ref: "admin" },
   items : [ orderItemSchema ],
-  subtotal : Number
-
+  subtotal : Number,
 },{timestamps: true})
  
 const orderSchema = new mongoose.Schema({
@@ -36,12 +34,25 @@ const orderSchema = new mongoose.Schema({
         },
   status:{
         type: String,
-        enum: ['pending','cancel','process','complete'],
+        enum: ['pending',
+                'accepted',
+                'assigned',
+                'pickedup',
+                'delivered',
+                'cancelled'
+        ],
         default:"pending",
     },
   platformFee: { type: Number, default: 20 },
+  paymentMethod: { type: String, enum: ["COD", "Online"] },
+  paymentStatus: { type: String, enum: ["pending", "paid"]},
   delivery: {type: Number, default: 30},
   totalAmount: { type: Number },
+  deliveryBoy: {
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: "DeliveryBoy",
+    default: null
+  }
 }, { timestamps: true });
 
 orderSchema.index({ location: "2dsphere" });

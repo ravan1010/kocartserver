@@ -1,11 +1,35 @@
 import express from 'express';
-import { ownersignup, ownersignupOTPverify, getpostdata, postTohomepage, removepostinhomepage, getorderdata, orderpending, orderProcess, ordercancel, getordercancel, afterorderprocess, Tocomplete, ordercomplete, postActive, branchFCMtoken, branchLocation, otpTObranch, Branch_dashboard, Branch_openORclose, parcelFromData, parcelToData } from '../controller/owner_controller.js';
+import {  getpostdata, 
+    postTohomepage, 
+    removepostinhomepage,
+     getorderdata,
+      orderpending, 
+      orderProcess, 
+      ordercancel, 
+      getordercancel, 
+      afterorderprocess,
+       Tocomplete,
+        ordercomplete, 
+        postActive,
+         branchFCMtoken,
+          branchLocation,
+            Branch_dashboard,
+             Branch_openORclose,
+              parcelFromData, parcelToData, marchentActivate } from '../controller/owner_controller.js';
 import { ownertoken } from '../middleware/owner.js';
+import { deliveryBoyAuth } from '../middleware/OGauth.js';
+import { DeliveryAcceptOrder, DeliveryBoyFCMtoken, 
+         DeliveryBoyIsOnline,
+         DeliveryBoyLocation, 
+         DeliveryComplete, 
+         Deliverydashboard, 
+         DeliverygetAssignOrders, 
+         DeliverygetOrders, 
+         DeliverygetpickedupOrders, 
+         Deliverypickedup} from '../controller/deliveryBoy.js';
 
 const router = express.Router()
 
-router.route('/owner/log').post(ownersignup)
-router.route('/owner/verify').post(ownersignupOTPverify)
 router.route('/owner/fcmToken').post(ownertoken, branchFCMtoken)
 router.route('/owner/location').post(ownertoken, branchLocation)
 
@@ -13,7 +37,7 @@ router.route('/owner/dashboard').get(ownertoken, Branch_dashboard)
 router.route('/owner/openORclose').post(ownertoken, Branch_openORclose)
 
 
-router.route('/owner/otpTObranch').get(ownertoken, otpTObranch)
+router.route('/owner/marchentActivate').get(ownertoken, marchentActivate)
 
 router.route('/owner/getpostdata').get(ownertoken, getpostdata)
 router.route('/owner/active').post(ownertoken, postActive)
@@ -45,7 +69,19 @@ router.route('/parceltoData').get(ownertoken, parcelToData)
 // router.route('/owner/image').post(ownertoken, imageCreate)
 // router.route('/owner/delete/:id').delete(ownertoken, imagedelete)
 
- 
+ // delivery boy
+
+router.route('/delivery-boy/fcmToken').post(deliveryBoyAuth, DeliveryBoyFCMtoken)
+router.route('/delivery-boy/location').post(deliveryBoyAuth, DeliveryBoyLocation)
+router.route('/delivery/dashboard').get(deliveryBoyAuth, Deliverydashboard)
+router.route('/delivery/onAndOff').post(deliveryBoyAuth, DeliveryBoyIsOnline)
+
+router.route("/delivery/orders").get(deliveryBoyAuth, DeliverygetOrders);
+router.route("/delivery/accept/:orderId").put(deliveryBoyAuth, DeliveryAcceptOrder)
+router.route("/delivery/assigned").get(deliveryBoyAuth, DeliverygetAssignOrders)
+router.route("/delivery/pickedup/:orderId").put(deliveryBoyAuth, Deliverypickedup)
+router.route("/delivery/getpickedupOrder").get(deliveryBoyAuth, DeliverygetpickedupOrders)
+router.route("/delivery/complete/:orderId").put(deliveryBoyAuth, DeliveryComplete)
  
 router.get('/owner/token', ownertoken, (req, res) => {
     res.json({owner: req.owner})

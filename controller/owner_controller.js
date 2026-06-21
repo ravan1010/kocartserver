@@ -16,59 +16,6 @@ import Parcel_model from '../model/Parcel_model.js';
 
 dotenv.config()
 
-export const ownersignup = async (req, res, next) => {
-
-  const { number } = req.body;
-  try {
-
-    const branch = await branch_model.findOne({ number: number })
-
-    // if(branch) return res.json({message: 'already exist'})
-
-    const otp = otpGenerate.generate(6, { upperCaseAlphabets: false, lowerCaseAlphabets: false, specialChars: false })
-
-    const otpnumber = await branch_otp_model.create({ otp: otp, number: number })
-    await otpnumber.save()
-
-
-    res.status(201).json({ message: "otp sent" })
-
-  } catch (error) {
-    res.status(401).json({ error: error.message })
-  }
-
-}
-
-export const ownersignupOTPverify = async (req, res, next) => {
-  const { otp } = req.body
-
-  const findotp = await branch_otp_model.findOne({ otp })
-
-  try {
-    if (!findotp) { return res.json({ message: 'no' }) }
-
-    const branch = await branch_model.create({ number: findotp.number })
-
-    await branch_otp_model.findByIdAndDelete(findotp._id);
-
-    const id = branch._id
-    const token = jwt.sign({ id, iat: Math.floor(Date.now() / 1000) - 30 }
-      , process.env.ADMINJWTOTPKEY, { expiresIn: '400d' });
-
-    res.cookie('owner', token, {
-      httpOnly: true,
-      secure: true, // true in production
-      sameSite: 'none',
-      maxAge: 400 * 24 * 60 * 60 * 1000
-    })
-    return res.json({ message: 'verified' })
-  } catch (error) {
-    console.log(error)
-    res.status(400).json(error)
-  }
-
-}
-
 export const branchFCMtoken = async (req, res) => {
   try {
     const id = req.owner.id
@@ -154,9 +101,9 @@ export const Branch_openORclose = async (req, res) => {
 }
 
 
-//otp to branch
+//
 
-export const otpTObranch = async (req, res) => {
+export const marchentActivate = async (req, res) => {
   try {
     const id = req.owner.id;
 
@@ -164,7 +111,7 @@ export const otpTObranch = async (req, res) => {
     if (!branch) return res.status(400).json({ success: false })
 
     const city = branch.city
-    const branchOTP = await adminotpmodel.find({ city: city });
+    const branchOTP = await adminotpmodel.find({ city: city, })
 
 
     console.log(branchOTP)

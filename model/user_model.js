@@ -20,6 +20,10 @@ const UserSchema =  mongoose.Schema({
     //     type: String,
     //     require: true,
     // },
+    googleId: String,
+    name: String,
+    email: String,
+    avatar: String,
     city:{
         type: String,
         require: true,

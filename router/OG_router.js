@@ -1,23 +1,22 @@
 import express from 'express';
 import { Address, signup } from '../controller/user_control.js';
-import { appAuth, authLocation, signat } from '../middleware/OGauth.js';
+import { appAuth, authLocation, deliveryBoyAuth, signat } from '../middleware/OGauth.js';
 import user_model from '../model/user_model.js';
 const router = express.Router()
 
 router.route('/signup').post(signup)
 router.route('/to/address').post( signat, Address)
 
- 
-
 //auth check for frontend
 
 router.get('/token', signat, async (req, res) => {
-    if (!req.Atoken) {
-        return res.status(401).json({ message: "Unauthorized" });
-    }
     res.json({ user: req.Atoken });
 });
 
+router.get('/deliveryboy/token', deliveryBoyAuth, async (req, res) => {
+    
+    res.json({ user: req.deliveryBoy });
+});
 
 router.get('/authlocation', authLocation, async(req, res) => {
     res.json({user: req.location})
