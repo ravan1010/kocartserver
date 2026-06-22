@@ -28,9 +28,13 @@ app.use(cookieParser())
 
 
 app.use(cors({
-  origin: true, // reflects request origin automatically
+  origin: [
+      "http://localhost:5173",
+      "https://www.kocart.online/"
+
+    ], // reflects request origin automatically
   credentials: true
-})); 
+}));
 
 
 app.get('/i', (req, res) => {
