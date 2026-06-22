@@ -53,7 +53,7 @@ router.get(
     });
 
     return res.redirect(
-      "http://localhost:5173/client-auth-success"
+      "https://www.kocart.online/client-auth-success"
     );
   }
 
@@ -66,7 +66,7 @@ router.get(
     });
 
     return res.redirect(
-      "http://localhost:5173/marchent-auth-success"
+      "https://www.kocart.online/marchent-auth-success"
     );
   }
 
