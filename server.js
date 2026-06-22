@@ -30,7 +30,7 @@ app.use(cookieParser())
 app.use(cors({
   origin: [
       "http://localhost:5173",
-      "https://www.kocart.online/"
+      "https://www.kocart.online"
 
     ], // reflects request origin automatically
   credentials: true
