@@ -77,7 +77,7 @@ router.get(
       sameSite: "None",
     });
     return res.redirect(
-      "http://localhost:5173/deliveryBoy-auth-success"
+      "https://delivery.kocart.online/deliveryBoy-auth-success"
     );
   }
  }
