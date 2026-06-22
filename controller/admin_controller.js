@@ -286,7 +286,7 @@ export const openORclose = async (req, res) => {
 
       await post_model.updateMany(
         { author: admin._id },
-        { open: admin.open }
+        { active: admin.open }
       );
     
     res.json({ success: true })
