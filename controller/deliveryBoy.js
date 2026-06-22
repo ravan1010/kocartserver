@@ -233,6 +233,7 @@ export const Deliverypickedup = async (req, res) => {
         const platformcommision = shop.subtotal * 0.15;
 
         admin.platformcommision += platformcommision;
+        admin.amount += shop.subtotal;
         await admin.save();
       }
     }

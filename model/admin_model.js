@@ -14,7 +14,11 @@ const adminSchema = mongoose.Schema({
         type: String,
         require: true,
     },
-    platformcommission: {
+    amount:{
+        type : Number,
+        default: 0,
+    },
+    platformcommision: {
         type: Number,
         default: 0,
     },
