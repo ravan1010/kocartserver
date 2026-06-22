@@ -36,8 +36,8 @@ router.get(
     if (role === "branch") {
       res.cookie("owner", token, {
         httpOnly: true,
-        secure: false,
-        sameSite: "lax",
+        secure: true,
+        sameSite: "None",
       });
 
       return res.redirect(
@@ -48,8 +48,8 @@ router.get(
     if (role === "client") {
     res.cookie("at", token, {
       httpOnly: true,
-      secure: false,
-      sameSite: "lax",
+      secure: true,
+      sameSite: "None",
     });
 
     return res.redirect(
@@ -61,8 +61,8 @@ router.get(
 
     res.cookie("amogu", token, {
       httpOnly: true,
-      secure: false,
-      sameSite: "lax",
+      secure: true,
+      sameSite: "None",
     });
 
     return res.redirect(
@@ -73,8 +73,8 @@ router.get(
   if (role === "deliveryBoy") {
     res.cookie("deliveryBoy", token, {
       httpOnly: true,
-      secure: false,
-      sameSite: "lax",
+      secure: true,
+      sameSite: "None",
     });
     return res.redirect(
       "http://localhost:5173/deliveryBoy-auth-success"

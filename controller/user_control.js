@@ -6,36 +6,6 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-export const signup = async (req, res) => {
-  try {
-    const { number } = req.body;
-console.log(number)
-    if (!number) {
-      return res.json({ success: false })
-    }
-    const user = await usermodel.create({ number })
-    console.log(user._id)
-    const id = user._id
-
-    const token = jwt.sign(
-      { id, iat: Math.floor(Date.now() / 1000) - 30 },
-      process.env.ADMINJWTOTPKEY,
-      { expiresIn: "100d" }
-    );
-
-    res.cookie("at", token, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "None",
-      maxAge: 100 * 24 * 60 * 60 * 1000
-    });
-    return res.json({ token, success: true })
-
-  } catch (error) {
-    res.json(error)
-  }
-}
-
 export const liveupdate = async (req, res) => {
 
     const { latitude, longitude, city } = req.body

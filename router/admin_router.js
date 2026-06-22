@@ -5,12 +5,10 @@ import express from 'express';
 import { signat } from '../middleware/OGauth.js';
 const router = express.Router();
 import { admingu, adminif, admintoa } from '../middleware/admin_auth.js';
-import { AdminFCMtoken, Adminid, admininfo, adminsignup, adminsignupOTPverify, bookedlisttoadmin, dashboard, EVENTCreate, EVENTDelete, EVENTUpdate, getAdminOrders, getSinglePost, open, openORclose, Toadmin, updateOrder } from '../controller/admin_controller.js';
+import { AdminFCMtoken, Adminid, admininfo, bookedlisttoadmin, dashboard, EVENTCreate, EVENTDelete, EVENTUpdate, getAdminOrders, getSinglePost, open, openORclose, Toadmin, updateOrder } from '../controller/admin_controller.js';
 
 ///admin
 
-router.route('/admin').post(signat, adminsignup)
-router.route('/admin/otp').post(signat, admingu, adminsignupOTPverify)
 router.route('/admin/info').post(signat, admingu, admininfo)
 
 router.route('/adminid').get(admingu, Adminid);
