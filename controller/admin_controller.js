@@ -278,7 +278,7 @@ export const openORclose = async (req, res) => {
     const number = req.admingu.id
     console.log(number, req.body)
     const admin = await adminmodel.findById(number)
-    // const post = await post_model.findOne({ author: admin._id })
+    const post = await post_model.findOne({ author: admin._id })
 
     admin.open = !admin.open;
     await admin.save();
@@ -289,7 +289,6 @@ export const openORclose = async (req, res) => {
         { open: admin.open }
       );
     
-
     res.json({ success: true })
 
   } catch (error) {
