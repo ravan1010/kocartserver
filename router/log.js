@@ -41,7 +41,7 @@ router.get(
       });
 
       return res.redirect(
-        "http://localhost:5173/branch-auth-success"
+        "https://branch.kocart.online/branch-auth-success"
       );
     }
 
