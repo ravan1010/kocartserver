@@ -109,3 +109,23 @@ export const appAuth = (req, res, next) => {
   }
 };
 
+export const auth = (req, res, next) => {
+  // 1. Get token from header
+  const token = req.header('Authorization')?.replace('Bearer ', '');
+  console.log(token)
+
+  if (!token) {
+    return res.status(200).json({ message: "No token, authorization denied" });
+  }
+
+  try {
+    // 2. Verify token using your Secret Key
+    
+    // 3. Add the user ID to the request object
+    req.token = token;
+    next();
+  } catch (err) {
+    res.status(201).json({ message: "Token is not valid" });
+  }
+};
+

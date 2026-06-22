@@ -43,7 +43,7 @@ const orderSchema = new mongoose.Schema({
         ],
         default:"pending",
     },
-  platformFee: { type: Number, default: 20 },
+  platformFee: { type: Number, default: 6 },
   paymentMethod: { type: String, enum: ["COD", "Online"] },
   paymentStatus: { type: String, enum: ["pending", "paid"]},
   delivery: {type: Number, default: 30},

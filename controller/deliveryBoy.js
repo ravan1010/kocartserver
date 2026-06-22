@@ -185,6 +185,9 @@ export const DeliverygetAssignOrders = async (req, res) => {
       .populate("userId", "name")
       .populate("address")
       .populate("shop.admin", "companyName location address")
+      .populate("shop.items.productId", "name variantname ")
+      .populate("shop.items.productId.variants", "name price")
+
 
     res.json({
       success: true,
@@ -266,6 +269,8 @@ export const DeliverygetpickedupOrders = async (req, res) => {
       })
       .populate("userId", "name")
       .populate("address");
+      .populate("shop.items.productId", "name variantname ")
+      .populate("shop.items.productId.variants", "name price")
 
     res.json({
       success: true,
@@ -332,4 +337,6 @@ export const DeliveryComplete = async (req, res) => {
     });
   }
 };
+
+
 
