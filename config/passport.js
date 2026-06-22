@@ -13,7 +13,7 @@ passport.use(
     {      
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: "http://localhost:5001/auth/google/callback",
+      callbackURL: "https://serverside.kocart.online/auth/google/callback",
       passReqToCallback: true, // Important
     },
     async (req, accessToken, refreshToken, profile, done) => {
