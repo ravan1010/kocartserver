@@ -219,17 +219,18 @@ router.get("/google/deliveryBoy", (req, res, next) => {
 });
 
 router.get("/deliveryBoy/cookie",  (req, res) => {
+
   const token = req.cookies?.deliveryBoy;
 
   if (!token) {
-    return res.status(401).json({ message: "No token" });
+    return res.json({ message: "No token" });
   }
 
   try {
     const user = jwt.verify(token, process.env.JWT_SECRET);
     res.json({ user });
   } catch (err) {
-    res.status(401).json({ message: "Invalid token" });
+    res.json({ message: "Invalid token" });
   }
 
 });
