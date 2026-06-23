@@ -104,7 +104,7 @@ export const Adminid = async (req, res) => {
 
     if (!author) {
       return res.status(404).json({
-        message: "Admin not found"
+        message: `Admin not found ${author} || ${req.admingu}`
       });
     }
 
