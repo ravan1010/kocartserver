@@ -268,9 +268,9 @@ export const DeliverygetpickedupOrders = async (req, res) => {
         deliveryBoy: id
       })
       .populate("userId", "name")
-      .populate("address");
+      .populate("address")
       .populate("shop.items.productId", "name variantname ")
-      .populate("shop.items.productId.variants", "name price")
+      .populate("shop.items.productId.variants", "name price");
 
     res.json({
       success: true,
