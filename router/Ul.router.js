@@ -8,7 +8,7 @@ import { checkout, placeCODOrder, verifyPayment } from '../controller/orderContr
 import { liveupdate } from '../controller/user_control.js';
 
 router.route('/liveupdate').post(liveupdate)
-
+ 
 router.route('/home').get( signat, home )
 router.route('/explore').get( signat, explore )
 router.route('/nearby').get( nearby )

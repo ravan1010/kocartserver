@@ -91,15 +91,34 @@ export const admininfo = async (req, res) => {
 };
 
 export const Adminid = async (req, res) => {
+  try {
+    console.log("admingu:", req.admingu);
 
-  const id = req.admingu.id
-  console.log(id)
-  const author = await adminmodel.findById(id)
+    if (!req.admingu) {
+      return res.status(401).json({
+        message: "Unauthorized"
+      });
+    }
 
-  console.log(  author)
+    const author = await adminmodel.findById(req.admingu.id);
 
-  res.json({ id: author._id })
-}
+    if (!author) {
+      return res.status(404).json({
+        message: "Admin not found"
+      });
+    }
+
+    res.json({
+      id: author._id
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      message: err.message
+    });
+  }
+};
 
 export const AdminFCMtoken = async (req, res) => {
   try {
@@ -248,8 +267,6 @@ export const Toadmin = async (req, res, next) => {
     }
 
     res.json({ success: true })
-
-
   } catch (error) {
     res.json(error)
   }

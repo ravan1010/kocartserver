@@ -105,6 +105,7 @@ router.get(
         secure: true,
         sameSite: "None",
         maxAge: 100 * 24 * 60 * 60 * 1000, // 100 days
+        // domain: ".kocart.online",
       });
 
       return res.redirect(
@@ -123,6 +124,7 @@ router.get(
 
     return res.redirect(
       "https://www.kocart.online/marchent-auth-success"
+            // "https://localhost:5173/marchent-auth-success"
     );
   }
 
