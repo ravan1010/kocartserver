@@ -257,7 +257,6 @@ export const getallAdminpost = async (req, res, next) => {
 
 export const Toadmin = async (req, res, next) => {
 
-
   try {
     const number = req.admingu.id
     const admin = await adminmodel.findById(number)
