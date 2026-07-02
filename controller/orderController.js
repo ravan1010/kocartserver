@@ -86,7 +86,7 @@ export const verifyPayment = async (req, res) => {
       console.log("FCM Token:", fcmToken);
       const title = 'You got a new order!';
       const body = `Order ID: ${order._id} - Total: ₹${order.totalAmount} - Delivery: ${delivery}`;
-      const url = `http://localhost:5173/admin/order`;
+      const url = `https://www.kocart.online/admin/order`;
 
       sendPushNotification(fcmToken, title, body, url);
 
@@ -112,8 +112,8 @@ console.log("Nearby branches:", nearbyBranches[0].fcmToken);
   await sendPushNotification(
     nearbyBranches[0].fcmToken,
     "New Order Nearby!",
-    `Order ID: `,
-    "https://yourdomain.com/admin/order"
+    `Order ID: ${order._id}`,
+    "https://branch.kocart.online/allorder"
   );
 
     await cart_model.findOneAndDelete({ userId });
@@ -169,7 +169,7 @@ export const placeCODOrder = async (req, res) => {
           fcmToken,
           "You got a new COD order!",
           `Order ID: ${order._id} - Total: ₹${order.totalAmount}`,
-          "/admin/order"
+          "https://www.kocart.online/admin/order"
         );
       }
     }
@@ -194,7 +194,7 @@ export const placeCODOrder = async (req, res) => {
           branch.fcmToken,
           "New Order Nearby!",
           `Order ID: ${order._id}`,
-          "http://localhost:5173/admin/order"
+          "https://branch.kocart.online/allorder"
         );
       }
     }

@@ -54,6 +54,7 @@ const productSchema = new mongoose.Schema({
     companyName:{
         type: String,
     },
+    locationLink: String, 
     rate:{
         type:Number,
     },

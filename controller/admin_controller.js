@@ -154,6 +154,7 @@ export const EVENTCreate = async (req, res, next) => {
       image,
       variants,
       variantname,
+      locationLink
     } = req.body
 
     const cityTown = adminuser.city
@@ -175,7 +176,8 @@ export const EVENTCreate = async (req, res, next) => {
       companyName: companyName,
       variantname: variantname,
       variants: variants,
-      open: adminuser.open
+      open: adminuser.open,
+      locationLink: locationLink
     })
     await postData.save()
 
@@ -365,6 +367,7 @@ export const EVENTUpdate = async (req, res, next) => {
       image,
       variants,
       variantname,
+      locationLink,
       open,
     } = req.body;
 
@@ -387,6 +390,7 @@ export const EVENTUpdate = async (req, res, next) => {
     if (variants !== undefined) post.variants = variants;
     if (variantname !== undefined) post.variantname = variantname;
     if (open !== undefined) post.open = open;
+    if (locationLink !== undefined) post.locationLink = locationLink;
 
     // optional sync from admin profile
     post.cityTown = adminuser.city;
