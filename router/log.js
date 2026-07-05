@@ -6,6 +6,7 @@ import dotenv from "dotenv"
 import { OAuth2Client } from 'google-auth-library'
 import admin_model from "../model/admin_model.js";
 import user_model from "../model/user_model.js";
+import deliveryBoy_model from "../model/deliveryBoy_model.js";
 dotenv.config()
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -18,55 +19,86 @@ router.get("/google/branch", (req, res, next) => {
   })(req, res, next);
 });
 
-router.post('/app/google/user', async (req, res) => {
-  const { token } = req.body;
- 
-  console.log(token)
+router.post("/app/google/user", async (req, res) => {
+  const { token, state } = req.body;
 
   if (!token) {
     return res.status(400).json({ error: "Token is required" });
   }
 
   try {
-    // 1. Verify the Google Token
     const ticket = await client.verifyIdToken({
       idToken: token,
       audience: process.env.GOOGLE_CLIENT_ID,
     });
 
     const payload = ticket.getPayload();
-    const { sub: googleId, email, name, picture } = payload;
 
-    // 2. Search for the user in MongoDB
-    let user = await user_model.findOne({ googleId });
+    const googleId = payload.sub;
+    const email = payload.email;
+    const name = payload.name;
+    const avatar = payload.picture;
 
-    if (!user) {
-      // 3. If user doesn't exist, create a new one
-      console.log("New user detected, creating account...");
-      user = await user_model.create({
-        googleId,
-        email,
-        name,
-        avatar: picture
-      });
-    } else {
-      console.log("Existing user logged in.");
+    let account;
+
+    switch (state) {
+      case "client":
+        account = await user_model.findOne({ googleId });
+
+        if (!account) {
+          account = await user_model.create({
+            googleId,
+            email,
+            name,
+            avatar,
+          });
+        }
+        break;
+
+      // case "marchent":
+      //   account = await admin_model.findOne({ googleId });
+
+      //   if (!account) {
+      //     account = await admin_model.create({
+      //       googleId,
+      //       email,
+      //       name,
+      //       avatar,
+      //     });
+      //   }
+      //   break;
+
+      case "deliveryBoy":
+        account = await deliveryBoy_model.findOne({ googleId });
+
+        if (!account) {
+          account = await deliveryBoy_model.create({
+            googleId,
+            email,
+            name,
+            avatar,
+          });
+        }
+        break;
+
+      default:
+        return res.status(400).json({
+          success: false,
+          error: "Invalid state",
+        });
     }
 
-    console.log(user._id)
-    // 4. Send the Internal User ID back to the app
-    // Note: 'user._id' is the MongoDB ObjectId
-    res.json({ 
-      success: true, 
-      userId: user._id, 
-      isNewUser: !user.createdAt 
+    res.json({
+      success: true,
+      userId: account._id,
+      role: state,
     });
-
-
-    
-  } catch (error) {
-    console.error("Auth Error:", error);
-    res.status(401).json({ error: "Invalid Google Token" });
+  } catch (err) {
+    console.error(err);
+    res.status(401).json({
+      success: false,
+      error: "Invalid Google token",
+    });
   }
 });
 
