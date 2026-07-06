@@ -61,55 +61,7 @@ export const adu = async (req, res, next) => {
 }
 
 //app auth
-export const appAuth = (req, res, next) => {
-  try {
-
-    const authHeader = req.headers.authorization;    
-
-    console.log("Auth Headers:", {
-      'authorization': authHeader,
-      
-    });
-
-    if (!authHeader) {
-      return res.json({
-        success: false,
-        message: "No token provided"
-      });
-    }
-
-    const token = authHeader.split(" ")[1];
-
-    if (!token) {
-      return res.json({
-        success: false,
-        message: "Malformed token"
-      });
-    }
-
-    console.log("Extracted Token:", token);
-
-    const decoded = jwt.verify(token, process.env.JWTOTPKEY);
-
-    console.log("Decoded Token:", decoded);
-
-    req.Atoken = decoded;
-
-    next();
-
-  } catch (error) {
-
-    console.log("Auth Error:", error);
-
-    return res.status(401).json({
-      success: false,
-      message: "Invalid or expired token"
-    });
-
-  }
-};
-
-export const auth = (req, res, next) => {
+export const Appauth = (req, res, next) => {
   // 1. Get token from header
   const token = req.header('Authorization')?.replace('Bearer ', '');
   console.log(token)
