@@ -61,7 +61,7 @@ export const adu = async (req, res, next) => {
 }
 
 //app auth
-export const Appauth = (req, res, next) => {
+export const appAuth = (req, res, next) => {
   // 1. Get token from header
   const token = req.header('Authorization')?.replace('Bearer ', '');
   console.log(token)
