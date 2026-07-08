@@ -78,7 +78,7 @@ export const nearby = async (req, res) => {
             type: "Point",
             coordinates: [parseFloat(lng), parseFloat(lat)],
           },
-          $maxDistance: 5000, // 5km in meters
+          $maxDistance: 3000, // 3km in meters
         },
       },
     }).select("_id");
@@ -92,7 +92,7 @@ export const nearby = async (req, res) => {
                 type: "Point",
                 coordinates: [parseFloat(lng), parseFloat(lat)],
               },
-              $maxDistance: 25000, // 25km in meters
+              $maxDistance: 10000, // 10km in meters
             },
           },
     });

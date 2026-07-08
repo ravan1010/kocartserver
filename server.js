@@ -39,7 +39,7 @@ app.use(cors({
 }));
 
 
-app.get('/i', (req, res) => {
+app.get('/i', (req, res) => { 
   res.send('connected')
 }) 
 
