@@ -86,7 +86,7 @@ export const verifyPayment = async (req, res) => {
       console.log("FCM Token:", fcmToken);
       const title = 'You got a new order!';
       const body = `Order ID: ${order._id} - Total: ₹${order.totalAmount} - Delivery: ${delivery}`;
-      const url = `https://www.kocart.online/admin/order`;
+      const url = `https://www.kocart.online/admin/orders`;
 
       sendPushNotification(fcmToken, title, body, url);
 
@@ -169,7 +169,7 @@ export const placeCODOrder = async (req, res) => {
           fcmToken,
           "You got a new COD order!",
           `Order ID: ${order._id} - Total: ₹${order.totalAmount}`,
-          "https://www.kocart.online/admin/order"
+          "https://www.kocart.online/admin/orders"
         );
       }
     }
