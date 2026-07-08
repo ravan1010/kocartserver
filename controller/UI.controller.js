@@ -10,7 +10,6 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-
 export const home = async (req, res, next) => {
 
   try {
@@ -66,7 +65,6 @@ export const nearby = async (req, res) => {
   try {
     const { lat, lng } = req.query;
 
-
     if (!lat || !lng) {
       return res.status(400).json({ message: "Location required" });
     }
@@ -78,11 +76,10 @@ export const nearby = async (req, res) => {
             type: "Point",
             coordinates: [parseFloat(lng), parseFloat(lat)],
           },
-          $maxDistance: 3000, // 3km in meters
+          $maxDistance: 4000, // 4km in meters
         },
       },
     }).select("_id");
-
     console.log("Nearby merchants:", merchants);
 
     const branch = await branch_model.findOne({
@@ -103,10 +100,9 @@ export const nearby = async (req, res) => {
     const grocery = await post_model.find({ author: { $in: merchantIds }, category: "groceryFruitsANDvegetables" });
     const restaurant = await post_model.find({ author: { $in: merchantIds }, category: "foodANDbeverages" });
     
-
     res.json({ grocery, restaurant, branch });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(501).json({ message: error.message});
     console.error("Nearby error:", error);
   }
 };
@@ -524,6 +520,11 @@ export const calculateDeliveryFee = async (req, res) => {
     res.status(500).json({ message: "Delivery fee calculation failed" });
   }
 };
+
+
+
+// for app
+
 
 
 

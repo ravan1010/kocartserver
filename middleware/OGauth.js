@@ -74,7 +74,7 @@ export const appAuth = (req, res, next) => {
     // 2. Verify token using your Secret Key
     
     // 3. Add the user ID to the request object
-    req.token = token;
+    req.Apptoken = token;
     next();
   } catch (err) {
     res.status(201).json({ message: "Token is not valid" });
