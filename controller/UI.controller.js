@@ -102,8 +102,14 @@ export const nearby = async (req, res) => {
     
     res.json({ grocery, restaurant, branch });
   } catch (error) {
-    res.status(501).json({ message: error.message});
-    console.error("Nearby error:", error);
+     console.error("Nearby error:", error);
+
+  res.status(500).json({
+    success: false,
+    message: error.message,
+    name: error.name,
+    stack: error.stack,
+  });
   }
 };
 
@@ -137,6 +143,23 @@ const transporter = nodemailer.createTransport({
 export const setting = async (req, res, next) => {
 
   const id = req?.Atoken?.id
+
+  try {
+
+    const name = await usermodel.findById(id)
+    if (!name) {
+      return res.status(400).json('user not found')
+    }
+
+    res.json({ number: name.email } || null)
+  } catch (error) {
+    res.status(400).json(error)
+  }
+}
+
+export const Appsetting = async (req, res, next) => {
+
+  const id = req?.Apptoken?.id
 
   try {
 

@@ -12,6 +12,7 @@ router.route('/liveupdate').post(liveupdate)
 router.route('/home').get( signat, home )
 router.route('/explore').get( signat, explore )
 router.route('/nearby').get( nearby )
+//web
 router.route('/setting').get( signat, setting )
 
 //app
