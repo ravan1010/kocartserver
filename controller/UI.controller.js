@@ -140,39 +140,37 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-export const setting = async (req, res, next) => {
+export const setting = async (req, res) => {
+  console.log(req.Atoken);
 
-  const id = req?.Atoken?.id
-
-  try {
-
-    const name = await usermodel.findById(id)
-    if (!name) {
-      return res.status(400).json('user not found')
-    }
-
-    res.json({ number: name.email } || null)
-  } catch (error) {
-    res.status(400).json(error)
-  }
-}
-
-export const Appsetting = async (req, res, next) => {
-
-  const id = req?.Apptoken?.id
+  const id = req?.Atoken?.id;
+  console.log("User ID:", id);
 
   try {
-
-    const name = await usermodel.findById(id)
-    if (!name) {
-      return res.status(400).json('user not found')
+    if (!id) {
+      return res.status(401).json({
+        message: "Unauthorized",
+      });
     }
 
-    res.json({ number: name.email } || null)
+    const user = await usermodel.findById(id);
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    res.json({
+      number: user.email,
+    });
   } catch (error) {
-    res.status(400).json(error)
+    console.log(error);
+    res.status(500).json({
+      message: error.message,
+    });
   }
-}
+};
 
 export const addtocart = async (req, res) => {
   try {

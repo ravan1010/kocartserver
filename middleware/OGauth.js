@@ -77,7 +77,7 @@ export const appAuth = (req, res, next) => {
     req.Atoken = token;
     next();
   } catch (err) {
-    res.status(201).json({ message: "Token is not valid" });
+    res.status(201).json({ message: "Token is not valid" }); 
   }
 };
 
