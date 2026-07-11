@@ -38,10 +38,20 @@ router.route("/remove/:itemId/:shopId").delete(signat, removecart )
 //app
 router.route("/app/remove/:itemId/:shopId").delete(appAuth, removecart )
 
+//web
 router.post("/delivery-fee", signat, calculateDeliveryFee );
+//app
+router.post("/app/delivery-fee", appAuth, calculateDeliveryFee );
+
+// web
 router.route('/order/checkout').post(signat, checkout )
 router.route('/order/verify').post(signat, verifyPayment )
+
+//web
 router.route('/order/cod').post(signat, placeCODOrder )
+//app
+router.route('/app/order/cod').post(appAuth, placeCODOrder )
+
 // Buy (Checkout)
 router.route("/buy").post(signat, buy ) 
 //app
