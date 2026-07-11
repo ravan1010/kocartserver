@@ -88,8 +88,19 @@ router.post("/app/google/user", async (req, res) => {
         });
     }
 
+    const jwtToken = jwt.sign(
+      {
+        id: account._id,
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "100d",
+      }
+    );
+
     res.json({
       success: true,
+      token: jwtToken,
       userId: account._id,
       role: state,
     });
@@ -143,39 +154,39 @@ router.get(
       return res.redirect(
         "https://www.kocart.online/client-auth-success"
       );
+    }
+
+    if (role === "marchent") {
+
+      res.cookie("amogu", token, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "None",
+        maxAge: 100 * 24 * 60 * 60 * 1000, // 100 days
+      });
+
+      return res.redirect(
+        "https://www.kocart.online/marchent-auth-success"
+        // "https://localhost:5173/marchent-auth-success"
+      );
+    }
+
+    if (role === "deliveryBoy") {
+      res.cookie("deliveryBoy", token, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "None",
+        maxAge: 100 * 24 * 60 * 60 * 1000, // 100 days
+      });
+      return res.redirect(
+        "https://delivery.kocart.online/deliveryBoy-auth-success"
+      );
+    }
   }
-
-  if (role === "marchent") { 
-
-    res.cookie("amogu", token, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "None",
-      maxAge: 100 * 24 * 60 * 60 * 1000, // 100 days
-    });
-
-    return res.redirect(
-      "https://www.kocart.online/marchent-auth-success"
-            // "https://localhost:5173/marchent-auth-success"
-    );
-  }
-
-  if (role === "deliveryBoy") {
-    res.cookie("deliveryBoy", token, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "None",
-      maxAge: 100 * 24 * 60 * 60 * 1000, // 100 days
-    });
-    return res.redirect(
-      "https://delivery.kocart.online/deliveryBoy-auth-success"
-    );
-  }
- }
 );
 
 // step 3: save town branch cookie
-router.get("/town/cookie",  (req, res) => {
+router.get("/town/cookie", (req, res) => {
   const token = req.cookies?.owner;
 
   if (!token) {
@@ -199,7 +210,7 @@ router.get("/google/client", (req, res, next) => {
 });
 
 // step 3: save town branch cookie
-router.get("/client/cookie",  (req, res) => {
+router.get("/client/cookie", (req, res) => {
   const token = req.cookies?.at;
 
   if (!token) {
@@ -232,10 +243,10 @@ router.get("/marchent/cookie", async (req, res) => {
   try {
     const user = jwt.verify(token, process.env.JWT_SECRET);
     const isActive = await admin_model.findById(user.id);
-     // Assuming the token contains an isActive field
+    // Assuming the token contains an isActive field
 
-     console.log("User:", user);
-     console.log("isActive:", isActive.active);
+    console.log("User:", user);
+    console.log("isActive:", isActive.active);
 
     res.json({ user, isActive: isActive.active });
 
@@ -252,7 +263,7 @@ router.get("/google/deliveryBoy", (req, res, next) => {
   })(req, res, next);
 });
 
-router.get("/deliveryBoy/cookie",  (req, res) => {
+router.get("/deliveryBoy/cookie", (req, res) => {
 
   const token = req.cookies?.deliveryBoy;
 

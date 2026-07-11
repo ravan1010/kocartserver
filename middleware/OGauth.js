@@ -61,23 +61,26 @@ export const adu = async (req, res, next) => {
 }
 
 //app auth
+
 export const appAuth = (req, res, next) => {
-  // 1. Get token from header
-  const token = req.header('Authorization')?.replace('Bearer ', '');
-  console.log(token)
+  const token = req.header("Authorization")?.replace("Bearer ", "");
 
   if (!token) {
-    return res.status(200).json({ message: "No token, authorization denied" });
+    return res.status(401).json({
+      message: "No token",
+    });
   }
 
   try {
-    // 2. Verify token using your Secret Key
-    
-    // 3. Add the user ID to the request object
-    req.Atoken = token;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    req.Atoken = decoded;
+
     next();
   } catch (err) {
-    res.status(201).json({ message: "Token is not valid" }); 
+    return res.status(401).json({
+      message: "Invalid token",
+    });
   }
 };
 
