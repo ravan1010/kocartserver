@@ -143,7 +143,7 @@ const transporter = nodemailer.createTransport({
 export const setting = async (req, res) => {
   console.log(req.Atoken);
 
-  const id = req?.Atoken?.id;
+  const id = req.Atoken.id;
   console.log("User ID:", id);
 
   try {
