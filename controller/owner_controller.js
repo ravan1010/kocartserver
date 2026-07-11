@@ -185,36 +185,78 @@ export const gethomepostdata = async (req, res, next) => {
 
 //order status
 
-export const getorderdata = async (req, res, next) => {
+export const getorderdata = async (req, res) => {
+  try {
+    const id = req.owner.id;
 
-  const id = req.owner.id
-  console.log(id)
-  const branch = await branch_model.findById(id)
-  console.log(branch.location.coordinates)
-  if (!branch) return res.status(400).json({ success: false })
+    const branch = await branch_model.findById(id);
 
-  const order = await order_model.find({
-    location: {
-      $near: {
-        $geometry: {
-          type: "Point",
-          coordinates: branch.location.coordinates, // ✅ use branch's coordinates
+    if (!branch) {
+      return res.status(404).json({ success: false, message: "Branch not found" });
+    }
+
+    // Find merchants within 6 km
+    const nearbyMerchants = await admin_model.find({
+      location: {
+        $near: {
+          $geometry: {
+            type: "Point",
+            coordinates: branch.location.coordinates,
+          },
+          $maxDistance: 6000, // 6 km
         },
-        $maxDistance: 25000, // 25km in meters
       },
-    },
-  }).populate("userId", "number location") // ✅ populate user details
-    .populate("shop.admin", "number location companyName")
-    .populate("shop.items.productId")
-    .sort({ createdAt: -1 }) // newest first
-    .exec();
+    }).select("_id");
 
-  console.log(order)
+    const merchantIds = nearbyMerchants.map((m) => m._id);
+
+    // Fetch orders containing those merchants
+    const orders = await order_model
+      .find({
+        "shop.admin": { $in: merchantIds },
+      })
+      .populate("userId", "number location")
+      .populate("shop.admin", "number location companyName")
+      .populate("shop.items.productId")
+      .sort({ createdAt: -1 });
+
+    res.json(orders);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+// export const getorderdata = async (req, res, next) => {
+
+//   const id = req.owner.id
+//   console.log(id)
+//   const branch = await branch_model.findById(id)
+//   console.log(branch.location.coordinates)
+//   if (!branch) return res.status(400).json({ success: false })
+
+//   const order = await order_model.find({
+//     location: {
+//       $near: {
+//         $geometry: {
+//           type: "Point",
+//           coordinates: branch.location.coordinates, // ✅ use branch's coordinates
+//         },
+//         $maxDistance: 25000, // 25km in meters
+//       },
+//     },
+//   }).populate("userId", "number location") // ✅ populate user details
+//     .populate("shop.admin", "number location companyName")
+//     .populate("shop.items.productId")
+//     .sort({ createdAt: -1 }) // newest first
+//     .exec();
+
+//   console.log(order)
 
 
-  res.json(order);
+//   res.json(order);
 
-}
+// }
 
 export const orderpending = async (req, res) => {
 
