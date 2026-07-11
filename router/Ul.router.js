@@ -36,7 +36,7 @@ router.route("/app/cart/get").get(appAuth, cartdata )
 // Remove item
 router.route("/remove/:itemId/:shopId").delete(signat, removecart )
 //app
-router.route("/app/remove/:id").delete(appAuth, removecart )
+router.route("/app/remove/:itemId/:shopId").delete(appAuth, removecart )
 
 router.post("/delivery-fee", signat, calculateDeliveryFee );
 router.route('/order/checkout').post(signat, checkout )
