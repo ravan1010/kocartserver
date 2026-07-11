@@ -227,74 +227,85 @@ export const getorderdata = async (req, res) => {
   }
 };
 
-// export const getorderdata = async (req, res, next) => {
-
-//   const id = req.owner.id
-//   console.log(id)
-//   const branch = await branch_model.findById(id)
-//   console.log(branch.location.coordinates)
-//   if (!branch) return res.status(400).json({ success: false })
-
-//   const order = await order_model.find({
-//     location: {
-//       $near: {
-//         $geometry: {
-//           type: "Point",
-//           coordinates: branch.location.coordinates, // ✅ use branch's coordinates
-//         },
-//         $maxDistance: 25000, // 25km in meters
-//       },
-//     },
-//   }).populate("userId", "number location") // ✅ populate user details
-//     .populate("shop.admin", "number location companyName")
-//     .populate("shop.items.productId")
-//     .sort({ createdAt: -1 }) // newest first
-//     .exec();
-
-//   console.log(order)
-
-
-//   res.json(order);
-
-// }
-
 export const orderpending = async (req, res) => {
-
   try {
-    const id = req.owner.id
-    console.log(id)
-    const branch = await branch_model.findById(id)
-    if (!branch) return res.status(400).json({ success: false })
+    const id = req.owner.id;
 
-    console.log("Finding pending orders near branch at coordinates:", branch.location.coordinates);
+    const branch = await branch_model.findById(id);
 
-    const order = await order_model.find({
-      status: 'pending',
+    if (!branch) {
+      return res.status(404).json({ success: false, message: "Branch not found" });
+    }
+
+    // Find merchants within 6 km
+    const nearbyMerchants = await adminmodel.find({
       location: {
         $near: {
           $geometry: {
             type: "Point",
-            coordinates: branch.location.coordinates, // ✅ use branch's coordinates
+            coordinates: branch.location.coordinates,
           },
-          $maxDistance: 25000, // 25km in meters
+          $maxDistance: 6000, // 6 km
         },
       },
-    }).populate("userId", "number location") // ✅ populate user details
+    }).select("_id");
+
+    const merchantIds = nearbyMerchants.map((m) => m._id);
+
+    // Fetch orders containing those merchants
+    const orders = await order_model
+      .find({
+        "shop.admin": { $in: merchantIds },
+        status: 'pending',
+      })
+      .populate("userId", "number location")
       .populate("shop.admin", "number location companyName")
       .populate("shop.items.productId")
-      .sort({ createdAt: -1 }) // newest first
+      .sort({ createdAt: -1 });
 
-    console.log(order)
-
-
-    res.json(order);
-
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "server error" });
+    res.json(orders);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ success: false, message: err.message });
   }
+};
+// export const  = async (req, res) => {
 
-}
+//   try {
+//     const id = req.owner.id
+//     console.log(id)
+//     const branch = await branch_model.findById(id)
+//     if (!branch) return res.status(400).json({ success: false })
+
+//     console.log("Finding pending orders near branch at coordinates:", branch.location.coordinates);
+
+//     const order = await order_model.find({
+//       status: 'pending',
+//       location: {
+//         $near: {
+//           $geometry: {
+//             type: "Point",
+//             coordinates: branch.location.coordinates, // ✅ use branch's coordinates
+//           },
+//           $maxDistance: 25000, // 25km in meters
+//         },
+//       },
+//     }).populate("userId", "number location") // ✅ populate user details
+//       .populate("shop.admin", "number location companyName")
+//       .populate("shop.items.productId")
+//       .sort({ createdAt: -1 }) // newest first
+
+//     console.log(order)
+
+
+//     res.json(order);
+
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: "server error" });
+//   }
+
+// }
 
 export const orderProcess = async (req, res) => {
   try {
