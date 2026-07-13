@@ -55,18 +55,18 @@ router.post("/app/google/user", async (req, res) => {
         }
         break;
 
-      // case "marchent":
-      //   account = await admin_model.findOne({ googleId });
+      case "marchent":
+        account = await admin_model.findOne({ googleId });
 
-      //   if (!account) {
-      //     account = await admin_model.create({
-      //       googleId,
-      //       email,
-      //       name,
-      //       avatar,
-      //     });
-      //   }
-      //   break;
+        if (!account) {
+          account = await admin_model.create({
+            googleId,
+            email,
+            name,
+            avatar,
+          });
+        }
+        break;
 
       case "deliveryBoy":
         account = await deliveryBoy_model.findOne({ googleId });
