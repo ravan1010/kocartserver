@@ -52,9 +52,15 @@ router.route('/admin/:id').delete(admingu, EVENTDelete)
 router.route('/toadmin').get(admingu, Toadmin)
 router.route('/bookedlist').get(admingu, bookedlisttoadmin)
 
-
+//web
 router.route('/admin/Orders').get(admingu, getAdminOrders)
+//app
+router.route('/app/admin/Orders').get(appAdminAuth, getAdminOrders)
+
+//web
 router.route('/admin/order/update/:orderId/:orderstatus').put(admingu, updateOrder)
+//app
+router.route('/app/admin/order/update/:orderId/:orderstatus').put(appAdminAuth, updateOrder)
 
 
 //admin auth route for frontend
