@@ -24,10 +24,6 @@ admin.initializeApp({
     }),
   });
 
-
-
-
-
 export const sendPushNotification = async (fcmToken, title, body, url) => {
 
   if (typeof fcmToken !== "string") {

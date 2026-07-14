@@ -463,6 +463,7 @@ export const getAdminOrders = async (req, res) => {
                            pendingOrders: orders.filter(order => order.status === "pending"),
                            acceptedOrders: orders.filter(order => order.status === "accepted"),
                            assignedOrders: orders.filter(order => order.status === "assigned"),
+                           pickupOrders: orders.filter(order => order.status === "pickedup"),
                            completedOrders: orders.filter(order => order.status === "delivered"),
                            cancelledOrders: orders.filter(order => order.status === "cancelled"),
                           });
