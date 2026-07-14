@@ -152,7 +152,8 @@ router.get(
       });
 
       return res.redirect(
-        "https://www.kocart.online/client-auth-success"
+        // "https://www.kocart.online/client-auth-success"
+        'http://localhost:5173/client-auth-success'
       );
     }
 
