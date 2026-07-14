@@ -25,30 +25,49 @@ admin.initializeApp({
   });
 
 export const sendPushNotification = async (fcmToken, title, body, url) => {
-
-  if (typeof fcmToken !== "string") {
+  if (!fcmToken || typeof fcmToken !== "string") {
     console.log("⚠️ FCM token missing, push skipped");
     return;
   }
 
- const massage = {
-  token: fcmToken,
-  notification: {
-    title,
-    body,
-  },
-  webpush: {
-    fcmOptions: {
-    link: url,
-  },
-  },
-}; 
+  const message = {
+    token: fcmToken,
+
+    notification: {
+      title,
+      body,
+    },
+
+    data: {
+      screen: "Orders",
+      orderId: orderId.toString(),
+      url,
+    },
+
+    android: {
+      priority: "high",
+      notification: {
+        channelId: "default",
+      },
+    },
+
+    webpush: {
+      fcmOptions: {
+        link: url,
+      },
+      notification: {
+        title,
+        body,
+      },
+    },
+  };
 
   try {
-    const res = await admin.messaging().send(massage);
-    return res;
+    const response = await admin.messaging().send(message);
+    console.log("✅ Push sent:", response);
+    return response;
   } catch (error) {
-    // throw error;
     console.error("❌ FCM Error:", error);
   }
 };
+
