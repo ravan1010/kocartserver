@@ -524,7 +524,7 @@ export const calculateDeliveryFee = async (req, res) => {
     }
 
     // 💰 Fee logic
-    let deliveryFee = 0;
+    let deliveryFee = 16;
     if (totalDistance > 3) {
       deliveryFee += Math.ceil(totalDistance - 1) * 10;
     }
