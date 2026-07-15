@@ -259,7 +259,7 @@ export const appplaceCODOrder = async (req, res) => {
         await sendAppPushNotification(
           fcmToken,
           "Order",
-          "Your order .",
+          "Your order",
           order._id,
           "https://kocart.online/orders"
         )

@@ -553,6 +553,7 @@ export const updateOrder = async (req, res) => {
     res.status(200).json({
       success: true,
       order,
+      message: `order ${orderstatus} successfully`
     });
 
   } catch (error) {
