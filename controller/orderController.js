@@ -4,7 +4,7 @@ import Product from "../model/event_post_model.js";
 import { razorpay } from "../utils/razorpay.js";
 import user_model from "../model/user_model.js";
 import cart_model from "../model/cart_model.js";
-import { sendPushNotification } from "../utils/firebase.js";
+import { sendAppPushNotification, sendPushNotification } from "../utils/firebase.js";
 import branch_model from "../model/branch_model.js";
 import admin_model from "../model/admin_model.js";
 
@@ -217,5 +217,94 @@ export const placeCODOrder = async (req, res) => {
   }
 };
 
+export const appplaceCODOrder = async (req, res) => {
+  try {
+    const { items, addressId, delivery, Number, totalAmount } = req.body;
 
+    const platform = 6;
+
+    const id = req.Atoken.id;
+    const user = await user_model.findById(id);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    const shop = items?.shop;
+
+    const order = await Order.create({
+      userId: user._id,
+      shop,
+      address: addressId,
+      number: Number,
+      location: user.location,
+      totalAmount,
+      delivery,
+      platformFee: platform,
+      paymentMethod: "COD",
+      paymentStatus: "pending",
+      status: "pending",
+    });
+
+    await order.populate("shop.admin");
+
+    // Notify merchants
+    for (const item of order.shop) {
+      const fcmToken = item.admin?.fcmToken;
+
+      if (fcmToken) {
+        await sendAppPushNotification(
+  user.fcmToken,
+  "Order Accepted",
+  "Your order has been accepted.",
+  order._id,
+  "https://kocart.online/orders"
+)
+    }
+  }
+    // Find nearby branches
+    const nearbyBranches = await branch_model.find({
+      location: {
+        $near: {
+          $geometry: {
+            type: "Point",
+            coordinates: user.location.coordinates,
+          },
+          $maxDistance: 25000,
+        },
+      },
+    });
+
+    // Notify all nearby branches
+    for (const branch of nearbyBranches) {
+      if (branch.fcmToken) {
+        await sendPushNotification(
+          branch.fcmToken,
+          "New Order Nearby!",
+          `Order ID: ${order._id}`,
+          "https://branch.kocart.online/allorder"
+        );
+      }
+    }
+
+    // Clear cart
+    await cart_model.findOneAndDelete({ userId: user._id });
+
+    return res.status(201).json({
+      success: true,
+      message: "COD order placed successfully",
+      order,
+    });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to place COD order",
+    });
+  }
+};
 
