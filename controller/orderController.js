@@ -257,12 +257,12 @@ export const appplaceCODOrder = async (req, res) => {
 
       if (fcmToken) {
         await sendAppPushNotification(
-  user.fcmToken,
-  "Order Accepted",
-  "Your order has been accepted.",
-  order._id,
-  "https://kocart.online/orders"
-)
+          user.fcmToken,
+          "Order",
+          "Your order has been accepted.",
+          order._id,
+          "https://kocart.online/orders"
+        )
     }
   }
     // Find nearby branches
