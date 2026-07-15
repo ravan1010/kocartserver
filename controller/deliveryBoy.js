@@ -232,8 +232,14 @@ export const Deliverypickedup = async (req, res) => {
     for (const shop of order.shop) {
       const admin = await admin_model.findById(shop.admin);
 
-      if (admin) {
+      if (admin.category === "foodANDbeverages") {
         const platformcommision = shop.subtotal * 0.20;
+
+        admin.platformcommision += platformcommision;
+        admin.amount += shop.subtotal;
+        await admin.save();
+      } else if(admin.category === "groceryFruitsANDvegetables"){
+         const platformcommision = shop.subtotal * 0.01;
 
         admin.platformcommision += platformcommision;
         admin.amount += shop.subtotal;
