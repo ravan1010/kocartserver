@@ -8,6 +8,13 @@ import { sendAppPushNotification, sendPushNotification } from "../utils/firebase
 import branch_model from "../model/branch_model.js";
 import admin_model from "../model/admin_model.js";
 
+const generateOrderId = () => {
+  const timestamp = Date.now().toString().slice(-6);
+  const random = Math.floor(1000 + Math.random() * 9000);
+
+  return `KOCART${timestamp}${random}`;
+};
+
 export const checkout = async (req, res) => {
   try {
     const { total } = req.body;
@@ -65,6 +72,7 @@ export const verifyPayment = async (req, res) => {
     const shop = items?.shop
 
     const order = await Order.create({
+      orderId: generateOrderId(),
       userId,
       shop,
       address: addressId,
@@ -100,7 +108,7 @@ const nearbyBranches = await branch_model.find({
         type: "Point",
         coordinates: user.location.coordinates,
       },
-      $maxDistance: 25000,
+      $maxDistance: 7000,
     },
   },
 })
@@ -145,6 +153,7 @@ export const placeCODOrder = async (req, res) => {
     const shop = items?.shop;
 
     const order = await Order.create({
+      orderId: generateOrderId(),
       userId: user._id,
       shop,
       address: addressId,
@@ -182,7 +191,7 @@ export const placeCODOrder = async (req, res) => {
             type: "Point",
             coordinates: user.location.coordinates,
           },
-          $maxDistance: 25000,
+          $maxDistance: 7000,
         },
       },
     });
@@ -236,6 +245,7 @@ export const appplaceCODOrder = async (req, res) => {
     const shop = items?.shop;
 
     const order = await Order.create({
+      orderId: generateOrderId(),
       userId: user._id,
       shop,
       address: addressId,
@@ -273,7 +283,7 @@ export const appplaceCODOrder = async (req, res) => {
             type: "Point",
             coordinates: user.location.coordinates,
           },
-          $maxDistance: 25000,
+          $maxDistance: 7000,
         },
       },
     });

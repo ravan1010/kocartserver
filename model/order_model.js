@@ -17,6 +17,11 @@ const shopId = new mongoose.Schema({
 },{timestamps: true})
  
 const orderSchema = new mongoose.Schema({
+   orderId: {
+    type: String,
+    unique: true,
+    required: true,
+  },
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "user", required: true },
   shop: [shopId],
   number: { type: Number, required: true},
