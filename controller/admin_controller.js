@@ -172,6 +172,7 @@ export const EVENTCreate = async (req, res, next) => {
       name: name,
       description: description,
       image: image,
+      category: adminuser.category,
       cityTown: cityTown,
       companyName: companyName,
       variantname: variantname,
