@@ -61,55 +61,91 @@ export const explore = async (req, res) => {
 };
 
 export const nearby = async (req, res) => {
-
   try {
     const { lat, lng } = req.query;
 
     if (!lat || !lng) {
-      return res.status(400).json({ message: "Location required" });
+      return res.status(400).json({
+        success: false,
+        message: "Latitude and Longitude are required",
+      });
     }
 
-    const merchants = await admin_model.find({
+    const latitude = parseFloat(lat);
+    const longitude = parseFloat(lng);
+
+    if (isNaN(latitude) || isNaN(longitude)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid coordinates",
+      });
+    }
+
+    // Find nearby merchants (4 km)
+    const merchants = await admin_model
+      .find({
+        location: {
+          $near: {
+            $geometry: {
+              type: "Point",
+              coordinates: [longitude, latitude],
+            },
+            $maxDistance: 4000,
+          },
+        },
+      })
+      .select("_id");
+
+    const merchantIds = merchants.map((m) => m._id);
+
+    // Find nearest branch (10 km)
+    const branch = await branch_model.findOne({
       location: {
         $near: {
           $geometry: {
             type: "Point",
-            coordinates: [parseFloat(lng), parseFloat(lat)],
+            coordinates: [longitude, latitude],
           },
-          $maxDistance: 4000, // 4km in meters
+          $maxDistance: 10000,
         },
       },
-    }).select("_id");
-    console.log("Nearby merchants:", merchants);
-
-    const branch = await branch_model.findOne({
-          location: {
-            $near: {
-              $geometry: {
-                type: "Point",
-                coordinates: [parseFloat(lng), parseFloat(lat)],
-              },
-              $maxDistance: 10000, // 10km in meters
-            },
-          },
     });
 
-    const merchantIds = merchants.map(m => m._id);
-    console.log("Merchant IDs:", merchantIds);
+    // If no merchants found
+    if (merchantIds.length === 0) {
+      return res.json({
+        success: true,
+        grocery: [],
+        restaurant: [],
+        branch,
+      });
+    }
 
-    const grocery = await post_model.find({ author: { $in: merchantIds }, category: "groceryFruitsANDvegetables" });
-    const restaurant = await post_model.find({ author: { $in: merchantIds }, category: "foodANDbeverages" });
-    
-    res.json({ grocery, restaurant, branch });
+    // Fetch posts in parallel
+    const [grocery, restaurant] = await Promise.all([
+      post_model.find({
+        author: { $in: merchantIds },
+        category: "groceryFruitsANDvegetables",
+      }),
+      post_model.find({
+        author: { $in: merchantIds },
+        category: "foodANDbeverages",
+      }),
+    ]);
+
+    res.json({
+      success: true,
+      grocery,
+      restaurant,
+      branch,
+    });
   } catch (error) {
-     console.error("Nearby error:", error);
+    console.error("Nearby error:", error);
 
-  res.status(500).json({
-    success: false,
-    message: error.message,
-    name: error.name,
-    stack: error.stack,
-  });
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
 };
 
