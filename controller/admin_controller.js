@@ -22,6 +22,7 @@ export const admininfo = async (req, res) => {
 
     const {
       companyName,
+      number,
       category,
       FHBCA,
       ASSV,
@@ -45,6 +46,7 @@ export const admininfo = async (req, res) => {
       id,
       {
         companyName,
+        number,
         category,
         city,
         address: {
