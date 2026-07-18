@@ -6,6 +6,7 @@ import { signat } from '../middleware/OGauth.js';
 const router = express.Router();
 import { admingu, adminif, admintoa, appAdminAuth } from '../middleware/admin_auth.js';
 import { AdminFCMtoken, Adminid, admininfo, bookedlisttoadmin, dashboard, EVENTCreate, EVENTDelete, EVENTUpdate, getAdminOrders, getSinglePost, open, openORclose, Toadmin, updateOrder } from '../controller/admin_controller.js';
+import admin_model from '../model/admin_model.js';
 
 ///admin
 
@@ -77,5 +78,41 @@ router.get('/adminmain', admintoa, (req, res) => {
 
 });
 
+router.get('/marchent/data', async (req, res) => {
+  try {
+    
+    const admin = await admin_model.find({ active: "false"  });
+    console.log(admin)
+
+    if (admin.length === 0) {
+      return res.status(404).json({ message: 'No inactive vendors found' });
+    }
+
+    res.status(200).json(admin);
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+});
+
+router.post('/marchent/active/:id', async (req, res) => {
+  try {
+    const updatedVendor = await admin_model.findByIdAndUpdate(
+      req.params.id,
+      { $set: { active: true } },
+      { new: true }
+    );
+
+    if (!updatedVendor) {
+      return res.status(404).json({ message: 'Vendor not found' });
+    }
+    res.status(200).json({
+      message: 'marchent activated successfully',
+      vendor: updatedVendor
+    });
+
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+});
 
 export default router;
