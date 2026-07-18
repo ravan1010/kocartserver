@@ -303,11 +303,11 @@ export const openORclose = async (req, res) => {
     await admin.save();
     console.log(admin._id)
 
-      await post_model.updateMany(
-        { author: admin._id },
-        { active: admin.open }
-      );
-    
+    await post_model.updateMany(
+      { author: admin._id },
+      { active: admin.open }
+    );
+
     res.json({ success: true })
 
   } catch (error) {
@@ -459,15 +459,22 @@ export const getAdminOrders = async (req, res) => {
       .populate("address", "FHBCA ASSV Landmark pincode cityTown state")
       .populate("deliveryBoy", "name")
 
-    res.status(200).json({ success: true, 
-                           orders, 
-                           pendingOrders: orders.filter(order => order.status === "pending"),
-                           acceptedOrders: orders.filter(order => order.status === "accepted"),
-                           assignedOrders: orders.filter(order => order.status === "assigned"),
-                           pickupOrders: orders.filter(order => order.status === "pickedup"),
-                           completedOrders: orders.filter(order => order.status === "delivered"),
-                           cancelledOrders: orders.filter(order => order.status === "cancelled"),
-                          });
+
+    res.status(200).json({
+      success: true,
+      orders,
+      pendingOrders: orders.filter(order => order.status === "pending"),
+      acceptedOrders: orders.filter(order => order.status === "accepted"),
+      assignedOrders: orders.filter(order => order.status === "assigned"),
+      pickupOrders: orders.filter(order => order.status === "pickedup"), 
+      completedOrders: orders
+        .filter(order => order.status === "delivered")
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)),
+
+      cancelledOrders: orders
+        .filter(order => order.status === "cancelled")
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)),
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: "Server error" });
@@ -478,7 +485,7 @@ export const updateOrder = async (req, res) => {
   try {
     const adminNumber = req.admingu.id;
     const adminuser = await adminmodel.findById(adminNumber);
-    const { orderId, orderstatus } = req.params; 
+    const { orderId, orderstatus } = req.params;
 
     console.log(orderId, orderstatus)
 
