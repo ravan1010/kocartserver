@@ -219,6 +219,7 @@ export const getorderdata = async (req, res) => {
       .populate("userId", "number location")
       .populate("shop.admin", "number location companyName")
       .populate("shop.items.productId")
+      .populate("deliveryBoy", "name")
       .sort({ createdAt: -1 });
 
     res.json(orders);
