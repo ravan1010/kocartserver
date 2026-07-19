@@ -229,9 +229,10 @@ export const getorderdata = async (req, res) => {
   }
 };
 
-export const orderpending = async (req, res) => {
+export const getOrderTobranch = async (req, res) => {
   try {
     const id = req.owner.id;
+    const { status } = req.query;
 
     const branch = await branch_model.findById(id);
 
@@ -258,7 +259,7 @@ export const orderpending = async (req, res) => {
     const orders = await order_model
       .find({
         "shop.admin": { $in: merchantIds },
-        status: 'pending',
+        status: status,
       })
       .populate("userId", "number location")
       .populate("shop.admin", "number location companyName")

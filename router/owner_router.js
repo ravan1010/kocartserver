@@ -15,7 +15,8 @@ import {  getpostdata,
           branchLocation,
             Branch_dashboard,
              Branch_openORclose,
-              parcelFromData, parcelToData, marchentActivate } from '../controller/owner_controller.js';
+              parcelFromData, parcelToData, marchentActivate, 
+              getOrderTobranch} from '../controller/owner_controller.js';
 import { ownertoken } from '../middleware/owner.js';
 import { deliveryBoyAuth } from '../middleware/OGauth.js';
 import { DeliveryAcceptOrder, DeliveryBoyFCMtoken, 
@@ -48,7 +49,7 @@ router.route('/owner/removepostinhomepage').post(ownertoken, removepostinhomepag
 //order status
 router.route('/owner/getorderdata').get(ownertoken, getorderdata)
 
-router.route('/owner/orderpending').get(ownertoken, orderpending) 
+router.route('/owner/orders').get(ownertoken, getOrderTobranch) 
 
 router.route('/owner/orderProcess').post(ownertoken, orderProcess)
 router.route('/owner/ordercancel').post(ownertoken, ordercancel)
