@@ -447,39 +447,48 @@ export const getSinglePost = async (req, res) => {
 
 export const getAdminOrders = async (req, res) => {
   try {
-    const adminNumber = req.admingu.id
+    const { status } = req.query;
+
+    const adminNumber = req.admingu.id;
     const adminuser = await adminmodel.findById(adminNumber);
 
     if (!adminuser) {
-      return res.status(401).json({ message: "Admin not found" });
+      return res.status(401).json({
+        success: false,
+        message: "Admin not found",
+      });
     }
 
-    const orders = await order_model.find({ "shop.admin": adminuser._id })
+    const filter = {
+      "shop.admin": adminuser._id,
+    };
+
+    // Add status only if provided
+    if (status) {
+      filter.status = status;
+    }
+
+    const orders = await order_model
+      .find(filter)
+      .sort({ createdAt: -1 })
       .populate("userId", "name email")
       .populate("shop.items.productId", "name image price")
       .populate("shop.items.variantid", "name")
       .populate("address", "FHBCA ASSV Landmark pincode cityTown state")
-      .populate("deliveryBoy", "name")
-
+      .populate("deliveryBoy", "name");
 
     res.status(200).json({
       success: true,
+      count: orders.length,
       orders,
-      pendingOrders: orders.filter(order => order.status === "pending"),
-      acceptedOrders: orders.filter(order => order.status === "accepted"),
-      assignedOrders: orders.filter(order => order.status === "assigned"),
-      pickupOrders: orders.filter(order => order.status === "pickedup"), 
-      completedOrders: orders
-        .filter(order => order.status === "delivered")
-        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)),
-
-      cancelledOrders: orders
-        .filter(order => order.status === "cancelled")
-        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)),
     });
+
   } catch (error) {
     console.error(error);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
   }
 };
 
