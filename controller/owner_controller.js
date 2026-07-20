@@ -13,6 +13,7 @@ import branch_otp_model from '../model/branch_otp_model.js';
 import user_model from '../model/user_model.js';
 import order_model from '../model/order_model.js';
 import Parcel_model from '../model/Parcel_model.js';
+import deliveryBoy_model from '../model/deliveryBoy_model.js';
 
 dotenv.config()
 
@@ -336,22 +337,48 @@ export const orderProcess = async (req, res) => {
 export const ordercancel = async (req, res) => {
   try {
     const { id } = req.body;
-    console.log("post", id);
 
-    const postDoc = await order.findById(id);  // ✅ use model here
-    if (!postDoc) {
-      return res.json({ message: "product not found" });
+    if (!id) {
+      return res.status(400).json({ message: "Order ID is required" });
     }
 
-    postDoc.status = "cancel" // ✅ update array
+    const postDoc = await order.findById(id);
+
+    if (!postDoc) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    // Update order status
+    postDoc.status = "cancelled";
+
+    // Remove assigned delivery boy (optional)
+    postDoc.deliveryBoy = null;
+
     await postDoc.save();
 
-    res.json({ message: "order cancelled" });
+    // Make delivery boy available again
+    if (postDoc.deliveryBoy) {
+      await deliveryBoy_model.findByIdAndUpdate(
+        postDoc.deliveryBoy,
+        {
+          isAvailable: true,
+        }
+      );
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Order cancelled successfully",
+    });
+
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "server error" });
+    console.error("Order Cancel Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
   }
-}
+};
 
 export const afterorderprocess = async (req, res) => {
 

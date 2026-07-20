@@ -304,7 +304,7 @@ export const DeliveryComplete = async (req, res) => {
 
     const order = await order_model.findOneAndUpdate(
       {
-        _id: orderId,
+        _id: orderId, 
         deliveryBoy: id
       },
       {
