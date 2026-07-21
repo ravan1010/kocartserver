@@ -688,7 +688,7 @@ export const copyProductToMerchant = async (req, res) => {
     // Optional: Reset stock
     // newProduct.stock = 0;
 
-    const copiedProduct = await adminmodel.create(newProduct);
+    const copiedProduct = await post_model.create(newProduct);
     await copiedProduct.save()
 
 
