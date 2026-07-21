@@ -14,8 +14,6 @@ import user_model from '../model/user_model.js';
 import order_model from '../model/order_model.js';
 import Parcel_model from '../model/Parcel_model.js';
 import deliveryBoy_model from '../model/deliveryBoy_model.js';
-import post_model from '../model/event_post_model.js';
-import admin_model from '../model/admin_model.js';
 
 dotenv.config()
 
@@ -615,7 +613,7 @@ export const MerchantpaymentSettlement = async (req, res) => {
   try {
     const { merchantId, amount, platformCommission, settlementAmount } = req.body;
 
-    const merchant = await admin_model.findById(merchantId);
+    const merchant = await adminmodel.findById(merchantId);
 
     if (!merchant) {
       return res.status(404).json({
@@ -650,7 +648,7 @@ export const postsData = async (req, res) => {
   try {
     const id = '6a39428d332fcff2e62947ff';
 
-    const posts = await event_post_model.find({ author: id })
+    const posts = await adminmodel.find({ author: id })
     
     res.status(201).json({
           post: posts,
@@ -667,7 +665,7 @@ export const copyProductToMerchant = async (req, res) => {
     const { productId, newMerchantId } = req.body;
 
     // Find original product
-    const product = await admin_model.findById(productId);
+    const product = await adminmodel.findById(productId);
 
     if (!product) {
       return res.status(404).json({
@@ -690,7 +688,7 @@ export const copyProductToMerchant = async (req, res) => {
     // Optional: Reset stock
     // newProduct.stock = 0;
 
-    const copiedProduct = await admin_model.create(newProduct);
+    const copiedProduct = await adminmodel.create(newProduct);
 
 
     res.status(201).json({
