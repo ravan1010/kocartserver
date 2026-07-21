@@ -254,11 +254,11 @@ export const Deliverypickedup = async (req, res) => {
 
       admin.platformcommision += platformCommission;
       admin.amount += shop.subtotal;
-      admin.marchentAmount += merchantAmount;
+      // admin.marchentAmount += merchantAmount;
 
-      admin.lifetimesales += shop.subtotal;
-      admin.lifetimecommission += platformCommission;
-      admin.lifetimeMarchentAmount += merchantAmount;
+      // admin.lifetimesales += shop.subtotal;
+      // admin.lifetimecommission += platformCommission;
+      // admin.lifetimeMarchentAmount += merchantAmount;
 
       await admin.save();
     }
