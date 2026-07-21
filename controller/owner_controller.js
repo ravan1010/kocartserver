@@ -7,13 +7,13 @@ import post from '../model/event_post_model.js';
 import user from '../model/user_model.js';
 import order from '../model/order_model.js'
 import dotenv from 'dotenv'
-import post_model from '../model/event_post_model.js';
 import branch_model from '../model/branch_model.js';
 import branch_otp_model from '../model/branch_otp_model.js';
 import user_model from '../model/user_model.js';
 import order_model from '../model/order_model.js';
 import Parcel_model from '../model/Parcel_model.js';
 import deliveryBoy_model from '../model/deliveryBoy_model.js';
+import post_model from "../model/event_post_model.js";
 
 dotenv.config()
 
@@ -648,7 +648,7 @@ export const postsData = async (req, res) => {
   try {
     const id = '6a39428d332fcff2e62947ff';
 
-    const posts = await adminmodel.find({ author: id })
+    const posts = await post_model.find({ author: id })
     
     res.status(201).json({
           post: posts,
@@ -665,7 +665,7 @@ export const copyProductToMerchant = async (req, res) => {
     const { productId, newMerchantId } = req.body;
 
     // Find original product
-    const product = await adminmodel.findById(productId);
+    const product = await post_model.findById(productId);
 
     if (!product) {
       return res.status(404).json({
