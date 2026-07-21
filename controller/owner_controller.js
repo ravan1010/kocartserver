@@ -677,7 +677,7 @@ export const copyProductToMerchant = async (req, res) => {
     // Convert document to object
     const newProduct = product.toObject();
 
-    // Remove MongoDB fields
+    // Remove MongoDB fields 
     delete newProduct._id;
     delete newProduct.createdAt;
     delete newProduct.updatedAt;
@@ -689,6 +689,7 @@ export const copyProductToMerchant = async (req, res) => {
     // newProduct.stock = 0;
 
     const copiedProduct = await adminmodel.create(newProduct);
+    await copiedProduct.save()
 
 
     res.status(201).json({
