@@ -14,7 +14,7 @@ import user_model from '../model/user_model.js';
 import order_model from '../model/order_model.js';
 import Parcel_model from '../model/Parcel_model.js';
 import deliveryBoy_model from '../model/deliveryBoy_model.js';
-import event_post_model from '../model/event_post_model.js';
+import post_model from '../model/event_post_model.js';
 import admin_model from '../model/admin_model.js';
 
 dotenv.config()
@@ -667,9 +667,7 @@ export const copyProductToMerchant = async (req, res) => {
     const { productId, newMerchantId } = req.body;
 
     // Find original product
-    const product = await event_post_model.findOne({
-      _id: productId,
-    });
+    const product = await admin_model.findById(productId);
 
     if (!product) {
       return res.status(404).json({
@@ -687,12 +685,13 @@ export const copyProductToMerchant = async (req, res) => {
     delete newProduct.updatedAt;
 
     // Assign new merchant
-    newProduct.merchant = newMerchantId;
+    newProduct.author = newMerchantId;
 
     // Optional: Reset stock
     // newProduct.stock = 0;
 
-    const copiedProduct = await event_post_model.create(newProduct);
+    const copiedProduct = await admin_model.create(newProduct);
+
 
     res.status(201).json({
       success: true,
