@@ -584,6 +584,7 @@ export const getMarchentData = async (req, res) => {
 
     // Find merchants within 7 km
     const nearbyMerchants = await adminmodel.find({
+      active: true,
       location: {
         $near: {
           $geometry: {
