@@ -626,7 +626,7 @@ export const MerchantpaymentSettlement = async (req, res) => {
 
     // Update values
     merchant.amount = Number(amount);
-    merchant.platformCommission = Number(platformCommission);
+    merchant.platformcommision = Number(platformCommission);
     merchant.settlementAmount = Number(settlementAmount);
 
     await merchant.save();
