@@ -593,9 +593,15 @@ export const getMarchentData = async (req, res) => {
           $maxDistance: 7000, // 7 km
         },
       },
-    }).select("_id");
+    }).select(
+      "_id email companyName number amount platformcommision marchentAmount settlementAmount lifetimesales lifetimecommission lifetimeMarchentAmount category city"
+    );
 
-    res.json(nearbyMerchants);
+    res.status(200).json({
+      success: true,
+      merchants: nearbyMerchants,
+    });  
+
   } catch (err) {
     console.log(err);
     res.status(500).json({ success: false, message: err.message });

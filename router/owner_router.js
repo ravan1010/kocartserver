@@ -65,7 +65,7 @@ router.route('/parcelfromData').get(ownertoken, parcelFromData)
 router.route('/parceltoData').get(ownertoken, parcelToData)
 
 router.route('/owner/getmarchemtData').get(ownertoken, getMarchentData)
-router.route('/owner/zero').post(ownertoken, )
+// router.route('/owner/zero').post(ownertoken, )
 
 
 // router.route('/owner/image').post(ownertoken, imageCreate)
