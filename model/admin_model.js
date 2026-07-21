@@ -33,7 +33,7 @@ const adminSchema = mongoose.Schema({
         type: Number
     },
     lifetimecommission: {
-        type: Nunber
+        type: Number
     },
     lifetimeMarchentAmount: {
         type: Number
