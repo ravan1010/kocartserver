@@ -16,7 +16,9 @@ import {  getpostdata,
              Branch_openORclose,
               parcelFromData, parcelToData, marchentActivate, 
               getOrderTobranch,
-              getMarchentData} from '../controller/owner_controller.js';
+              getMarchentData,
+              postsData,
+              copyProductToMerchant} from '../controller/owner_controller.js';
 import { ownertoken } from '../middleware/owner.js';
 import { deliveryBoyAuth } from '../middleware/OGauth.js';
 import { DeliveryAcceptOrder, DeliveryBoyFCMtoken, 
@@ -33,6 +35,9 @@ const router = express.Router()
 
 router.route('/owner/fcmToken').post(ownertoken, branchFCMtoken)
 router.route('/owner/location').post(ownertoken, branchLocation)
+
+router.route('/owner/posts').get(ownertoken, postsData)
+router.route('/owner/post/copy').post(ownertoken, copyProductToMerchant)
 
 router.route('/owner/dashboard').get(ownertoken, Branch_dashboard)
 router.route('/owner/openORclose').post(ownertoken, Branch_openORclose)

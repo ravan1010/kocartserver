@@ -14,6 +14,7 @@ import user_model from '../model/user_model.js';
 import order_model from '../model/order_model.js';
 import Parcel_model from '../model/Parcel_model.js';
 import deliveryBoy_model from '../model/deliveryBoy_model.js';
+import event_post_model from '../model/event_post_model.js';
 
 dotenv.config()
 
@@ -608,5 +609,72 @@ export const getMarchentData = async (req, res) => {
     res.status(500).json({ success: false, message: err.message });
   }
 };
+
+export const postsData = async (req, res) => {
+  try {
+    const id = '6a39428d332fcff2e62947ff';
+
+    const posts = await event_post_model.find({ author: id })
+    
+    res.status(201).json({
+          post: posts,
+          success: true
+        })
+
+  } catch (error) {
+    res.json(error)
+  }
+} 
+
+export const copyProductToMerchant = async (req, res) => {
+  try {
+    const { productId, newMerchantId } = req.body;
+
+    // Find original product
+    const product = await event_post_model.findOne({
+      _id: productId,
+    });
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found",
+      });
+    }
+
+    // Convert document to object
+    const newProduct = product.toObject();
+
+    // Remove MongoDB fields
+    delete newProduct._id;
+    delete newProduct.createdAt;
+    delete newProduct.updatedAt;
+
+    // Assign new merchant
+    newProduct.merchant = newMerchantId;
+
+    // Optional: Reset stock
+    // newProduct.stock = 0;
+
+    const copiedProduct = await event_post_model.create(newProduct);
+
+    res.status(201).json({
+      success: true,
+      message: "Product copied successfully",
+      product: copiedProduct,
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+
+
+
 
 
