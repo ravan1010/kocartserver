@@ -14,8 +14,8 @@ const adminSchema = mongoose.Schema({
         type: String,
         require: true,
     },
-    amount:{
-        type : Number,
+    amount: {
+        type: Number,
         default: 0,
     },
     platformcommision: {
@@ -23,22 +23,26 @@ const adminSchema = mongoose.Schema({
         default: 0,
     },
     marchentAmount: {
-        type: Number
+        type: Number,
+        default: 0,
     },
     settlementAmount: {
         type: Number,
-        default: 0
+        default: 0,
     },
     lifetimesales: {
-        type: Number
+        type: Number,
+        default: 0,
     },
     lifetimecommission: {
-        type: Number
+        type: Number,
+        default: 0,
     },
     lifetimeMarchentAmount: {
-        type: Number
+        type: Number,
+        default: 0,
     },
-    fcmToken: { 
+    fcmToken: {
         type: String,
         default: null,
     },
@@ -63,10 +67,10 @@ const adminSchema = mongoose.Schema({
             default: [0, 0],
         },
     },
-    city:{
+    city: {
         type: String
     },
-    active:{
+    active: {
         type: Boolean,
         default: false,
     },

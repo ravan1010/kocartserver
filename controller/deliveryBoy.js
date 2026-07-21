@@ -252,17 +252,15 @@ export const Deliverypickedup = async (req, res) => {
       const platformCommission = shop.subtotal * commissionRate;
       const merchantAmount = shop.subtotal - platformCommission;
 
-      // Pending
-      admin.platformcommision += platformCommission;
-      admin.amount += shop.subtotal;
-      admin.marchentAmount += merchantAmount;
+admin.platformcommision += platformCommission;
+admin.amount += shop.subtotal;
+admin.marchentAmount += merchantAmount;
 
-      // Lifetime
-      admin.lifetimesales += shop.subtotal;
-      admin.lifetimecommission += platformCommission;
-      admin.lifetimeMarchentAmount += merchantAmount;
+admin.lifetimesales += shop.subtotal;
+admin.lifetimecommission += platformCommission;
+admin.lifetimeMarchentAmount += merchantAmount;
 
-      await admin.save();
+await admin.save();
     }
 
     res.json({
