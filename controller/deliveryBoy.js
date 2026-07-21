@@ -230,40 +230,40 @@ export const Deliverypickedup = async (req, res) => {
     }
 
     for (const shop of order.shop) {
-  const admin = await admin_model.findById(shop.admin);
+      const admin = await admin_model.findById(shop.admin);
 
-  if (!admin) continue;
+      if (!admin) continue;
 
-  let commissionRate = 0;
+      let commissionRate = 0;
 
-  switch (admin.category) {
-    case "foodANDbeverages":
-      commissionRate = 0.20;
-      break;
+      switch (admin.category) {
+        case "foodANDbeverages":
+          commissionRate = 0.20;
+          break;
 
-    case "groceryFruitsANDvegetables":
-      commissionRate = 0.01;
-      break;
+        case "groceryFruitsANDvegetables":
+          commissionRate = 0.01;
+          break;
 
-    default:
-      commissionRate = 0;
-  }
+        default:
+          commissionRate = 0;
+      }
 
-  const platformCommission = shop.subtotal * commissionRate;
-  const merchantAmount = shop.subtotal - platformCommission;
+      const platformCommission = shop.subtotal * commissionRate;
+      const merchantAmount = shop.subtotal - platformCommission;
 
-  // Pending
-  admin.platformcommision += platformCommission;
-  admin.amount += shop.subtotal;
-  admin.marchentAmount += merchantAmount;
+      // Pending
+      admin.platformcommision += platformCommission;
+      admin.amount += shop.subtotal;
+      admin.marchentAmount += merchantAmount;
 
-  // Lifetime
-  admin.lifetimesales += shop.subtotal;
-  admin.lifetimecommission += platformCommission;
-  admin.lifetimeMarchentAmount += merchantAmount;
+      // Lifetime
+      admin.lifetimesales += shop.subtotal;
+      admin.lifetimecommission += platformCommission;
+      admin.lifetimeMarchentAmount += merchantAmount;
 
-  await admin.save();
-}
+      await admin.save();
+    }
 
     res.json({
       success: true,
@@ -272,7 +272,7 @@ export const Deliverypickedup = async (req, res) => {
     });
 
 
-  } catch (error){
+  } catch (error) {
     res.status(500).json({
       success: false
     });
@@ -322,7 +322,7 @@ export const DeliveryComplete = async (req, res) => {
 
     const order = await order_model.findOneAndUpdate(
       {
-        _id: orderId, 
+        _id: orderId,
         deliveryBoy: id
       },
       {
