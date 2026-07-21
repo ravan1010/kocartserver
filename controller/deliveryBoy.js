@@ -235,14 +235,36 @@ export const Deliverypickedup = async (req, res) => {
       if (admin.category === "foodANDbeverages") {
         const platformcommision = shop.subtotal * 0.20;
 
-        admin.platformcommision += platformcommision;
-        admin.amount += shop.subtotal;
-        await admin.save();
-      } else if(admin.category === "groceryFruitsANDvegetables"){
-         const platformcommision = shop.subtotal * 0.01;
+        const marchentAmount = shop.subtotal - platformcommision;
 
+        //pending amount
         admin.platformcommision += platformcommision;
         admin.amount += shop.subtotal;
+        admin.marchentAmount += marchentAmount
+
+        //life time amount data
+        admin.lifetimesales += shop.subtotal;
+        admin.lifetimecommission += platformcommision;
+        admin.lifetimeMarchentAmount += marchentAmount;
+
+        await admin.save();
+
+      } else if(admin.category === "groceryFruitsANDvegetables"){
+
+        const platformcommision = shop.subtotal * 0.01;
+
+        const marchentAmount = shop.subtotal - platformcommision;
+
+        //pending amount
+        admin.platformcommision += platformcommision;
+        admin.amount += shop.subtotal;
+        admin.marchentAmount += marchentAmount;
+
+        //life time amount data
+        admin.lifetimesales += shop.subtotal;
+        admin.lifetimecommission += platformcommision;
+        admin.lifetimeMarchentAmount += marchentAmount;
+      
         await admin.save();
       }
     }
@@ -254,7 +276,7 @@ export const Deliverypickedup = async (req, res) => {
     });
 
 
-  } catch (error) {
+  } catch (error){
     res.status(500).json({
       success: false
     });

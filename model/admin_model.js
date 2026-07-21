@@ -22,6 +22,22 @@ const adminSchema = mongoose.Schema({
         type: Number,
         default: 0,
     },
+    marchentAmount: {
+        type: Number
+    },
+    settlementAmount: {
+        type: Number,
+        default: 0
+    },
+    lifetimesales: {
+        type: Number
+    },
+    lifetimecommission: {
+        type: Nunber
+    },
+    lifetimeMarchentAmount: {
+        type: Number
+    },
     fcmToken: { 
         type: String,
         default: null,

@@ -15,7 +15,8 @@ import {  getpostdata,
             Branch_dashboard,
              Branch_openORclose,
               parcelFromData, parcelToData, marchentActivate, 
-              getOrderTobranch} from '../controller/owner_controller.js';
+              getOrderTobranch,
+              getMarchentData} from '../controller/owner_controller.js';
 import { ownertoken } from '../middleware/owner.js';
 import { deliveryBoyAuth } from '../middleware/OGauth.js';
 import { DeliveryAcceptOrder, DeliveryBoyFCMtoken, 
@@ -63,7 +64,8 @@ router.route('/owner/ordercomplete').get(ownertoken, ordercomplete)
 router.route('/parcelfromData').get(ownertoken, parcelFromData)
 router.route('/parceltoData').get(ownertoken, parcelToData)
 
-
+router.route('/owner/getmarchemtData').get(ownertoken, getMarchentData)
+router.route('/owner/zero').post(ownertoken, )
 
 
 // router.route('/owner/image').post(ownertoken, imageCreate)

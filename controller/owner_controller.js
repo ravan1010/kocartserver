@@ -249,7 +249,7 @@ export const getOrderTobranch = async (req, res) => {
             type: "Point",
             coordinates: branch.location.coordinates,
           },
-          $maxDistance: 6000, // 6 km
+          $maxDistance: 7000, // 7 km
         },
       },
     }).select("_id");
@@ -498,7 +498,6 @@ export const getuserdata = async (req, res, next) => {
 
 }
 
-
 export const postActive = async (req, res) => {
   try {
     const { productId, active } = req.body;
@@ -573,5 +572,34 @@ export const parcelToData = async (req, res) => {
   }
 };
 
+export const getMarchentData = async (req, res) => {
+  try {
+    const id = req.owner.id;
+
+    const branch = await branch_model.findById(id);
+
+    if (!branch) {
+      return res.status(404).json({ success: false, message: "Branch not found" });
+    }
+
+    // Find merchants within 7 km
+    const nearbyMerchants = await adminmodel.find({
+      location: {
+        $near: {
+          $geometry: {
+            type: "Point",
+            coordinates: branch.location.coordinates,
+          },
+          $maxDistance: 7000, // 7 km
+        },
+      },
+    }).select("_id");
+
+    res.json(nearbyMerchants);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
 
 
