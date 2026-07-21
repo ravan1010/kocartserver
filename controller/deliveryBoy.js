@@ -230,44 +230,40 @@ export const Deliverypickedup = async (req, res) => {
     }
 
     for (const shop of order.shop) {
-      const admin = await admin_model.findById(shop.admin);
+  const admin = await admin_model.findById(shop.admin);
 
-      if (admin.category === "foodANDbeverages") {
-        const platformcommision = shop.subtotal * 0.20;
+  if (!admin) continue;
 
-        const marchentAmount = shop.subtotal - platformcommision;
+  let commissionRate = 0;
 
-        //pending amount
-        admin.platformcommision += platformcommision;
-        admin.amount += shop.subtotal;
-        admin.marchentAmount += marchentAmount
+  switch (admin.category) {
+    case "foodANDbeverages":
+      commissionRate = 0.20;
+      break;
 
-        //life time amount data
-        admin.lifetimesales += shop.subtotal;
-        admin.lifetimecommission += platformcommision;
-        admin.lifetimeMarchentAmount += marchentAmount;
+    case "groceryFruitsANDvegetables":
+      commissionRate = 0.01;
+      break;
 
-        await admin.save();
+    default:
+      commissionRate = 0;
+  }
 
-      } else if(admin.category === "groceryFruitsANDvegetables"){
+  const platformCommission = shop.subtotal * commissionRate;
+  const merchantAmount = shop.subtotal - platformCommission;
 
-        const platformcommision = shop.subtotal * 0.01;
+  // Pending
+  admin.platformcommision += platformCommission;
+  admin.amount += shop.subtotal;
+  admin.marchentAmount += merchantAmount;
 
-        const marchentAmount = shop.subtotal - platformcommision;
+  // Lifetime
+  admin.lifetimesales += shop.subtotal;
+  admin.lifetimecommission += platformCommission;
+  admin.lifetimeMarchentAmount += merchantAmount;
 
-        //pending amount
-        admin.platformcommision += platformcommision;
-        admin.amount += shop.subtotal;
-        admin.marchentAmount += marchentAmount;
-
-        //life time amount data
-        admin.lifetimesales += shop.subtotal;
-        admin.lifetimecommission += platformcommision;
-        admin.lifetimeMarchentAmount += marchentAmount;
-      
-        await admin.save();
-      }
-    }
+  await admin.save();
+}
 
     res.json({
       success: true,
