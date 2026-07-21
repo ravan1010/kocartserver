@@ -15,6 +15,7 @@ import order_model from '../model/order_model.js';
 import Parcel_model from '../model/Parcel_model.js';
 import deliveryBoy_model from '../model/deliveryBoy_model.js';
 import event_post_model from '../model/event_post_model.js';
+import admin_model from '../model/admin_model.js';
 
 dotenv.config()
 
@@ -607,6 +608,41 @@ export const getMarchentData = async (req, res) => {
   } catch (err) {
     console.log(err);
     res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+export const MerchantpaymentSettlement = async (req, res) => {
+  try {
+    const { merchantId, amount, platformCommission, settlementAmount } = req.body;
+
+    const merchant = await admin_model.findById(merchantId);
+
+    if (!merchant) {
+      return res.status(404).json({
+        success: false,
+        message: "Merchant not found",
+      });
+    }
+
+    // Update values
+    merchant.amount = Number(amount);
+    merchant.platformCommission = Number(platformCommission);
+    merchant.settlementAmount = Number(settlementAmount);
+
+    await merchant.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Payment updated successfully",
+      merchant,
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
 };
 
