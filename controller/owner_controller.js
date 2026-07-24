@@ -649,8 +649,11 @@ export const postsData = async (req, res) => {
   try {
     const id = '6a39428d332fcff2e62947ff';
 
-    const posts = await post_model.find({ author: id })
-    
+const posts = await post_model
+  .find({ author: id })
+  .select("name image variantname Eventcategory variants active")
+  .lean();
+      
     res.status(201).json({
           post: posts,
           success: true
