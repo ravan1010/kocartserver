@@ -12,6 +12,10 @@ const deliveryBoySchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  kocartAmount:{
+    type: Number,
+    default: 0
+  },
   city: String,
   fcmToken: String,
 

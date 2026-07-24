@@ -197,7 +197,7 @@ export const getorderdata = async (req, res) => {
       return res.status(404).json({ success: false, message: "Branch not found" });
     }
 
-    // Find merchants within 6 km
+    // Find merchants within 7 km
     const nearbyMerchants = await adminmodel.find({
       location: {
         $near: {
@@ -205,7 +205,7 @@ export const getorderdata = async (req, res) => {
             type: "Point",
             coordinates: branch.location.coordinates,
           },
-          $maxDistance: 6000, // 6 km
+          $maxDistance: 7000, // 6 km
         },
       },
     }).select("_id");
@@ -352,19 +352,19 @@ export const ordercancel = async (req, res) => {
     postDoc.status = "cancelled";
 
     // Remove assigned delivery boy (optional)
-    postDoc.deliveryBoy = null;
+    // postDoc.deliveryBoy = null;
 
     await postDoc.save();
 
     // Make delivery boy available again
-    if (postDoc.deliveryBoy) {
+    // if (postDoc.deliveryBoy) {
       await deliveryBoy_model.findByIdAndUpdate(
         postDoc.deliveryBoy,
         {
           isAvailable: true,
         }
       );
-    }
+    // }
 
     return res.status(200).json({
       success: true,
@@ -611,7 +611,7 @@ export const getMarchentData = async (req, res) => {
 
 export const MerchantpaymentSettlement = async (req, res) => {
   try {
-    const { merchantId, amount, platformCommission, settlementAmount } = req.body;
+    const { merchantId, amount, platformCommission, settlementAmount, marchentAmount } = req.body;
 
     const merchant = await adminmodel.findById(merchantId);
 
@@ -625,6 +625,7 @@ export const MerchantpaymentSettlement = async (req, res) => {
     // Update values
     merchant.amount = Number(amount);
     merchant.platformcommision = Number(platformCommission);
+    merchant.marchentAmount = Number(marchentAmount);
     merchant.settlementAmount = Number(settlementAmount);
 
     await merchant.save();

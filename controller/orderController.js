@@ -88,41 +88,53 @@ export const verifyPayment = async (req, res) => {
 
     await order.populate("shop.admin");
 
-    order.shop.forEach(id => {
-      const fcmToken = id.admin?.fcmToken;
+    // Notify merchants
+    for (const item of order.shop) {
+  const fcmToken = item.admin?.fcmToken;
 
-      console.log("FCM Token:", fcmToken);
-      const title = 'You got a new order!';
-      const body = `Order ID: ${order._id} - Total: ₹${order.totalAmount} - Delivery: ${delivery}`;
-      const url = `https://www.kocart.online/admin/orders`;
+  if (fcmToken) {
+    // Merchant App
+    await sendAppPushNotification(
+      fcmToken,
+      "You got a new order!",
+      `Order ID: ${order.orderId} - Total: ₹${order.totalAmount}`,
+      order._id,
+      "https://kocart.online/orders"
+    );
 
-      sendPushNotification(fcmToken, title, body, url);
-
+    // Merchant Website
+    await sendPushNotification(
+      fcmToken,
+      "You got a new order!",
+      `Order ID: ${order.orderId} - Total: ₹${order.totalAmount}`,
+      "https://www.kocart.online/admin/orders"
+    );
+  }
+}
+    // Find nearby branches
+    const nearbyBranches = await branch_model.find({
+      location: {
+        $near: {
+          $geometry: {
+            type: "Point",
+            coordinates: user.location.coordinates,
+          },
+          $maxDistance: 7000,
+        },
+      },
     });
 
-// 2️⃣ Find nearby branches
-const nearbyBranches = await branch_model.find({
-  location: {
-    $near: {
-      $geometry: {
-        type: "Point",
-        coordinates: user.location.coordinates,
-      },
-      $maxDistance: 7000,
-    },
-  },
-})
-
-console.log("Nearby branches:", nearbyBranches[0].fcmToken);
-
-// 3️⃣ Send notification to branches
-
-  await sendPushNotification(
-    nearbyBranches[0].fcmToken,
-    "New Order Nearby!",
-    `Order ID: ${order._id}`,
-    "https://branch.kocart.online/allorder"
-  );
+    // Notify all nearby branches
+    for (const branch of nearbyBranches) {
+      if (branch.fcmToken) {
+        await sendPushNotification(
+          branch.fcmToken,
+          "New Order Nearby!",
+          `Order ID: ${order.orderId}`,
+          "https://branch.kocart.online/allorder"
+        );
+      }
+    }
 
     await cart_model.findOneAndDelete({ userId });
 
@@ -169,20 +181,29 @@ export const placeCODOrder = async (req, res) => {
 
     await order.populate("shop.admin");
 
-    // Notify merchants
+     // Notify merchants
     for (const item of order.shop) {
-      const fcmToken = item.admin?.fcmToken;
+  const fcmToken = item.admin?.fcmToken;
 
-      if (fcmToken) {
-        await sendPushNotification(
-          fcmToken,
-          "You got a new COD order!",
-          `Order ID: ${order._id} - Total: ₹${order.totalAmount}`,
-          "https://www.kocart.online/admin/orders"
-        );
-      }
-    }
+  if (fcmToken) {
+    // Merchant App
+    await sendAppPushNotification(
+      fcmToken,
+      "You got a new order!",
+      `Order ID: ${order.orderId} - Total: ₹${order.totalAmount}`,
+      order._id,
+      "https://kocart.online/orders"
+    );
 
+    // Merchant Website
+    await sendPushNotification(
+      fcmToken,
+      "You got a new order!",
+      `Order ID: ${order.orderId} - Total: ₹${order.totalAmount}`,
+      "https://www.kocart.online/admin/orders"
+    );
+  }
+}
     // Find nearby branches
     const nearbyBranches = await branch_model.find({
       location: {
@@ -202,7 +223,7 @@ export const placeCODOrder = async (req, res) => {
         await sendPushNotification(
           branch.fcmToken,
           "New Order Nearby!",
-          `Order ID: ${order._id}`,
+          `Order ID: ${order.orderId}`,
           "https://branch.kocart.online/allorder"
         );
       }
@@ -263,18 +284,27 @@ export const appplaceCODOrder = async (req, res) => {
 
     // Notify merchants
     for (const item of order.shop) {
-      const fcmToken = item.admin?.fcmToken;
+  const fcmToken = item.admin?.fcmToken;
 
-      if (fcmToken) {
-        await sendAppPushNotification(
-          fcmToken,
-          "Order",
-          "Your order",
-          order._id,
-          "https://kocart.online/orders"
-        )
-    }
+  if (fcmToken) {
+    // Merchant App
+    await sendAppPushNotification(
+      fcmToken,
+      "You got a new order!",
+      `Order ID: ${order.orderId} - Total: ₹${order.totalAmount}`,
+      order._id,
+      "https://kocart.online/orders"
+    );
+
+    // Merchant Website
+    await sendPushNotification(
+      fcmToken,
+      "You got a new order!",
+      `Order ID: ${order.orderId} - Total: ₹${order.totalAmount}`,
+      "https://www.kocart.online/admin/orders"
+    );
   }
+}
     // Find nearby branches
     const nearbyBranches = await branch_model.find({
       location: {
@@ -294,7 +324,7 @@ export const appplaceCODOrder = async (req, res) => {
         await sendPushNotification(
           branch.fcmToken,
           "New Order Nearby!",
-          `Order ID: ${order._id}`,
+          `Order ID: ${order.orderId}`,
           "https://branch.kocart.online/allorder"
         );
       }
@@ -317,4 +347,3 @@ export const appplaceCODOrder = async (req, res) => {
     });
   }
 };
-
