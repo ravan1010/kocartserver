@@ -100,6 +100,8 @@ export const nearby = async (req, res) => {
 
     // Find nearest branch (10 km)
     const branch = await branch_model.findOne({
+      open: true,
+      active: true,
       location: {
         $near: {
           $geometry: {
