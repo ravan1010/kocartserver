@@ -100,8 +100,6 @@ export const nearby = async (req, res) => {
 
     // Find nearest branch (10 km)
     const branch = await branch_model.findOne({
-      open: true,
-      active: true,
       location: {
         $near: {
           $geometry: {
@@ -128,10 +126,14 @@ export const nearby = async (req, res) => {
       post_model.find({
         author: { $in: merchantIds },
         category: "groceryFruitsANDvegetables",
+         open: true,
+      active: true,
       }),
       post_model.find({
         author: { $in: merchantIds },
         category: "foodANDbeverages",
+         open: true,
+      active: true,
       }),
     ]);
 
