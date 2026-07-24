@@ -202,6 +202,9 @@ export const dashboard = async (req, res, next) => {
     const id = req.admingu.id
     const author = await adminmodel.findById(id)
     const post = await post_model.find({ author: author._id })
+    .select("name image variantname Eventcategory variants active")
+    .lean();
+
     res.status(201).json({
       post: post,
       productlist: post.length,
