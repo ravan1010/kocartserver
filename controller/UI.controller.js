@@ -91,6 +91,66 @@ export const updateLocation = async (req, res) => {
   }
 };
 
+export const merchantProducts = async (req, res) => {
+
+    try{
+
+        const merchantId = req.params.id;
+
+        const merchant = await admin_model
+            .findById(merchantId)
+
+        if(!merchant){
+            return res.status(404).json({
+                success:false,
+                message:"Merchant not found"
+            });
+        }
+
+
+        const posts = await post_model.find({
+
+            author: merchantId,
+            active:true
+
+        }).lean();
+
+          const branch = await branch_model.findOne({
+      location: {
+        $near: {
+          $geometry: merchant.location,
+          $maxDistance: 7000, // 7 km
+        },
+      },
+    })
+
+        res.json({
+
+            success:true,
+            merchant,
+            posts,
+            branch
+
+        });
+
+    }catch(err){
+
+        res.status(500).json({
+            success:false,
+            message:err.message
+        });
+
+    }
+
+}
+
+
+
+
+
+
+
+
 
 
 
@@ -645,12 +705,3 @@ export const calculateDeliveryFee = async (req, res) => {
     res.status(500).json({ message: "Delivery fee calculation failed" });
   }
 };
-
-
-
-// for app
-
-
-
-
-

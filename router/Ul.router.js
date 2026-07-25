@@ -11,6 +11,8 @@ router.route('/liveupdate').post(liveupdate)
  
 router.route('/home').get( signat, home );
 router.put("/user/location", signat, updateLocation);
+router.get("/merchant/:id", homeAuth, merchantProducts);
+
 
 router.route('/explore').get( signat, explore )
 router.route('/nearby').get( nearby )

@@ -21,7 +21,7 @@ import {  getpostdata,
               copyProductToMerchant,
               MerchantpaymentSettlement} from '../controller/owner_controller.js';
 import { ownertoken } from '../middleware/owner.js';
-import { deliveryBoyAuth } from '../middleware/OGauth.js';
+import { appdeliveryBoyAuth, deliveryBoyAuth } from '../middleware/OGauth.js';
 import { DeliveryAcceptOrder, DeliveryBoyFCMtoken, 
          DeliveryBoyIsOnline,
          DeliveryBoyLocation, 
@@ -78,6 +78,7 @@ router.route('/owner/zero').post(ownertoken, MerchantpaymentSettlement)
 
  // delivery boy
 
+//web
 router.route('/delivery-boy/fcmToken').post(deliveryBoyAuth, DeliveryBoyFCMtoken)
 router.route('/delivery-boy/location').post(deliveryBoyAuth, DeliveryBoyLocation)
 router.route('/delivery/dashboard').get(deliveryBoyAuth, Deliverydashboard)
@@ -89,6 +90,19 @@ router.route("/delivery/assigned").get(deliveryBoyAuth, DeliverygetAssignOrders)
 router.route("/delivery/pickedup/:orderId").put(deliveryBoyAuth, Deliverypickedup)
 router.route("/delivery/getpickedupOrder").get(deliveryBoyAuth, DeliverygetpickedupOrders)
 router.route("/delivery/complete/:orderId").put(deliveryBoyAuth, DeliveryComplete)
+
+//app
+router.route('/app/delivery-boy/fcmToken').post(appdeliveryBoyAuth, DeliveryBoyFCMtoken)
+router.route('/app/delivery-boy/location').post(appdeliveryBoyAuth, DeliveryBoyLocation)
+router.route('/app/delivery/dashboard').get(appdeliveryBoyAuth, Deliverydashboard)
+router.route('/app/delivery/onAndOff').post(appdeliveryBoyAuth, DeliveryBoyIsOnline)
+
+router.route("/app/delivery/orders").get(appdeliveryBoyAuth, DeliverygetOrders);
+router.route("/app/delivery/accept/:orderId").put(appdeliveryBoyAuth, DeliveryAcceptOrder)
+router.route("/app/delivery/assigned").get(appdeliveryBoyAuth, DeliverygetAssignOrders)
+router.route("/app/delivery/pickedup/:orderId").put(appdeliveryBoyAuth, Deliverypickedup)
+router.route("/app/delivery/getpickedupOrder").get(appdeliveryBoyAuth, DeliverygetpickedupOrders)
+router.route("/app/delivery/complete/:orderId").put(appdeliveryBoyAuth, DeliveryComplete)
  
 router.get('/owner/token', ownertoken, (req, res) => {
     res.json({owner: req.owner})
