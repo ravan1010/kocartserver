@@ -678,6 +678,8 @@ export const copyProductToMerchant = async (req, res) => {
       });
     }
 
+    const marchent = await adminmodel.findById(newMerchantId);
+
     // Convert document to object
     const newProduct = product.toObject();
 
@@ -688,6 +690,8 @@ export const copyProductToMerchant = async (req, res) => {
 
     // Assign new merchant
     newProduct.author = newMerchantId;
+    newProduct.category = marchent.category;
+    newProduct.companyName = marchent.companyName;
 
     // Optional: Reset stock
     // newProduct.stock = 0;
