@@ -10,26 +10,89 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-export const home = async (req, res, next) => {
-
+export const home = async (req, res) => {
   try {
-    const id = req.Atoken.id
-    console.log('home')
+    const id = req.Atoken.id;
 
-    const user = await usermodel.findById(id)
-    if (!id || !user) {
-      return res.json('user not found')
+    const user = await usermodel.findById(id).lean();
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
     }
-    const post = await post_model.find({ cityTown: user.city })
-    const city = user.city
 
-    // status: 'home'
-    res.json({ post: post, city: city })
+    // Find nearby merchants within 7 km
+    const nearbyAdmins = await admin_model.find({
+      active: true,
+      open: true,
+      location: {
+        $near: {
+          $geometry: user.location,
+          $maxDistance: 4000, // 4 km
+        },
+      },
+    })
+    .select("_id companyName")
+    .lean();
+
+    const adminIds = nearbyAdmins.map((admin) => admin._id);
+
+    // Get products/posts of nearby merchants
+    const posts = await post_model.find({
+      author: { $in: adminIds },
+      active: true,
+
+    }).lean();
+
+    res.json({
+      success: true,
+      merchants: nearbyAdmins,
+      posts,
+    });
 
   } catch (error) {
-    res.json(error)
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
-}
+};
+
+export const updateLocation = async (req, res) => {
+  try {
+    const id = req.Atoken.id;
+
+    const { latitude, longitude } = req.body;
+
+    const user = await usermodel.findByIdAndUpdate(
+      id,
+      {
+        location: {
+          type: "Point",
+          coordinates: [longitude, latitude],
+        },
+      },
+      { new: true }
+    );
+
+    res.json({
+      success: true,
+      user,
+    });
+
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+
+
+
 
 export const explore = async (req, res) => {
   try {
@@ -106,7 +169,7 @@ export const nearby = async (req, res) => {
             type: "Point",
             coordinates: [longitude, latitude],
           },
-          $maxDistance: 10000,
+          $maxDistance: 7000,
         },
       },
     });
@@ -203,6 +266,7 @@ export const setting = async (req, res) => {
 
     res.json({
       number: user.email,
+      user
     });
   } catch (error) {
     console.log(error);
