@@ -37,19 +37,19 @@ export const home = async (req, res) => {
     .select("_id companyName")
     .lean();
 
-    const adminIds = nearbyAdmins.map((admin) => admin._id);
+    // const adminIds = nearbyAdmins.map((admin) => admin._id);
 
-    // Get products/posts of nearby merchants
-    const posts = await post_model.find({
-      author: { $in: adminIds },
-      active: true,
+    // // Get products/posts of nearby merchants
+    // const posts = await post_model.find({
+    //   author: { $in: adminIds },
+    //   active: true,
 
-    }).lean();
+    // }).lean();
 
     res.json({
       success: true,
       merchants: nearbyAdmins,
-      posts,
+      // posts,
     });
 
   } catch (error) {

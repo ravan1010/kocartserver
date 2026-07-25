@@ -65,7 +65,8 @@ export const Deliverydashboard = async (req, res, next) => {
 
     res.status(201).json({
       isOnline: deliveryBoy.isOnline,
-      id: deliveryBoy._id
+      id: deliveryBoy._id,
+      kocartAmount: deliveryBoy.kocartAmount,
     })
 
   } catch (error) {
@@ -339,12 +340,18 @@ export const DeliveryComplete = async (req, res) => {
       });
     }
 
-    await deliveryBoy_model.findByIdAndUpdate(
-      id,
-      {
-        isAvailable: true
-      }
-    );
+    const updateData = {
+      isAvailable: true,
+    };
+
+    // Only COD cash is collected by the delivery partner
+    if (order.paymentMethod === "COD") {
+      updateData.$inc = {
+        kocartAmount: order.totalAmount,
+      };
+    }
+
+    await deliveryBoy_model.findByIdAndUpdate(id, updateData);
 
     res.json({
       success: true,
