@@ -1,7 +1,7 @@
 import express from 'express';
 const router = express.Router()
 import {signat, authLocation, appAuth} from '../middleware/OGauth.js';
-import { home, setting, address, explore, cartdata, removecart, buy, order, addtocart, calculateDeliveryFee, nearby, updateLocation, merchantProducts } from '../controller/UI.controller.js';
+import { home, setting, address, explore, cartdata, removecart, buy, order, addtocart, calculateDeliveryFee, nearby, updateLocation, merchantProducts, clearCart } from '../controller/UI.controller.js';
 // const event_post_model = require('../model/event_post_model.js')
 import user_model from '../model/user_model.js';
 import { appplaceCODOrder, checkout, placeCODOrder, verifyPayment } from '../controller/orderController.js';
@@ -31,6 +31,9 @@ router.route('/app/address-list').get(appAuth, address )
 router.route("/cart/add").post( signat, addtocart )
 //app add item to
 router.route("/app/cart/add").post( appAuth, addtocart )
+
+//web
+router.route("/cart/clear").delete(signat, clearCart)
 
 // Get cart
 router.route("/cart/get").get(signat, cartdata )

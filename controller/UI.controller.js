@@ -23,10 +23,17 @@ export const home = async (req, res) => {
       });
     }
 
+    if(!user.location){
+      return res.status(404).json({
+        success: false,
+        message: "location not found",
+      });
+    }
+
     // Find nearby merchants within 7 km
     const nearbyAdmins = await admin_model.find({
       active: true,
-      open: true,
+      // open: true,
       location: {
         $near: {
           $geometry: user.location,
@@ -367,7 +374,18 @@ export const addtocart = async (req, res) => {
       cart = new Cart({ userId, shop: [], total: 0 });
     }
 
-
+// Allow only one merchant in cart
+if (
+  cart.shop.length > 0 &&
+  cart.shop[0].admin.toString() !== adminId
+) {
+  return res.status(400).json({
+    success: false,
+    differentMerchant: true,
+    message:
+      "Your cart contains items from another merchant. Clear the cart to continue.",
+  });
+}
 
     // 🔹 find shop
     let shop = cart.shop.find(
@@ -420,6 +438,34 @@ export const addtocart = async (req, res) => {
   }
 };
 
+export const clearCart = async (req, res) => {
+  try {
+    const userId = req.Atoken.id;
+
+    await Cart.findOneAndUpdate(
+      { userId },
+      {
+        shop: [],
+        total: 0,
+      }
+    );
+
+    res.json({
+      success: true,
+      message: "Cart cleared",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+
+
+
+
 
 export const cartdata = async (req, res) => {
 
@@ -429,6 +475,9 @@ export const cartdata = async (req, res) => {
 
   res.json(cart || null);
 };
+
+
+
 
 export const updateQuantity = async (req, res) => {
   const { productId, adminId, quantity } = req.body;
