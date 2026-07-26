@@ -102,8 +102,7 @@ export const Branch_openORclose = async (req, res) => {
 }
 
 
-//
-
+//marchentActivate
 export const marchentActivate = async (req, res) => {
   try {
     const id = req.owner.id;
@@ -123,6 +122,14 @@ export const marchentActivate = async (req, res) => {
   }
 }
 
+//delivery
+export const deliveryActivate = async (req, res) => {
+  try {
+    
+  } catch (error) {
+    
+  }
+}
 
 
 //post get, add, remove, home
@@ -238,10 +245,20 @@ export const getOrderTobranch = async (req, res) => {
     const branch = await branch_model.findById(id);
 
     if (!branch) {
-      return res.status(404).json({ success: false, message: "Branch not found" });
+      return res.status(404).json({
+        success: false,
+        message: "Branch not found",
+      });
     }
 
-    // Find merchants within 6 km
+    // Start and end of today
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date();
+    endOfDay.setHours(23, 59, 59, 999);
+
+    // Find merchants within 7 km
     const nearbyMerchants = await adminmodel.find({
       location: {
         $near: {
@@ -249,18 +266,22 @@ export const getOrderTobranch = async (req, res) => {
             type: "Point",
             coordinates: branch.location.coordinates,
           },
-          $maxDistance: 7000, // 7 km
+          $maxDistance: 7000,
         },
       },
     }).select("_id");
 
     const merchantIds = nearbyMerchants.map((m) => m._id);
 
-    // Fetch orders containing those merchants
+    // Fetch today's orders
     const orders = await order_model
       .find({
         "shop.admin": { $in: merchantIds },
-        status: status,
+        status,
+        createdAt: {
+          $gte: startOfDay,
+          $lte: endOfDay,
+        },
       })
       .populate("userId", "number location")
       .populate("shop.admin", "number location companyName")
@@ -270,9 +291,13 @@ export const getOrderTobranch = async (req, res) => {
     res.json(orders);
   } catch (err) {
     console.log(err);
-    res.status(500).json({ success: false, message: err.message });
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
   }
 };
+
 // export const  = async (req, res) => {
 
 //   try {

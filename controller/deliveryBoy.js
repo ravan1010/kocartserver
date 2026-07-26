@@ -67,6 +67,7 @@ export const Deliverydashboard = async (req, res, next) => {
       isOnline: deliveryBoy.isOnline,
       id: deliveryBoy._id,
       kocartAmount: deliveryBoy.kocartAmount,
+      activate: deliveryBoy.activate,
     })
 
   } catch (error) {
