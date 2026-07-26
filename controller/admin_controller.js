@@ -462,8 +462,19 @@ export const getAdminOrders = async (req, res) => {
       });
     }
 
+    // Today's start and end
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date();
+    endOfDay.setHours(23, 59, 59, 999);
+
     const filter = {
       "shop.admin": adminuser._id,
+      createdAt: {
+        $gte: startOfDay,
+        $lte: endOfDay,
+      },
     };
 
     // Add status only if provided
