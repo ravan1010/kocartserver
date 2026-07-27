@@ -38,7 +38,7 @@ const deliveryBoySchema = new mongoose.Schema({
     default: true
   },
 
-  currentLocation: {
+  location : {
     type: {
       type: String,
       enum: ["Point"],
