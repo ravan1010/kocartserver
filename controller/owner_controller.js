@@ -744,34 +744,44 @@ export const getDeliveryData = async (req, res) => {
   try {
     const id = req.owner.id;
 
-    const branch = await branch_model.findById(id);
+    const branch = await branch_model.findById(id).select("location");
 
     if (!branch) {
-      return res.status(404).json({ success: false, message: "Branch not found" });
+      return res.status(404).json({
+        success: false,
+        message: "Branch not found",
+      });
     }
 
-    // Find merchants within 7 km
-    const nearbydelivery = await deliveryBoy_model.find({
-      activate: true,
-      location: {
-        $near: {
-          $geometry: {
-            type: "Point",
-            coordinates: branch.location.coordinates,
+    const nearbyDelivery = await deliveryBoy_model
+      .find({
+        activate: true,
+        location: {
+          $near: {
+            $geometry: {
+              type: "Point",
+              coordinates: branch.location.coordinates,
+            },
+            $maxDistance: 7000,
           },
-          $maxDistance: 7000, // 7 km
         },
-      },
-    })
+      })
+      .select(
+        "_id name email Number isOnline isAvailable kocartAmount deliveryBoyAmount settlementAmount location"
+      );
 
     res.status(200).json({
       success: true,
-      deliveryboys: nearbydelivery,
-    });  
-
+      total: nearbyDelivery.length,
+      deliveryboys: nearbyDelivery,
+    });
   } catch (err) {
-    console.log(err);
-    res.status(500).json({ success: false, message: err.message });
+    console.error(err);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch delivery partners.",
+    });
   }
 };
 
