@@ -752,7 +752,7 @@ export const getDeliveryData = async (req, res) => {
 
     // Find merchants within 7 km
     const nearbydelivery = await deliveryBoy_model.find({
-      active: true,
+      activate: true,
       location: {
         $near: {
           $geometry: {
