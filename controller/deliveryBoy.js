@@ -342,21 +342,19 @@ export const DeliveryComplete = async (req, res) => {
       });
     }
 
-    const updateData = {
-      isAvailable: true,
-      $inc:{
-       deliveryBoyAmount : order.deliveryBoyAmount,
-      },
-    };
+   const updateData = {
+  isAvailable: true,
+  $inc: {
+    deliveryBoyAmount: order.deliveryBoyAmount,
+  },
+};
 
-    // Only COD cash is collected by the delivery partner
-    if (order.paymentMethod === "COD") {
-      updateData.$inc = {
-        kocartAmount: order.totalAmount,
-      };
-    }
+// Only COD cash is collected by the delivery partner
+if (order.paymentMethod === "COD") {
+  updateData.$inc.kocartAmount = order.totalAmount;
+}
 
-    await deliveryBoy_model.findByIdAndUpdate(id, updateData);
+await deliveryBoy_model.findByIdAndUpdate(id, updateData);
 
     res.json({
       success: true,
