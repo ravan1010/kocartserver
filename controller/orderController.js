@@ -78,6 +78,7 @@ export const verifyPayment = async (req, res) => {
       deliveryBoyAmount += Math.ceil(extraDistance / 0.4) * 3;
     }  
 
+    
 
     const order = await Order.create({
       orderId: generateOrderId(),
