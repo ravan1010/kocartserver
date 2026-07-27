@@ -84,7 +84,7 @@ router.get('/marchent/data', async (req, res) => {
   try {
     
     const admin = await admin_model.find({ active: "false"  });
-    const delivery = await deliveryBoy_model({activate : "false"});
+    const delivery = await deliveryBoy_model.find({activate : "false"});
     console.log(admin)
 
     if (admin.length === 0) {
