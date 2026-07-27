@@ -101,7 +101,7 @@ export const DeliverygetOrders = async (req, res) => {
     console.log(id)
     const admin = await deliveryBoy_model.findById(id)
 
-    if (admin.isAvailable === false) {
+    if (admin.isAvailable === false || admin.isOnline === false ) {
       return res.json({ success: false })
     }
 
