@@ -56,8 +56,18 @@ const orderSchema = new mongoose.Schema({
   deliveryBoy: {
     type: mongoose.Schema.Types.ObjectId, 
     ref: "DeliveryBoy",
-    default: null
+    default: null,
+  },
+  distance: {
+    type: String,
+    default: '1 km'
+  },
+  deliveryBoyAmount: {
+    type : Number,
+    default : 20
   }
+
+
 }, { timestamps: true });
 
 orderSchema.index({ location: "2dsphere" });

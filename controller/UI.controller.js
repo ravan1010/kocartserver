@@ -643,7 +643,6 @@ export const order = async (req, res) => {
   res.json(order || null);
 }
 
-
 import axios from "axios";
 import branch_model from '../model/branch_model.js';
 
@@ -736,8 +735,8 @@ export const calculateDeliveryFee = async (req, res) => {
       );
     }
 
-    // 💰 Fee logic
-    let deliveryFee = 16;
+    // 💰 Fee logic3333
+    let deliveryFee = 17;
     if (totalDistance > 3) {
       deliveryFee += Math.ceil(totalDistance - 1) * 10;
     }

@@ -68,6 +68,7 @@ export const Deliverydashboard = async (req, res, next) => {
       id: deliveryBoy._id,
       kocartAmount: deliveryBoy.kocartAmount,
       activate: deliveryBoy.activate,
+      deliveryBoyAmount : deliveryBoy.deliveryBoyAmount,
     })
 
   } catch (error) {
@@ -343,6 +344,7 @@ export const DeliveryComplete = async (req, res) => {
 
     const updateData = {
       isAvailable: true,
+      deliveryBoyAmount: order.deliveryBoyAmount
     };
 
     // Only COD cash is collected by the delivery partner

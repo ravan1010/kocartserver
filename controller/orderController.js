@@ -50,7 +50,7 @@ export const checkout = async (req, res) => {
 
 export const verifyPayment = async (req, res) => {
   try {
-    const { response, items, addressId, delivery, Number, totalAmount } = req.body;
+    const { response, items, addressId, delivery, Number, totalAmount, distance } = req.body;
     let platform = 6;
 
     const id = req.Atoken.id;
@@ -71,10 +71,19 @@ export const verifyPayment = async (req, res) => {
 
     const shop = items?.shop
 
+    let deliveryBoyAmount = 30;
+
+    if (distance > 1) {
+      const extraDistance = distance - 1; // km beyond the first 1 km
+      deliveryBoyAmount += Math.ceil(extraDistance / 0.4) * 3;
+    }  
+
+
     const order = await Order.create({
       orderId: generateOrderId(),
       userId,
       shop,
+      deliveryBoyAmount,
       address: addressId,
       number: Number,
       location: user.location,
@@ -148,7 +157,7 @@ export const verifyPayment = async (req, res) => {
 
 export const placeCODOrder = async (req, res) => {
   try {
-    const { items, addressId, delivery, Number, totalAmount } = req.body;
+    const { items, addressId, delivery, Number, totalAmount, distance } = req.body;
 
     const platform = 6;
 
@@ -164,10 +173,18 @@ export const placeCODOrder = async (req, res) => {
 
     const shop = items?.shop;
 
+  let deliveryBoyAmount = 30;
+
+    if (distance > 1) {
+      const extraDistance = distance - 1; // km beyond the first 1 km
+      deliveryBoyAmount += Math.ceil(extraDistance / 0.4) * 3;
+    }  
+
     const order = await Order.create({
       orderId: generateOrderId(),
       userId: user._id,
       shop,
+      deliveryBoyAmount: deliveryBoyAmount,
       address: addressId,
       number: Number,
       location: user.location,
@@ -249,7 +266,7 @@ export const placeCODOrder = async (req, res) => {
 
 export const appplaceCODOrder = async (req, res) => {
   try {
-    const { items, addressId, delivery, Number, totalAmount } = req.body;
+    const { items, addressId, delivery, Number, totalAmount, distance  } = req.body;
 
     const platform = 6;
 

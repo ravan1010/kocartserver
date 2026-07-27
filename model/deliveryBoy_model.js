@@ -16,6 +16,11 @@ const deliveryBoySchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
+  deliveryBoyAmount: {
+    type :Number,
+    default : 0
+  },
+  
   city: String,
   fcmToken: String,
 
