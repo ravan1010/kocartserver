@@ -740,8 +740,103 @@ export const copyProductToMerchant = async (req, res) => {
   }
 };
 
+export const getDeliveryData = async (req, res) => {
+  try {
+    const id = req.owner.id;
 
+    const branch = await branch_model.findById(id);
 
+    if (!branch) {
+      return res.status(404).json({ success: false, message: "Branch not found" });
+    }
 
+    // Find merchants within 7 km
+    const nearbydelivery = await deliveryBoy_model.find({
+      active: true,
+      location: {
+        $near: {
+          $geometry: {
+            type: "Point",
+            coordinates: branch.location.coordinates,
+          },
+          $maxDistance: 7000, // 7 km
+        },
+      },
+    })
+
+    res.status(200).json({
+      success: true,
+      deliveryboys: nearbydelivery,
+    });  
+
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+export const deliveryboypaymentSettlement = async (req, res) => {
+  try {
+    const { deliveryBoyID, deliveryBoyAmount } = req.body;
+
+    const delivery = await deliveryBoy_model.findById(deliveryBoyID);
+
+    if (!delivery) {
+      return res.status(404).json({
+        success: false,
+        message: "Merchant not found",
+      });
+    }
+
+    // Update values
+    delivery.deliveryBoyAmount = Number(deliveryBoyAmount);
+    await delivery.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Payment updated successfully",
+      delivery,
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+export const deliveryboykocartSettlement = async (req, res) => {
+  try {
+    const { deliveryBoyID, kocartAmount } = req.body;
+
+    const delivery = await deliveryBoy_model.findById(deliveryBoyID);
+
+    if (!delivery) {
+      return res.status(404).json({
+        success: false,
+        message: "Merchant not found",
+      });
+    }
+
+    // Update values
+    delivery.kocartAmount = Number(kocartAmount);
+    await delivery.save();
+
+    res.status(200).json({
+      success: true,
+      message: "kocartAmount Payment updated successfully",
+      delivery,
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 
 

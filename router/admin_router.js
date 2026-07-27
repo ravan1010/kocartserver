@@ -8,6 +8,7 @@ import { admingu, adminif, admintoa, appAdminAuth } from '../middleware/admin_au
 import { AdminFCMtoken, Adminid, admininfo, bookedlisttoadmin, dashboard, EVENTCreate, EVENTDelete, EVENTUpdate, getAdminOrders, getSinglePost, open, openORclose, Toadmin, updateOrder } from '../controller/admin_controller.js';
 import admin_model from '../model/admin_model.js';
 import order_model from '../model/order_model.js';
+import deliveryBoy_model from '../model/deliveryBoy_model.js';
 
 ///admin
 
@@ -83,13 +84,14 @@ router.get('/marchent/data', async (req, res) => {
   try {
     
     const admin = await admin_model.find({ active: "false"  });
+    const delivery = await deliveryBoy_model({activate : "false"});
     console.log(admin)
 
     if (admin.length === 0) {
       return res.status(404).json({ message: 'No inactive vendors found' });
     }
 
-    res.status(200).json(admin);
+    res.status(200).json({admin, delivery});
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err.message });
   }
@@ -108,6 +110,27 @@ router.post('/marchent/active/:id', async (req, res) => {
     }
     res.status(200).json({
       message: 'marchent activated successfully',
+      vendor: updatedVendor
+    });
+
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+});
+
+router.post('/delivery/active/:id', async (req, res) => {
+  try {
+    const updatedVendor = await deliveryBoy_model.findByIdAndUpdate(
+      req.params.id,
+      { $set: { activate : true } },
+      { new: true }
+    );
+
+    if (!updatedVendor) {
+      return res.status(404).json({ message: 'Vendor not found' });
+    }
+    res.status(200).json({
+      message: 'delivery activated successfully',
       vendor: updatedVendor
     });
 

@@ -19,7 +19,10 @@ import {  getpostdata,
               getMarchentData,
               postsData,
               copyProductToMerchant,
-              MerchantpaymentSettlement} from '../controller/owner_controller.js';
+              MerchantpaymentSettlement,
+              getDeliveryData,
+              deliveryboykocartSettlement,
+              deliveryboypaymentSettlement} from '../controller/owner_controller.js';
 import { ownertoken } from '../middleware/owner.js';
 import { appdeliveryBoyAuth, deliveryBoyAuth } from '../middleware/OGauth.js';
 import { DeliveryAcceptOrder, DeliveryBoyFCMtoken, 
@@ -72,6 +75,10 @@ router.route('/parceltoData').get(ownertoken, parcelToData)
 
 router.route('/owner/getmarchemtData').get(ownertoken, getMarchentData)
 router.route('/owner/zero').post(ownertoken, MerchantpaymentSettlement)
+
+router.route('/owner/getdeliveryData').get(ownertoken, getDeliveryData)
+router.route('/owner/kocartamount').post(ownertoken, deliveryboykocartSettlement)
+router.route('/owner/deliverypayment').post(ownertoken, deliveryboypaymentSettlement)
 
 // router.route('/owner/image').post(ownertoken, imageCreate)
 // router.route('/owner/delete/:id').delete(ownertoken, imagedelete)
