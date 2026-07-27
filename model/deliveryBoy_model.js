@@ -38,7 +38,7 @@ const deliveryBoySchema = new mongoose.Schema({
     default: true
   },
 
-  location : {
+  currentLocation : {
     type: {
       type: String,
       enum: ["Point"],
@@ -51,7 +51,7 @@ const deliveryBoySchema = new mongoose.Schema({
   }
 });
 
-deliveryBoySchema.index({ location: "2dsphere" });
+deliveryBoySchema.index({ currentLocation: "2dsphere" });
 
 // deliveryBoySchema.index({
 //   currentLocation: "2dsphere"

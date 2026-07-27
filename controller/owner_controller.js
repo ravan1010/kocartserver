@@ -756,7 +756,7 @@ export const getDeliveryData = async (req, res) => {
     const nearbyDelivery = await deliveryBoy_model
       .find({
         activate: true,
-        location: {
+        currentLocation : {
           $near: {
             $geometry: {
               type: "Point",
