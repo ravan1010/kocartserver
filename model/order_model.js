@@ -59,12 +59,12 @@ const orderSchema = new mongoose.Schema({
     default: null,
   },
   distance: {
-    type: String,
-    default: '1 km'
+    type: Number,
+    default : 0
   },
   deliveryBoyAmount: {
     type : Number,
-    default : 20
+    default : 30
   }
 
 

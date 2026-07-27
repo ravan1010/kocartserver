@@ -344,7 +344,9 @@ export const DeliveryComplete = async (req, res) => {
 
     const updateData = {
       isAvailable: true,
-      deliveryBoyAmount: order.deliveryBoyAmount
+      $inc:{
+       deliveryBoyAmount : order.deliveryBoyAmount,
+      },
     };
 
     // Only COD cash is collected by the delivery partner

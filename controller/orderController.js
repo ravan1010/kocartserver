@@ -84,6 +84,7 @@ export const verifyPayment = async (req, res) => {
       userId,
       shop,
       deliveryBoyAmount,
+      distance,
       address: addressId,
       number: Number,
       location: user.location,
@@ -185,6 +186,7 @@ export const placeCODOrder = async (req, res) => {
       userId: user._id,
       shop,
       deliveryBoyAmount: deliveryBoyAmount,
+      distance,
       address: addressId,
       number: Number,
       location: user.location,
@@ -282,9 +284,18 @@ export const appplaceCODOrder = async (req, res) => {
 
     const shop = items?.shop;
 
+    let deliveryBoyAmount = 30;
+
+    if (distance > 1) {
+      const extraDistance = distance - 1; // km beyond the first 1 km
+      deliveryBoyAmount += Math.ceil(extraDistance / 0.4) * 3;
+    }  
+
     const order = await Order.create({
       orderId: generateOrderId(),
       userId: user._id,
+      distance,
+      deliveryBoyAmount,
       shop,
       address: addressId,
       number: Number,
