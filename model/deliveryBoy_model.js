@@ -51,8 +51,10 @@ const deliveryBoySchema = new mongoose.Schema({
   }
 });
 
-deliveryBoySchema.index({
-  currentLocation: "2dsphere"
-});
+deliveryBoySchema.index({ location: "2dsphere" });
+
+// deliveryBoySchema.index({
+//   currentLocation: "2dsphere"
+// });
 
 export default new mongoose.model("DeliveryBoy", deliveryBoySchema);

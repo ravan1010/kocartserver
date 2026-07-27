@@ -141,23 +141,6 @@ const adminSchema = mongoose.Schema({
 adminSchema.index({ location: "2dsphere" });
 
 
-// UserSchema.pre()
-
-adminSchema.pre("save", async function (next) {
-    if (!this.isModified("password")) {
-        return next();
-    }
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(this.password, salt);
-    this.password = hashedPassword;
-    next();
-})
-
-//user password compare 
-adminSchema.methods.comparePassword = async function (candidatePassword) {
-    return await bcrypt.compare(candidatePassword, this.password);
-};
-
 //
 
 export default new mongoose.model("admin", adminSchema);
