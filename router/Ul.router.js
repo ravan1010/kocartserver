@@ -15,7 +15,6 @@ router.get("/merchant/:id", signat, merchantProducts);
 
 
 router.route('/explore').get( signat, explore )
-router.route('/nearby').get( nearby )
 //web
 router.route('/setting').get( signat, setting )
 
