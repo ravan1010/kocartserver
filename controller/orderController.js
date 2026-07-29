@@ -71,13 +71,14 @@ export const verifyPayment = async (req, res) => {
 
     const shop = items?.shop
 
-    let deliveryBoyAmount = 30;
+  let deliveryBoyAmount = 30;
 
-    if (distance > 1) {
-      const extraDistance = distance - 1; // km beyond the first 1 km
-      deliveryBoyAmount += Math.ceil(extraDistance / 0.4) * 3;
-    }  
-
+if (distance > 3) {
+  deliveryBoyAmount = 45;
+} else if (distance > 1) {
+  const extraDistance = distance - 1;
+  deliveryBoyAmount += Math.ceil(extraDistance / 0.4) * 3;
+}
     
 
     const order = await Order.create({
@@ -175,12 +176,14 @@ export const placeCODOrder = async (req, res) => {
 
     const shop = items?.shop;
 
-  let deliveryBoyAmount = 30;
+let deliveryBoyAmount = 30;
 
-    if (distance > 1) {
-      const extraDistance = distance - 1; // km beyond the first 1 km
-      deliveryBoyAmount += Math.ceil(extraDistance / 0.4) * 3;
-    }  
+if (distance > 3) {
+  deliveryBoyAmount = 45;
+} else if (distance > 1) {
+  const extraDistance = distance - 1;
+  deliveryBoyAmount += Math.ceil(extraDistance / 0.4) * 3;
+}  
 
     const order = await Order.create({
       orderId: generateOrderId(),
@@ -285,12 +288,14 @@ export const appplaceCODOrder = async (req, res) => {
 
     const shop = items?.shop;
 
-    let deliveryBoyAmount = 30;
+   let deliveryBoyAmount = 30;
 
-    if (distance > 1) {
-      const extraDistance = distance - 1; // km beyond the first 1 km
-      deliveryBoyAmount += Math.ceil(extraDistance / 0.4) * 3;
-    }  
+if (distance > 3) {
+  deliveryBoyAmount = 45;
+} else if (distance > 1) {
+  const extraDistance = distance - 1;
+  deliveryBoyAmount += Math.ceil(extraDistance / 0.4) * 3;
+}
 
     const order = await Order.create({
       orderId: generateOrderId(),
