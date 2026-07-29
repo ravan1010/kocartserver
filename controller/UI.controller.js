@@ -37,7 +37,7 @@ export const home = async (req, res) => {
       location: {
         $near: {
           $geometry: user.location,
-          $maxDistance: 4000, // 4 km
+          $maxDistance: 3000, // 3 km
         },
       },
     })
@@ -220,7 +220,7 @@ export const nearby = async (req, res) => {
               type: "Point",
               coordinates: [longitude, latitude],
             },
-            $maxDistance: 4000,
+            $maxDistance: 3000,
           },
         },
       })
@@ -735,7 +735,7 @@ export const calculateDeliveryFee = async (req, res) => {
       );
     }
 
-    // 💰 Fee logic3333
+    // 💰 Fee logic
     let deliveryFee = 17;
     if (totalDistance > 3) {
       deliveryFee += Math.ceil(totalDistance - 1) * 10;
