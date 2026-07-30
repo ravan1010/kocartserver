@@ -32,7 +32,7 @@ export const home = async (req, res) => {
 
     // Find nearby merchants within 7 km
     const nearbyAdmins = await admin_model.find({
-      // category: "foodANDbeverages",
+      category: "foodANDbeverages",
       active: true,
       open: true,
       location: {
