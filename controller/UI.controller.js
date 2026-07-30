@@ -812,6 +812,7 @@ export const calculateDeliveryFee = async (req, res) => {
       deliveryFee,
       latitude,
       longitude,
+      category
     });
   } catch (err) {
     console.error(err);
