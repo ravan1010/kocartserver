@@ -32,8 +32,59 @@ export const home = async (req, res) => {
 
     // Find nearby merchants within 7 km
     const nearbyAdmins = await admin_model.find({
+      category: "FoodANDbeverages",
       active: true,
-      // open: true,
+      open: true,
+      location: {
+        $near: {
+          $geometry: user.location,
+          $maxDistance: 3000, // 3 km
+        },
+      },
+    })
+    .select("_id companyName")
+    .lean();
+
+    res.json({
+      success: true,
+      merchants: nearbyAdmins,
+      // posts,
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+export const mart = async (req, res) => {
+  try {
+    const id = req.Atoken.id;
+
+    const user = await usermodel.findById(id).lean();
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    if(!user.location){
+      return res.status(404).json({
+        success: false,
+        message: "location not found",
+      });
+    }
+
+    // Find nearby merchants within 7 km
+    const nearbyAdmins = await admin_model.find({
+      category: "groceryFruitsANDvegetables",
+      active: true,
+      open: true,
       location: {
         $near: {
           $geometry: user.location,
@@ -666,14 +717,13 @@ const getRoadDistanceKm = async (from, to) => {
 export const calculateDeliveryFee = async (req, res) => {
   try {
     const { latitude, longitude } = req.body;
-    console.log(latitude, longitude)
     const userId = req.Atoken.id;
 
     if (!latitude || !longitude) {
       return res.status(400).json({ message: "Location required" });
     }
 
-    // 📍 Save user location
+    // Save user location
     await usermodel.updateOne(
       { _id: userId },
       {
@@ -687,16 +737,19 @@ export const calculateDeliveryFee = async (req, res) => {
       }
     );
 
-    const user = await usermodel.findById(userId);
-
-    const cart = await Cart.findOne({ userId })
-      .populate('shop.admin', 'location');
+    const cart = await Cart.findOne({ userId }).populate(
+      "shop.admin",
+      "location category"
+    );
 
     if (!cart) {
-      return res.json({ deliveryFee: 0, totalDistance: 0 });
+      return res.json({
+        deliveryFee: 0,
+        totalDistance: 0,
+      });
     }
 
-    // 🏪 Unique merchants
+    // Unique merchants
     const merchants = [];
     const seen = new Set();
 
@@ -710,18 +763,19 @@ export const calculateDeliveryFee = async (req, res) => {
 
     let totalDistance = 0;
 
-    console.log(merchants[0].location)
-
-    // 📍 user → first merchant
+    // User → First Merchant
     totalDistance += await getRoadDistanceKm(
-      { lat: latitude, lng: longitude },
+      {
+        lat: parseFloat(latitude),
+        lng: parseFloat(longitude),
+      },
       {
         lat: merchants[0].location.coordinates[1],
         lng: merchants[0].location.coordinates[0],
       }
     );
 
-    // 📍 merchant → merchant
+    // Merchant → Merchant
     for (let i = 0; i < merchants.length - 1; i++) {
       totalDistance += await getRoadDistanceKm(
         {
@@ -735,21 +789,36 @@ export const calculateDeliveryFee = async (req, res) => {
       );
     }
 
-    // 💰 Fee logic
-    let deliveryFee = 17;
-    if (totalDistance > 3) {
-      deliveryFee += Math.ceil(totalDistance - 1) * 10;
+    // Delivery fee
+    let deliveryFee = 0;
+
+    const category = merchants[0]?.category;
+
+    if (category === "FoodANDbeverages") {
+      deliveryFee = 18;
+      if (totalDistance > 1) {
+        deliveryFee += Math.ceil(totalDistance - 1) * 10;
+      }
+    } else {
+      deliveryFee = 31;
+
+      if (totalDistance > 1) {
+        deliveryFee += Math.ceil(totalDistance - 1) * 11;
+      }
     }
 
-    res.json({
+    return res.json({
       totalDistance: Number(totalDistance.toFixed(2)),
       deliveryFee,
       latitude,
       longitude,
     });
-
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Delivery fee calculation failed" });
+    return res.status(500).json({
+      message: "Delivery fee calculation failed",
+    });
   }
 };
+
+

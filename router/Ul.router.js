@@ -1,7 +1,7 @@
 import express from 'express';
 const router = express.Router()
 import {signat, authLocation, appAuth} from '../middleware/OGauth.js';
-import { home, setting, address, explore, cartdata, removecart, buy, order, addtocart, calculateDeliveryFee, nearby, updateLocation, merchantProducts, clearCart } from '../controller/UI.controller.js';
+import { home, setting, address, explore, cartdata, removecart, buy, order, addtocart, calculateDeliveryFee, nearby, updateLocation, merchantProducts, clearCart, mart } from '../controller/UI.controller.js';
 // const event_post_model = require('../model/event_post_model.js')
 import user_model from '../model/user_model.js';
 import { appplaceCODOrder, checkout, placeCODOrder, verifyPayment } from '../controller/orderController.js';
@@ -10,6 +10,7 @@ import { liveupdate } from '../controller/user_control.js';
 router.route('/liveupdate').post(liveupdate)
  
 router.route('/home').get( signat, home );
+router.route('/mart').get(signat, mart)
 router.put("/user/location", signat, updateLocation);
 router.get("/merchant/:id", signat, merchantProducts);
 
