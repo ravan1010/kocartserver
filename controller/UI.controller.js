@@ -794,18 +794,17 @@ export const calculateDeliveryFee = async (req, res) => {
 
     const category = merchants[0]?.category;
 
-    // if (category === "FoodANDbeverages") {
+    if (category === "foodANDbeverages" || category === "FoodANDbeverages") {
       deliveryFee = 18;
       if (totalDistance > 1) {
         deliveryFee += Math.ceil(totalDistance - 1) * 10;
       }
-    // } else {
-    //   deliveryFee = 31;
-
-    //   if (totalDistance > 1) {
-    //     deliveryFee += Math.ceil(totalDistance - 1) * 11;
-    //   }
-    // }
+    } else {
+      deliveryFee = 31;
+      if (totalDistance > 1) {
+        deliveryFee += Math.ceil(totalDistance - 1) * 11;
+      }
+    }
 
     return res.json({
       totalDistance: Number(totalDistance.toFixed(2)),
