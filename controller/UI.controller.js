@@ -32,7 +32,7 @@ export const home = async (req, res) => {
 
     // Find nearby merchants within 7 km
     const nearbyAdmins = await admin_model.find({
-      category: "FoodANDbeverages",
+      category: "foodANDbeverages",
       active: true,
       open: true,
       location: {
@@ -724,18 +724,18 @@ export const calculateDeliveryFee = async (req, res) => {
     }
 
     // Save user location
-    await usermodel.updateOne(
-      { _id: userId },
-      {
-        location: {
-          type: "Point",
-          coordinates: [
-            parseFloat(longitude),
-            parseFloat(latitude),
-          ],
-        },
-      }
-    );
+    // await usermodel.updateOne(
+    //   { _id: userId },
+    //   {
+    //     location: {
+    //       type: "Point",
+    //       coordinates: [
+    //         parseFloat(longitude),
+    //         parseFloat(latitude),
+    //       ],
+    //     },
+    //   }
+    // );
 
     const cart = await Cart.findOne({ userId }).populate(
       "shop.admin",
