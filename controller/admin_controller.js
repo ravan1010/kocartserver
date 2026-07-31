@@ -380,7 +380,6 @@ export const open = async (req, res) => {
   }
 };
 
-
 export const EVENTUpdate = async (req, res, next) => {
   try {
     const adminNumber = req.admingu.id
@@ -441,7 +440,6 @@ export const EVENTUpdate = async (req, res, next) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
-
 
 export const getSinglePost = async (req, res) => {
   try {

@@ -202,7 +202,67 @@ export const merchantProducts = async (req, res) => {
 
 }
 
+export const getmartMerchantVariants = async (req, res) => {
+  try {
+    const { id } = req.params;
 
+    const variants = await post_model.distinct("variantname", {
+      author: id,
+      active: true,
+      variantname: { $ne: "" },
+    });
+
+    res.json({
+      success: true,
+      variants,
+    });
+
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+
+export const martmerchantProducts = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { variant } = req.query;
+
+    const filter = {
+      author: id,
+      active: true,
+    };
+
+    if (variant && variant !== "All") {
+      filter.variantname = variant;
+    }
+
+    const merchant = await admin_model.findById(id);
+
+    if (!merchant) {
+      return res.status(404).json({
+        success: false,
+        message: "Merchant not found",
+      });
+    }
+
+    const posts = await post_model.find(filter).lean();
+
+    res.json({
+      success: true,
+      merchant,
+      posts,
+    });
+
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
 
 
 
