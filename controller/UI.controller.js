@@ -160,7 +160,7 @@ export const merchantProducts = async (req, res) => {
 
         if(!merchant){
             return res.status(404).json({
-                success:false,
+                success:false, 
                 message:"Merchant not found"
             });
         }

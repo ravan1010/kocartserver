@@ -299,46 +299,68 @@ export const bookedlisttoadmin = async (req, res) => {
 
 export const openORclose = async (req, res) => {
   try {
-    const number = req.admingu.id
-    console.log(number, req.body)
-    const admin = await adminmodel.findById(number)
-    const post = await post_model.findOne({ author: admin._id })
+    const admin = await adminmodel.findById(req.admingu.id);
+
+    if (!admin) {
+      return res.status(404).json({
+        success: false,
+        message: "Merchant not found",
+      });
+    }
 
     admin.open = !admin.open;
     await admin.save();
-    console.log(admin._id)
 
     await post_model.updateMany(
       { author: admin._id },
-      { active: admin.open }
+      { $set: { active: admin.open } }
     );
 
-    res.json({ success: true })
+    res.status(200).json({
+      success: true,
+      open: admin.open,
+    });
 
   } catch (error) {
-    res.json({ message: error })
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
-}
+};
 
 export const open = async (req, res) => {
   try {
     const { id } = req.params;
     const { open } = req.body;
-    const number = req.admingu.id
 
+    const admin = await adminmodel.findById(req.admingu.id);
 
-    const admin = await adminmodel.findById(number)
-    // const post = await post_model.findOne({ author: admin._id })
-
-    if (admin.open === false) {
-      return res.status(400).json({ message: 'store door off' })
+    if (!admin) {
+      return res.status(404).json({
+        success: false,
+        message: "Merchant not found",
+      });
     }
 
-    const post = await post_model.findById(id);
-    console.log(id, open, post)
+    if (!admin.open) {
+      return res.status(400).json({
+        success: false,
+        message: "Store is closed",
+      });
+    }
+
+    const post = await post_model.findOne({
+      _id: id,
+      author: admin._id,
+    });
 
     if (!post) {
-      return res.status(404).json({ message: "Post not found" });
+      return res.status(404).json({
+        success: false,
+        message: "Post not found",
+      });
     }
 
     post.active = open;
@@ -346,11 +368,15 @@ export const open = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      open: post.open,
+      active: post.active,
     });
+
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
 };
 
