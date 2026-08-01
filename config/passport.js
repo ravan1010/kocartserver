@@ -85,7 +85,7 @@ passport.use(
           }
         }
 
-        if (role === "parcelandtransport") {
+        if (role === "parcel") {
           account = await parcelANDtransport.findOne({
             googleId: profile.id,
           }); 

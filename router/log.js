@@ -210,7 +210,7 @@ router.get(
       );
     }
 
-    if (role === "parcelandtransport") {
+    if (role === "parcel") {
       res.cookie("parcelandtransport", token, {
         httpOnly: true,
         secure: true,
@@ -328,10 +328,10 @@ router.get("/deliveryBoy/cookie", (req, res) => {
 });
 
 //parcelANDtransport
-router.get("/google/parcelandtransport", (req, res, next) => {
+router.get("/google/parcel", (req, res, next) => {
   passport.authenticate("google", {
     scope: ["profile", "email"],
-    state: "parcelandtransport",
+    state: "parcel",
   })(req, res, next);
 });
 
