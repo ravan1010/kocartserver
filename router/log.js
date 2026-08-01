@@ -135,13 +135,24 @@ router.get(
     session: false,
   }),
   async (req, res) => {
-    const role = req.query.state;
+    try {
+      console.log("STATE:", req.query.state);
+      console.log("USER:", req.user);
 
-    const token = jwt.sign(
-      { id: req.user._id },
-      process.env.JWT_SECRET,
-      { expiresIn: "100d" }
-    );
+      if (!req.user) {
+        return res.status(400).json({
+          success: false,
+          message: "req.user is undefined",
+        });
+      }
+
+      const role = req.query.state;
+
+      const token = jwt.sign(
+        { id: req.user._id },
+        process.env.JWT_SECRET,
+        { expiresIn: "100d" }
+      );
 
     if (role === "branch") {
       res.cookie("owner", token, {
@@ -209,6 +220,13 @@ router.get(
         "https://parcelandtransport.kocart.online/parcelandtransport-auth-success"
         // "https://localhost:5173/parcelANDtransport-auth-success"
       );
+    }
+       } catch (err) {
+      console.error(err);
+      res.status(500).json({
+        success: false,
+        error: err.message,
+      })
     }
   }
 );
