@@ -11,7 +11,7 @@ router.route('/liveupdate').post(liveupdate)
  
 router.route('/home').get( signat, home );
 router.route('/mart').get(signat, mart);
-router.put("/user/location", signat, updateLocation);i
+router.put("/user/location", signat, updateLocation);
 router.get("/merchant/:id", signat, merchantProducts);
 router.get('/mart/varients/:id', signat, getmartMerchantVariants)
 router.get("/mart/marchent/product", signat, martmerchantProducts);
