@@ -11,10 +11,10 @@ router.route('/liveupdate').post(liveupdate)
  
 router.route('/home').get( signat, home );
 router.route('/mart').get(signat, mart);
-router.put("/user/location", signat, updateLocation);
+router.put("/user/location", signat, updateLocation);i
 router.get("/merchant/:id", signat, merchantProducts);
-router.get('/mart/varients', signat, getmartMerchantVariants)
-router.get("/marchent/product", signat, martmerchantProducts);
+router.get('/mart/varients/:id', signat, getmartMerchantVariants)
+router.get("/mart/marchent/product", signat, martmerchantProducts);
 
 router.route('/explore').get( signat, explore )
 //web
