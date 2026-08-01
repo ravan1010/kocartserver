@@ -229,9 +229,12 @@ export const getProductsByVariant = async (req, res) => {
   try {
     const { variant } = req.params;
 
-    const products = await post_model.find({
+     const products = await post_model.find({
       author: req.admingu.id,
-      variantname: variant,
+      variantname: {
+        $regex: `^\\s*${variant.trim()}\\s*$`,
+        $options: "i", // optional: case-insensitive
+      },
     });
 
     res.json({
