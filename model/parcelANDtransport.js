@@ -18,7 +18,7 @@ const ParceldeliveryANDtransportPartnerSchema = new mongoose.Schema({
             "goods_auto",
             "auto_passenger",
         ],
-        required: true,
+        default: "bike_parcel"
     },
     activate: {
         type: Boolean,
