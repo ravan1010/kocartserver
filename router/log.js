@@ -198,8 +198,8 @@ router.get(
       );
     }
 
-    if (role === "parcelANDtransport") {
-      res.cookie("parcelANDtransport", token, {
+    if (role === "parcelandtransport") {
+      res.cookie("parcelandtransport", token, {
         httpOnly: true,
         secure: true,
         sameSite: "None",
@@ -309,16 +309,16 @@ router.get("/deliveryBoy/cookie", (req, res) => {
 });
 
 //parcelANDtransport
-router.get("/google/parcelANDtransport", (req, res, next) => {
+router.get("/google/parcelandtransport", (req, res, next) => {
   passport.authenticate("google", {
     scope: ["profile", "email"],
-    state: "parcelANDtransport",
+    state: "parcelandtransport",
   })(req, res, next);
 });
 
-router.get("/parcelANDtransport/cookie", (req, res) => {
+router.get("/parcelandtransport/cookie", (req, res) => {
 
-  const token = req.cookies?.parcelANDtransport;
+  const token = req.cookies?.parcelandtransport;
 
   if (!token) {
     return res.json({ message: "No token" });
