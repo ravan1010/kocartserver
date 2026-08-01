@@ -197,33 +197,40 @@ export const EVENTCreate = async (req, res, next) => {
 
 }
 
-export const dashboard = async (req, res, next) => {
+export const dashboard = async (req, res) => {
   try {
-    const id = req.admingu.id
-    const author = await adminmodel.findById(id)
-    const post = await post_model.find({ author: author._id })
-    .select("name image variantname Eventcategory variants active")
-    .lean();
+    const author = await adminmodel.findById(req.admingu.id);
 
-    res.status(201).json({
-      post: post,
+    const post = await post_model.find({ author: author._id })
+      .select("name image variantname Eventcategory variants active")
+      .lean();
+
+    const variants = [...new Set(
+      post.map(item => item.variantname).filter(Boolean)
+    )];
+
+    res.status(200).json({
+      variants,
       productlist: post.length,
       openORclose: author.open,
       id: author._id,
       marchent: author,
-    })
+    });
 
   } catch (error) {
-    res.json(error)
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
-}
+};
 
 export const getProductsByVariant = async (req, res) => {
   try {
     const { variant } = req.params;
 
     const products = await post_model.find({
-      author: req.admin.id,
+      author: req.admingu.id,
       variantname: variant,
     });
 
