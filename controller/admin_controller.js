@@ -218,6 +218,27 @@ export const dashboard = async (req, res, next) => {
   }
 }
 
+export const getProductsByVariant = async (req, res) => {
+  try {
+    const { variant } = req.params;
+
+    const products = await post_model.find({
+      author: req.admin.id,
+      variantname: variant,
+    });
+
+    res.json({
+      success: true,
+      products,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+
 export const EVENTDelete = async (req, res, next) => {
 
   const number = req.admingu.id

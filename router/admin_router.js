@@ -5,7 +5,7 @@ import express from 'express';
 import { signat } from '../middleware/OGauth.js';
 const router = express.Router();
 import { admingu, adminif, admintoa, appAdminAuth } from '../middleware/admin_auth.js';
-import { AdminFCMtoken, Adminid, admininfo, bookedlisttoadmin, dashboard, EVENTCreate, EVENTDelete, EVENTUpdate, getAdminOrders, getSinglePost, open, openORclose, Toadmin, updateOrder } from '../controller/admin_controller.js';
+import { AdminFCMtoken, Adminid, admininfo, bookedlisttoadmin, dashboard, EVENTCreate, EVENTDelete, EVENTUpdate, getAdminOrders, getProductsByVariant, getSinglePost, open, openORclose, Toadmin, updateOrder } from '../controller/admin_controller.js';
 import admin_model from '../model/admin_model.js';
 import order_model from '../model/order_model.js';
 import deliveryBoy_model from '../model/deliveryBoy_model.js';
@@ -44,6 +44,9 @@ router.route('/admin/dashboard').get(admingu, dashboard )
 //app
 router.route('/app/admin/dashboard').get(appAdminAuth, dashboard )
 
+//web 
+router.route('/admin/products/:variant').get(admingu, getProductsByVariant)
+
 //web
 router.route('/admin/door').post(admingu, openORclose)
 //app
@@ -76,7 +79,7 @@ router.get('/admininfo', adminif, (req, res) => {
 });
 
 router.get('/adminmain', admintoa, (req, res) => {
-    res.json({user: req.admintoa})
+   res.json({user: req.admintoa})
 
 });
 
