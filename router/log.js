@@ -82,7 +82,7 @@ router.post("/app/google/user", async (req, res) => {
         }
         break;
 
-      case "parcelANDtransport":
+      case "parcelandtransport":
         account = await parcelANDtransport.findOne({ googleId });
 
         if (!account) {
