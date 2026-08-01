@@ -308,6 +308,13 @@ router.get("/deliveryBoy/cookie", (req, res) => {
 
 });
 
+router.get("/google/parcelANDtransport", (req, res, next) => {
+  passport.authenticate("google", {
+    scope: ["profile", "email"],
+    state: "parcelANDtransport",
+  })(req, res, next);
+});
+
 router.get("/parcelANDtransport/cookie", (req, res) => {
 
   const token = req.cookies?.parcelANDtransport;
