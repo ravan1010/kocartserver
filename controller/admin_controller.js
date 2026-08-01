@@ -212,6 +212,7 @@ export const dashboard = async (req, res) => {
     res.status(200).json({
       variants,
       productlist: post.length,
+      post: post,
       openORclose: author.open,
       id: author._id,
       marchent: author,
