@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 const RouteDBSchema =  mongoose.Schema({
-
+    
     from:{
         type: String,
         require: true

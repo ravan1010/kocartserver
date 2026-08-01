@@ -7,6 +7,7 @@ import { OAuth2Client } from 'google-auth-library'
 import admin_model from "../model/admin_model.js";
 import user_model from "../model/user_model.js";
 import deliveryBoy_model from "../model/deliveryBoy_model.js";
+import parcelANDtransport from "../model/parcelANDtransport.js";
 dotenv.config()
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -73,6 +74,19 @@ router.post("/app/google/user", async (req, res) => {
 
         if (!account) {
           account = await deliveryBoy_model.create({
+            googleId,
+            email,
+            name,
+            avatar,
+          });
+        }
+        break;
+
+      case "parcelANDtransport":
+        account = await parcelANDtransport.findOne({ googleId });
+
+        if (!account) {
+          account = await parcelANDtransport.create({
             googleId,
             email,
             name,
@@ -183,6 +197,19 @@ router.get(
         "https://delivery.kocart.online/deliveryBoy-auth-success"
       );
     }
+
+    if (role === "parcelANDtransport") {
+      res.cookie("parcelANDtransport", token, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "None",
+        maxAge: 100 * 24 * 60 * 60 * 1000, // 100 days
+      });
+      return res.redirect(
+        "https://parcelANDtransport.kocart.online/parcelANDtransport-auth-success"
+        // "https://localhost:5173/parcelANDtransport-auth-success"
+      );
+    }
   }
 );
 
@@ -267,6 +294,23 @@ router.get("/google/deliveryBoy", (req, res, next) => {
 router.get("/deliveryBoy/cookie", (req, res) => {
 
   const token = req.cookies?.deliveryBoy;
+
+  if (!token) {
+    return res.json({ message: "No token" });
+  }
+
+  try {
+    const user = jwt.verify(token, process.env.JWT_SECRET);
+    res.json({ user });
+  } catch (err) {
+    res.json({ message: "Invalid token" });
+  }
+
+});
+
+router.get("/parcelANDtransport/cookie", (req, res) => {
+
+  const token = req.cookies?.parcelANDtransport;
 
   if (!token) {
     return res.json({ message: "No token" });

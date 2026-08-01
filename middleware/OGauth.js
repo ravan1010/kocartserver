@@ -37,6 +37,23 @@ export const deliveryBoyAuth = async (req, res, next) => {
     }
   }
 
+export const parcelANDtransportAuth = async (req, res, next) => {
+    const token = req.cookies.parcelANDtransport
+     
+    if(!token){
+        return res.status(400).json({message : "cookie not in broswer"})
+    }
+    try {
+        const decoded = jwt.verify(token, process.env.JWTOTPKEY)
+        req.parcelANDtransport = decoded
+        next()
+        
+        
+    } catch (error) {
+        res.status(400).json("soming wrong")
+    }
+}  
+
 export const authLocation = (req, res, next) => {
   const token = req.cookies.ln
 

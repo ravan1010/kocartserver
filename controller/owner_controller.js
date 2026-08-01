@@ -11,7 +11,6 @@ import branch_model from '../model/branch_model.js';
 import branch_otp_model from '../model/branch_otp_model.js';
 import user_model from '../model/user_model.js';
 import order_model from '../model/order_model.js';
-import Parcel_model from '../model/Parcel_model.js';
 import deliveryBoy_model from '../model/deliveryBoy_model.js';
 import post_model from "../model/event_post_model.js";
 

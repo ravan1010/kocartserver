@@ -6,6 +6,7 @@ import user_model from "../model/user_model.js";
 import dotenv from 'dotenv'
 import admin_model from "../model/admin_model.js";
 import deliveryBoy_model from "../model/deliveryBoy_model.js";
+import parcelANDtransport from "../model/parcelANDtransport.js";
 dotenv.config()
  
 passport.use( 
@@ -76,6 +77,21 @@ passport.use(
 
           if (!account) {
             account = await deliveryBoy_model.create({
+              googleId: profile.id,
+              name: profile.displayName,
+              email: profile.emails?.[0]?.value,
+              avatar: profile.photos?.[0]?.value,
+            });
+          }
+        }
+
+        if (role === "parcelANDtransport") {
+          account = await parcelANDtransport.findOne({
+            googleId: profile.id,
+          }); 
+
+          if (!account) {
+            account = await parcelANDtransport.create({
               googleId: profile.id,
               name: profile.displayName,
               email: profile.emails?.[0]?.value,

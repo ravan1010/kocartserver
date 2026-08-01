@@ -1,5 +1,4 @@
 import branch_model from "../model/branch_model.js";
-import Parcel_model from "../model/Parcel_model.js";
 import route_db from "../model/route_db.js";
 import axios from "axios";
 import { sendPushNotification } from "../utils/firebase.js";
