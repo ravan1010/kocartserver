@@ -39,6 +39,21 @@ passport.use(
             });
           }
         }
+
+        if (role === "auto") {
+          account = await user_model.findOne({
+            googleId: profile.id,
+          }); 
+
+          if (!account) {
+            account = await user_model.create({
+              googleId: profile.id,
+              name: profile.displayName,
+              email: profile.emails?.[0]?.value,
+              avatar: profile.photos?.[0]?.value,
+            });
+          }
+        }
           
           if (role === "client") {
           account = await user_model.findOne({
