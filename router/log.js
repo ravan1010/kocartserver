@@ -155,6 +155,19 @@ router.get(
         { expiresIn: "100d" }
       );
 
+    if (role === "parcel") {
+      res.cookie("parcelandtransport", token, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "None",
+        maxAge: 100 * 24 * 60 * 60 * 1000, // 100 days
+      });
+      return res.redirect(
+        "https://parcelandtransport.kocart.online/parcel-auth-success"
+        // "https://localhost:5173/parcelANDtransport-auth-success"
+      );
+    }  
+
     if (role === "branch") {
       res.cookie("owner", token, {
         httpOnly: true,
@@ -210,18 +223,6 @@ router.get(
       );
     }
 
-    if (role === "parcel") {
-      res.cookie("parcelandtransport", token, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "None",
-        maxAge: 100 * 24 * 60 * 60 * 1000, // 100 days
-      });
-      return res.redirect(
-        "https://parcelandtransport.kocart.online/parcelandtransport-auth-success"
-        // "https://localhost:5173/parcelANDtransport-auth-success"
-      );
-    }
        } catch (err) {
       console.error(err);
       res.status(500).json({
