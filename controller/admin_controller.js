@@ -216,6 +216,7 @@ export const dashboard = async (req, res) => {
       openORclose: author.open,
       id: author._id,
       marchent: author,
+      success: true,
     });
 
   } catch (error) {
