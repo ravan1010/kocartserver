@@ -169,7 +169,8 @@ export const merchantProducts = async (req, res) => {
         const posts = await post_model.find({
 
             author: merchantId,
-            active:true
+            active:true,
+            open: true,
 
         }).lean();
 
@@ -209,6 +210,7 @@ export const getmartMerchantVariants = async (req, res) => {
     const variants = await post_model.distinct("variantname", {
       author: req.params.id,
       variantname: { $ne: "" },
+
     });
 
     console.log(variants);
@@ -233,6 +235,7 @@ export const martmerchantProducts = async (req, res) => {
     const filter = {
       author: id,
       active: true,
+      open: true,
     };
 
     if (variant) {
