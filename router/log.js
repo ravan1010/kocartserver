@@ -206,8 +206,8 @@ router.get(
         maxAge: 100 * 24 * 60 * 60 * 1000, // 100 days
       });
       return res.redirect(
-        // "https://parcelANDtransport.kocart.online/parcelANDtransport-auth-success"
-        "https://localhost:5173/parcelANDtransport-auth-success"
+        "https://parcelandtransport.kocart.online/parcelandtransport-auth-success"
+        // "https://localhost:5173/parcelANDtransport-auth-success"
       );
     }
   }

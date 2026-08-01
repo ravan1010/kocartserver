@@ -33,7 +33,9 @@ app.use(cors({
       "https://www.kocart.online",
       "https://kocart.online",
       "https://delivery.kocart.online",
-      "https://branch.kocart.online"
+      "https://branch.kocart.online",
+      "https://parcelandtransport.kocart.online"
+
     ], // reflects request origin automatically
   credentials: true
 }));
