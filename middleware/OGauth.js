@@ -103,6 +103,7 @@ export const appAuth = (req, res, next) => {
 
 
 
+
 //app deliery partner
 export const appdeliveryBoyAuth = (req, res, next) => {
   const token = req.header("Authorization")?.replace("Bearer ", "");
@@ -125,4 +126,7 @@ export const appdeliveryBoyAuth = (req, res, next) => {
     });
   }
 };
+
+
+
 
