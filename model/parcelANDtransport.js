@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const Parcel_delivery_AND_transport_PartnerSchema = new mongoose.Schema({
+const ParceldeliveryANDtransportPartnerSchema = new mongoose.Schema({
     googleId: String,
     name: String,
     email: String,
@@ -59,10 +59,10 @@ const Parcel_delivery_AND_transport_PartnerSchema = new mongoose.Schema({
     }
 });
 
-Parcel_delivery_AND_transport_PartnerSchema.index({ currentLocation: "2dsphere" });
+ParceldeliveryANDtransportPartnerSchema.index({ currentLocation: "2dsphere" });
 
 // deliveryBoySchema.index({
 //   currentLocation: "2dsphere"
 // });
 
-export default new mongoose.model("ParcelANDTransport", Parcel_delivery_AND_transport_PartnerSchema);
+export default new mongoose.model("ParcelANDTransport", ParceldeliveryANDtransportPartnerSchema);
