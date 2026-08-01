@@ -228,16 +228,15 @@ export const getmartMerchantVariants = async (req, res) => {
 
 export const martmerchantProducts = async (req, res) => {
   try {
-    const { id } = req.params;
-    const { variant } = req.query;
+    const { id, variant } = req.query;
 
     const filter = {
       author: id,
       active: true,
     };
 
-    if (variant && variant !== "All") {
-      filter.variantname = variant;
+    if (variant) {
+      filter.variantname = variant.trim();
     }
 
     const merchant = await admin_model.findById(id);
@@ -251,10 +250,20 @@ export const martmerchantProducts = async (req, res) => {
 
     const posts = await post_model.find(filter).lean();
 
+    const branch = await branch_model.findOne({
+      location: {
+        $near: {
+          $geometry: merchant.location,
+          $maxDistance: 7000,
+        },
+      },
+    });
+
     res.json({
       success: true,
       merchant,
       posts,
+      branch,
     });
 
   } catch (err) {
