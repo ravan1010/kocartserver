@@ -204,20 +204,21 @@ export const merchantProducts = async (req, res) => {
 
 export const getmartMerchantVariants = async (req, res) => {
   try {
-    const { id } = req.params;
+    console.log("Merchant ID:", req.params.id);
 
     const variants = await post_model.distinct("variantname", {
-      author: id,
-      active: true,
+      author: req.params.id,
       variantname: { $ne: "" },
     });
+
+    console.log(variants);
 
     res.json({
       success: true,
       variants,
     });
-
   } catch (err) {
+    console.log(err);
     res.status(500).json({
       success: false,
       message: err.message,
