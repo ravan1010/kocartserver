@@ -5,7 +5,7 @@ const router = express.Router();
 // router.route('/parcelANDtransport/fcmToken').post(, AdminFCMtoken)
 
 
-router.get('/parcelANDtransport/token', parcelANDtransportAuth, async (req, res) => {
+router.get('/parcelandtransport/token', parcelANDtransportAuth, async (req, res) => {
     
     res.json({ user: req.parcelANDtransport });
 });
