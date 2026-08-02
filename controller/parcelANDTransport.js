@@ -31,7 +31,7 @@ export const updatePartnerDetails = async (req, res) => {
       serviceType,
       latitude,
       longitude,
-      Number,
+      phoneNumber,
       city,
     } = req.body;
 
@@ -40,7 +40,7 @@ export const updatePartnerDetails = async (req, res) => {
     const updatedPartner = await parcelANDtransportDB.findByIdAndUpdate(
       partnerId,
       {
-        Number,
+          Number: phoneNumber,
         city,
         vehicalNO,
         vehicalName,
