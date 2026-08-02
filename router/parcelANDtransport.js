@@ -15,7 +15,7 @@ router.route('/parcel/onANDoff').post(parcelANDtransportAuth, parcelBoyIsOnline)
 
 
 router.get('/parcelandtransport/token', parcelANDtransportAuth, async (req, res) => {
-    res.json({ user: req.parcelANDtransport });
+    res.json({ user: req.parcelandtransport }); 
 });
 
 export default router;

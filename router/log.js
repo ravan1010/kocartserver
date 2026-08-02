@@ -168,7 +168,7 @@ router.get(
       );
     }  
 
-       if (role === "auto") {
+    if (role === "auto") {
       res.cookie("parcelandtransport", token, {
         httpOnly: true,
         secure: true,
