@@ -6,6 +6,7 @@ import address_model from '../model/address_model.js';
 import Cart from "../model/cart_model.js";
 import order_model from '../model/order_model.js';
 import nodemailer from "nodemailer";
+import parcelANDtransport from "../model/parcelANDtransport.js"
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -316,7 +317,7 @@ export const serviceType = async (req, res) => {
 
     res.json({
       success: true,
-      serviceTypes,
+      serviceTypes
     });
   } catch (err) {
     res.status(500).json({
@@ -325,7 +326,6 @@ export const serviceType = async (req, res) => {
     });
   }
 };
-
 
 
 
@@ -639,7 +639,7 @@ export const clearCart = async (req, res) => {
 
 
 
-
+ 
 export const cartdata = async (req, res) => {
 
   const cart = await Cart.findOne({ userId: req.Atoken.id })
@@ -818,6 +818,7 @@ export const order = async (req, res) => {
 
 import axios from "axios";
 import branch_model from '../model/branch_model.js';
+import parcelANDtransport from '../model/parcelANDtransport.js';
 
 const getRoadDistanceKm = async (from, to) => {
       const apiKey = process.env.GEOAPIFY_KEY;
