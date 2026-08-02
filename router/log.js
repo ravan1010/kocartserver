@@ -164,7 +164,7 @@ router.get(
       });
       return res.redirect(
         // "https://parcelandtransport.kocart.online/parcel-auth-success"
-        "https://localhost:5173/parcelANDtransport-auth-success"
+        "https://localhost:5173/parcel-auth-success"
       );
     }  
 
