@@ -10,6 +10,7 @@ import getpost from './router/Ul.router.js';
 import owner from './router/owner_router.js';
 import long from './router/long_route.js'
 import log from './router/log.js'
+import parcel from './router/parcelANDtransport.js'
 import path from 'path'; 
 
 import { fileURLToPath } from "url";
@@ -53,6 +54,7 @@ app.use('/api', OG_router)
 app.use('/api', getpost)
 app.use('/api', owner)
 app.use('/api', long) 
+app.use('/api', parcel)
 
 
 const __filename = fileURLToPath(import.meta.url);
