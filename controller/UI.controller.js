@@ -38,7 +38,7 @@ export const home = async (req, res) => {
       location: {
         $near: {
           $geometry: user.location,
-          $maxDistance: 6000, // 3 km
+          $maxDistance: 6000, // 6 km
         },
       },
     })
