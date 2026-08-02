@@ -10,7 +10,9 @@ import dotenv from 'dotenv';
 import axios from "axios";
 import branch_model from '../model/branch_model.js';
 import parcelANDtransport from '../model/parcelANDtransport.js';
+import BikeParcel_Order from '../model/BikeParcel_Order.js';
 dotenv.config();
+
 
 export const home = async (req, res) => {
   try {
@@ -321,6 +323,72 @@ export const serviceType = async (req, res) => {
       serviceTypes
     });
   } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+
+export const createBikeParcelOrder = async (req, res) => {
+  try {
+    const {
+      pickup,
+      drop,
+      parcel,
+      payment,
+    } = req.body;
+
+    // Basic Validation
+    if (!pickup || !drop) {
+      return res.status(400).json({
+        success: false,
+        message: "Pickup and Drop are required.",
+      });
+    }
+
+    if (
+      pickup.location.coordinates.length !== 2 ||
+      drop.location.coordinates.length !== 2
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid coordinates.",
+      });
+    }
+
+    // Generate Order ID
+    const orderId =
+      "BP" +
+      Date.now() +
+      Math.floor(Math.random() * 1000);
+
+    const BikeParcel = await BikeParcel_Order.create({
+      orderId,
+
+      customer: req.Atoken.id, // JWT user id
+
+      serviceType: "bike_parcel",
+
+      pickup,
+
+      drop,
+
+      parcel,
+
+      payment,
+
+      status: "pending",
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "Order Created Successfully",
+      BikeParcel,
+    });
+  } catch (err) {
+    console.log(err);
+
     res.status(500).json({
       success: false,
       message: err.message,

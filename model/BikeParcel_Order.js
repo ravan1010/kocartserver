@@ -227,4 +227,4 @@ orderSchema.index({
     "drop.location": "2dsphere"
 });
 
-export default mongoose.model("Order", orderSchema);
+export default mongoose.model("parcelSchema", orderSchema);
