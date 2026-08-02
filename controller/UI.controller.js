@@ -6,9 +6,10 @@ import address_model from '../model/address_model.js';
 import Cart from "../model/cart_model.js";
 import order_model from '../model/order_model.js';
 import nodemailer from "nodemailer";
-import parcelANDtransport from "../model/parcelANDtransport.js"
 import dotenv from 'dotenv';
-
+import axios from "axios";
+import branch_model from '../model/branch_model.js';
+import parcelANDtransport from '../model/parcelANDtransport.js';
 dotenv.config();
 
 export const home = async (req, res) => {
@@ -816,9 +817,7 @@ export const order = async (req, res) => {
   res.json(order || null);
 }
 
-import axios from "axios";
-import branch_model from '../model/branch_model.js';
-import parcelANDtransport from '../model/parcelANDtransport.js';
+
 
 const getRoadDistanceKm = async (from, to) => {
       const apiKey = process.env.GEOAPIFY_KEY;
