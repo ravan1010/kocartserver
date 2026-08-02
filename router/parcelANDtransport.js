@@ -8,14 +8,13 @@ const router = express.Router();
 
 router.route('/parcelandtransport/fcmToken').post(parcelANDtransportAuth,parcelandtransportFCMtoken )
 
-router.route('/parcelandtransport/details').post(parcelANDtransportAuth, updatePartnerDetails )
+router.route('/parcelandtransport/details').put(parcelANDtransportAuth, updatePartnerDetails )
 
 router.route('/parcel/dashboard').get(parcelANDtransportAuth, parceldashboard)
 router.route('/parcel/onANDoff').post(parcelANDtransportAuth, parcelBoyIsOnline)
 
 
 router.get('/parcelandtransport/token', parcelANDtransportAuth, async (req, res) => {
-    
     res.json({ user: req.parcelANDtransport });
 });
 
