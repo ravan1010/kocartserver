@@ -31,6 +31,8 @@ export const updatePartnerDetails = async (req, res) => {
       serviceType,
       latitude,
       longitude,
+      Number,
+      city,
     } = req.body;
 
     const partnerId = req.parcelandtransport.id; // From JWT middleware
@@ -38,6 +40,8 @@ export const updatePartnerDetails = async (req, res) => {
     const updatedPartner = await parcelANDtransportDB.findByIdAndUpdate(
       partnerId,
       {
+        Number,
+        city,
         vehicalNO,
         vehicalName,
         serviceType,
