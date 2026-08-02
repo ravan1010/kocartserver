@@ -1,104 +1,230 @@
-// models/Parcel.js
 import mongoose from "mongoose";
 
-const bike_parcelSchema = new mongoose.Schema({
-
-  customerID: { type: mongoose.Schema.Types.ObjectId, ref: "user", required: true },
-  driverID: { type: mongoose.Schema.Types.ObjectId, ref: "ParcelANDTransport", default: null},
-
-  pickup: {
-    address: String,
-    latitude: Number,
-    longitude: Number,
-    contactName: String,
-    contactPhone: String,
-  },
-
-  drop: {
-    address: String,
-    latitude: Number,
-    longitude: Number,
-    contactName: String,
-    contactPhone: String,
-  },
-
-  parcel: {
-    itemName: String,
-    description: String,
-
-    weight: Number, // kg
-
-    length: Number,
-    width: Number,
-    height: Number,
-
-    quantity: {
-      type: Number,
-      default: 1,
+const orderSchema = new mongoose.Schema(
+{
+    orderId: {
+        type: String,
+        unique: true
     },
 
-    fragile: {
-      type: Boolean,
-      default: false,
+    // Customer
+    customer: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true
     },
 
-    cashOnDelivery: {
-      type: Boolean,
-      default: false,
+    // Driver
+    driver: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Parcel_delivery_AND_transport_Partner",
+        default: null
     },
 
-    codAmount: {
-      type: Number,
-      default: 0,
+    // Service
+    serviceType: {
+        type: String,
+        enum: [
+            "bike_parcel",
+            "goods_auto",
+            "auto_passenger"
+        ],
+        required: true
     },
-  },
 
-  distance: {
-    type: Number,
-    default: 0,
-  },
+    //---------------------------------------
+    // Pickup
+    //---------------------------------------
 
-  estimatedTime: {
-    type: Number,
-    default: 0,
-  },
+    pickup: {
+        address: String,
 
-  fare: {
-    type: Number,
-    required: true,
-  },
+        location: {
+            type: {
+                type: String,
+                enum: ["Point"],
+                default: "Point"
+            },
+            coordinates: {
+                type: [Number], // [lng, lat]
+                required: true
+            }
+        },
 
-  paymentMethod: {
-    type: String,
-    enum: ["COD", "ONLINE"],
-    default: "ONLINE",
-  },
+        name: String,
+        phone: String
+    },
 
-  paymentStatus: {
-    type: String,
-    enum: ["pending", "paid"],
-    default: "pending",
-  },
+    //---------------------------------------
+    // Drop
+    //---------------------------------------
 
-  otp: Number,
+    drop: {
+        address: String,
 
-  status: {
-    type: String,
-    enum: [
-      "pending",
-      "accepted",
-      "arrived_pickup",
-      "picked_up",
-      "in_transit",
-      "completed",
-      "cancelled",
-    ],
-    default: "pending",
-  },
+        location: {
+            type: {
+                type: String,
+                enum: ["Point"],
+                default: "Point"
+            },
+            coordinates: {
+                type: [Number]
+            }
+        },
 
-  cancelReason: String,
- 
+        name: String,
+        phone: String
+    },
+
+    //---------------------------------------
+    // Bike Parcel
+    //---------------------------------------
+
+    parcel: {
+        itemName: String,
+        category: String,
+
+        weight: Number,
+
+        quantity: {
+            type: Number,
+            default: 1
+        },
+
+        fragile: {
+            type: Boolean,
+            default: false
+        },
+
+        instructions: String
+    },
+
+    //---------------------------------------
+    // Goods Auto
+    //---------------------------------------
+
+    goods: {
+        itemType: String,
+
+        estimatedWeight: Number,
+
+        helpersRequired: {
+            type: Number,
+            default: 0
+        },
+
+        loadingRequired: Boolean,
+
+        unloadingRequired: Boolean,
+
+        instructions: String
+    },
+
+    //---------------------------------------
+    // Passenger Auto
+    //---------------------------------------
+
+    passenger: {
+        passengers: Number,
+
+        tripType: {
+            type: String,
+            enum: [
+                "one_way",
+                "round_trip"
+            ]
+        }
+    },
+
+    //---------------------------------------
+    // Fare
+    //---------------------------------------
+
+    pricing: {
+        distance: Number,
+        duration: Number,
+
+        baseFare: Number,
+
+        surge: {
+            type: Number,
+            default: 0
+        },
+
+        platformFee: {
+            type: Number,
+            default: 0
+        },
+
+        totalFare: Number
+    },
+
+    //---------------------------------------
+    // Payment
+    //---------------------------------------
+
+    payment: {
+        method: {
+            type: String,
+            enum: [
+                "cash",
+                "online"
+            ],
+            default : "cash"
+        },
+
+        transactionId: String
+    },
+
+    //---------------------------------------
+    // OTP
+    //---------------------------------------
+
+    otp: {
+        pickup: Number,
+        delivery: Number
+    },
+
+    //---------------------------------------
+    // Order Status
+    //---------------------------------------
+
+    status: {
+        type: String,
+        enum: [
+            "pending",
+            "driver_assigned",
+            "driver_arrived",
+            "picked_up",
+            "in_transit",
+            "completed",
+            "cancelled"
+        ],
+        default: "pending"
+    },
+
+    cancelReason: String,
+
+    cancelledBy: {
+        type: String,
+        enum: [
+            "customer",
+            "driver",
+        ]
+    }
+
+},
+{
+    timestamps: true
 });
 
-export default mongoose.model("BIKEParcel", bike_parcelSchema);
+orderSchema.index({
+    "pickup.location": "2dsphere"
+});
 
+orderSchema.index({
+    "drop.location": "2dsphere"
+});
+
+export default mongoose.model("Order", orderSchema);

@@ -38,7 +38,7 @@ export const home = async (req, res) => {
       location: {
         $near: {
           $geometry: user.location,
-          $maxDistance: 3000, // 3 km
+          $maxDistance: 6000, // 3 km
         },
       },
     })
@@ -918,9 +918,19 @@ export const calculateDeliveryFee = async (req, res) => {
 
     if (category === "foodANDbeverages" || category === "FoodANDbeverages") {
       deliveryFee = 18;
-      if (totalDistance > 1) {
-        deliveryFee += Math.ceil(totalDistance - 1) * 10;
-      }
+
+  if (totalDistance > 1) {
+    // Charge ₹10 for distance between 1 km and 3 km
+    const distance1to3 = Math.min(totalDistance, 3) - 1;
+    deliveryFee += Math.ceil(distance1to3) * 10;
+  }
+
+  if (totalDistance > 3) {
+    // Charge ₹15 for every km after 3 km
+    const distanceAfter3 = totalDistance - 3;
+    deliveryFee += Math.ceil(distanceAfter3) * 17;
+  }
+
     } else {
       deliveryFee = 31;
       if (totalDistance > 1) {
