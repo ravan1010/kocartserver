@@ -276,6 +276,55 @@ export const martmerchantProducts = async (req, res) => {
     });
   }
 };
+  
+export const serviceType = async (req, res) => {
+  try {
+
+     const id = req.Atoken.id;
+
+    const user = await usermodel.findById(id).lean();
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    if(!user.location){
+      return res.status(404).json({
+        success: false,
+        message: "location not found",
+      });
+    }
+
+
+    const serviceTypes = await parcelANDtransport.distinct(
+      "serviceType",
+      {
+        activate: true,
+        isOnline: true,
+        isAvailable: true,
+        currentLocation: {
+          $near: {
+          $geometry: user.location,
+          $maxDistance: 5000, // 3 km
+        },
+        },
+      }
+    );
+
+    res.json({
+      success: true,
+      serviceTypes,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
 
 
 
