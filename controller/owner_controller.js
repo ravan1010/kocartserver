@@ -13,6 +13,7 @@ import user_model from '../model/user_model.js';
 import order_model from '../model/order_model.js';
 import deliveryBoy_model from '../model/deliveryBoy_model.js';
 import post_model from "../model/event_post_model.js";
+import BikeParcel_Order from '../model/BikeParcel_Order.js';
 
 dotenv.config()
 
@@ -131,6 +132,7 @@ export const deliveryActivate = async (req, res) => {
 }
 
 
+
 //post get, add, remove, home
 
 export const getpostdata = async (req, res, next) => {
@@ -145,7 +147,6 @@ export const postTohomepage = async (req, res) => {
   try {
     const { id } = req.body;
     console.log("post", id);
-
     const postDoc = await post.findById(id);  // ✅ use model here
     if (!postDoc) {
       return res.json({ message: "product not found" });
@@ -848,4 +849,47 @@ export const deliveryboykocartSettlement = async (req, res) => {
   }
 };
 
+export const getNearbyBikeParcelOrders = async (req, res) => {
+  try {
+    const branchId = req.owner.id;
+    const { status = "pending" } = req.query;
 
+    const branch = await branch_model.findById(branchId);
+
+    if (!branch) {
+      return res.status(404).json({
+        success: false,
+        message: "Branch not found",
+      });
+    }
+
+    const orders = await BikeParcel_Order.find({
+      serviceType: "bike_parcel",
+      status,
+      "pickup.location": {
+        $near: {
+          $geometry: {
+            type: "Point",
+            coordinates: branch.location.coordinates, // [longitude, latitude]
+          },
+          $maxDistance: 1000000, // 1000 km
+        },
+      },
+    })
+      .populate("customer", "name Number")
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      count: orders.length,
+      orders,
+    });
+  } catch (err) {
+    console.log(err);
+
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};

@@ -432,7 +432,6 @@ export const createBikeParcelOrder = async (req, res) => {
     );
 
 
-
     res.status(201).json({
       success: true,
       message: "Order Created Successfully",

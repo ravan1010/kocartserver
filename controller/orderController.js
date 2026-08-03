@@ -131,7 +131,7 @@ if (distance > 3) {
             type: "Point",
             coordinates: user.location.coordinates,
           },
-          $maxDistance: 7000,
+          $maxDistance: 1000000,
         },
       },
     });
@@ -235,7 +235,7 @@ if (distance > 3) {
             type: "Point",
             coordinates: user.location.coordinates,
           },
-          $maxDistance: 7000,
+          $maxDistance: 1000000,
         },
       },
     });
@@ -347,7 +347,7 @@ if (distance > 3) {
             type: "Point",
             coordinates: user.location.coordinates,
           },
-          $maxDistance: 7000,
+          $maxDistance: 1000000,
         },
       },
     });
