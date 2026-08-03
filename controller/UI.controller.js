@@ -1021,4 +1021,50 @@ export const calculateDeliveryFee = async (req, res) => {
   }
 };
 
+export const distanceToParcel = async (req, res) => {
+  try {
+    const {pickuplat, pickuplng, droplat, droplng} = req.body;
 
+    if(!pickuplat || !pickuplng || !droplat || !droplng){
+      return res.status(404).json({massage: "fill require"})
+    }
+
+    const platform = 5;
+        let deliveryFee = 18;
+
+
+const distance = await getRoadDistanceKm(
+  {
+    lat: pickuplat,
+    lng: pickuplng,
+  },
+  {
+    lat: droplat,
+    lng: droplng,
+  }
+)
+
+   if (distance > 1) {
+    // Charge ₹10 for distance between 1 km and 3 km
+    const distance1to3 = Math.min(totalDistance, 3) - 1;
+    deliveryFee += Math.ceil(distance1to3) * 10;
+  }
+
+  if (distance > 3) {
+    // Charge ₹15 for every km after 3 km
+    const distanceAfter3 = totalDistance - 3;
+    deliveryFee += Math.ceil(distanceAfter3) * 17;
+  }
+
+  return res.json({
+      distance: Number(distance.toFixed(2)),
+      amount : deliveryFee,
+      latitude,
+      longitude,
+      platform
+    });
+
+  } catch (error) {
+    res.status(500).json(error)
+  }
+}
