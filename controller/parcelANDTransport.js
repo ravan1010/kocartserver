@@ -352,7 +352,7 @@ export const verifyDeliveryOtp = async (req, res) => {
     }
 
     // Update order
-    order.status = "delivered";
+    order.status = "completed";
     order.deliveredAt = new Date(); // Optional
     await order.save();
 
