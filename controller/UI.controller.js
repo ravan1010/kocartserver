@@ -11,6 +11,8 @@ import axios from "axios";
 import branch_model from '../model/branch_model.js';
 import parcelANDtransport from '../model/parcelANDtransport.js';
 import BikeParcel_Order from '../model/BikeParcel_Order.js';
+import { sendPushNotification } from '../utils/firebase.js';
+
 dotenv.config();
 
 
@@ -390,6 +392,46 @@ export const createBikeParcelOrder = async (req, res) => {
       status: "pending",
     });
 
+      // ==========================
+    // Find nearby bike partners (5 km)
+    // ==========================
+
+    const nearbyPartners = await parcelANDtransport.find({
+      serviceType: "bike_parcel",
+      isOnline: true, // optional
+      currentLocation: {
+        $near: {
+          $geometry: {
+            type: "Point",
+            coordinates: pickup.location.coordinates, // [longitude, latitude]
+          },
+          $maxDistance: 5000, // 5 km
+        },
+      },
+    });
+
+        // ==========================
+    // Send notification
+    // ==========================
+
+    await Promise.all(
+      nearbyPartners.map(async (partner) => {
+        if (!partner.fcmToken) return;
+
+        try {
+          await sendPushNotification(
+            partner.fcmToken,
+            "📦 New Bike Parcel",
+            `Pickup: ${distance} km | ₹${amount}`,
+            "https://parcelandtransport.kocart.online/available/order"
+          );
+        } catch (err) {
+          console.log("Notification Error:", err.message);
+        }
+      })
+    );
+
+
 
     res.status(201).json({
       success: true,
@@ -429,6 +471,7 @@ export const getBikeParcelOrders = async (req, res) => {
     });
   }
 };
+
 
 
 

@@ -214,7 +214,6 @@ export const acceptBikeParcelOrder = async (req, res) => {
 
 
 
-
 export const getAcceptedBikeParcelOrder = async (req, res) => {
   try {
     const order = await BikeParcel_Order.findOne({
