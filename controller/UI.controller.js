@@ -337,6 +337,8 @@ export const createBikeParcelOrder = async (req, res) => {
       drop,
       parcel,
       payment,
+      distance,
+      amount,
     } = req.body;
 
     // Basic Validation
@@ -369,6 +371,8 @@ export const createBikeParcelOrder = async (req, res) => {
       customer: req.Atoken.id, // JWT user id
 
       serviceType: "bike_parcel",
+      distance,
+      amount,
 
       pickup,
 
@@ -1044,23 +1048,19 @@ const distance = await getRoadDistanceKm(
   }
 )
 
-   if (distance > 1) {
-    // Charge ₹10 for distance between 1 km and 3 km
-    const distance1to3 = Math.min(totalDistance, 3) - 1;
-    deliveryFee += Math.ceil(distance1to3) * 10;
-  }
+ if (distance > 1) {
+  const distance1to3 = Math.min(distance, 3) - 1;
+  deliveryFee += Math.ceil(distance1to3) * 10;
+}
 
-  if (distance > 3) {
-    // Charge ₹15 for every km after 3 km
-    const distanceAfter3 = totalDistance - 3;
-    deliveryFee += Math.ceil(distanceAfter3) * 17;
-  }
+if (distance > 3) {
+  const distanceAfter3 = distance - 3;
+  deliveryFee += Math.ceil(distanceAfter3) * 17;
+}
 
   return res.json({
       distance: Number(distance.toFixed(2)),
       amount : deliveryFee,
-      latitude,
-      longitude,
       platform
     });
 

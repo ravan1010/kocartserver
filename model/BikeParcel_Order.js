@@ -21,6 +21,9 @@ const orderSchema = new mongoose.Schema(
         default: null
     },
 
+    distance : Number,
+    amount: Number,
+
     // Service
     serviceType: {
         type: String,
