@@ -1,6 +1,6 @@
 import express from 'express';
 import { parcelANDtransportAuth } from '../middleware/OGauth.js';
-import { parcelandtransportFCMtoken, 
+import { getNearbyPendingOrders, parcelandtransportFCMtoken, 
          parcelBoyIsOnline, 
          parceldashboard, 
          updatePartnerDetails } from '../controller/parcelANDTransport.js';
@@ -12,6 +12,8 @@ router.route('/parcelandtransport/details').put(parcelANDtransportAuth, updatePa
 
 router.route('/parcel/dashboard').get(parcelANDtransportAuth, parceldashboard)
 router.route('/parcel/onANDoff').post(parcelANDtransportAuth, parcelBoyIsOnline)
+
+router.route("/partner/orders/nearby").get(parcelANDtransportAuth, getNearbyPendingOrders);
 
 
 router.get('/parcelandtransport/token', parcelANDtransportAuth, async (req, res) => {

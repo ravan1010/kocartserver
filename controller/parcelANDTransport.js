@@ -1,4 +1,5 @@
 import parcelANDtransportDB from "../model/parcelANDtransport.js";
+import BikeParcel_Order from "../model/BikeParcel_Order.js";
 
 
 
@@ -113,6 +114,48 @@ export const parcelBoyIsOnline = async (req, res) => {
 }
 
 
+export const getNearbyPendingOrders = async (req, res) => {
+  try {
+    const partner = await parcelANDtransportDB.findById(req.parcelandtransport.id);
 
+    if (partner.isAvailable === false || partner.isOnline === false ) {
+      return res.json({ success: false })
+    }
+
+    if (!partner) {
+      return res.status(404).json({
+        success: false,
+        message: "Partner not found",
+      });
+    }
+
+    const orders = await BikeParcel_Order.find({
+      status: "pending",
+      serviceType: "bike_parcel",
+      "pickup.location": {
+        $near: {
+          $geometry: {
+            type: "Point",
+            coordinates: partner.currentLocation.coordinates,
+          },
+          $maxDistance: 5000, // 5 km
+        },
+      },
+    }).sort({ createdAt: -1 });
+
+    res.json({
+      success: true,
+      count: orders.length,
+      orders,
+    });
+  } catch (err) {
+    console.log(err);
+
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
 
 
