@@ -27,7 +27,7 @@ export const home = async (req, res) => {
       });
     }
 
-    if(!user.location){
+    if (!user.location) {
       return res.status(404).json({
         success: false,
         message: "location not found",
@@ -46,8 +46,8 @@ export const home = async (req, res) => {
         },
       },
     })
-    .select("_id companyName")
-    .lean();
+      .select("_id companyName")
+      .lean();
 
     res.json({
       success: true,
@@ -77,7 +77,7 @@ export const mart = async (req, res) => {
       });
     }
 
-    if(!user.location){
+    if (!user.location) {
       return res.status(404).json({
         success: false,
         message: "location not found",
@@ -96,8 +96,8 @@ export const mart = async (req, res) => {
         },
       },
     })
-    .select("_id companyName")
-    .lean();
+      .select("_id companyName")
+      .lean();
 
     // const adminIds = nearbyAdmins.map((admin) => admin._id);
 
@@ -155,30 +155,30 @@ export const updateLocation = async (req, res) => {
 
 export const merchantProducts = async (req, res) => {
 
-    try{
+  try {
 
-        const merchantId = req.params.id;
+    const merchantId = req.params.id;
 
-        const merchant = await admin_model
-            .findById(merchantId)
+    const merchant = await admin_model
+      .findById(merchantId)
 
-        if(!merchant){
-            return res.status(404).json({
-                success:false, 
-                message:"Merchant not found"
-            });
-        }
+    if (!merchant) {
+      return res.status(404).json({
+        success: false,
+        message: "Merchant not found"
+      });
+    }
 
 
-        const posts = await post_model.find({
+    const posts = await post_model.find({
 
-            author: merchantId,
-            active:true,
-            open: true,
+      author: merchantId,
+      active: true,
+      open: true,
 
-        }).lean();
+    }).lean();
 
-          const branch = await branch_model.findOne({
+    const branch = await branch_model.findOne({
       location: {
         $near: {
           $geometry: merchant.location,
@@ -187,23 +187,23 @@ export const merchantProducts = async (req, res) => {
       },
     })
 
-        res.json({
+    res.json({
 
-            success:true,
-            merchant,
-            posts,
-            branch
+      success: true,
+      merchant,
+      posts,
+      branch
 
-        });
+    });
 
-    }catch(err){
+  } catch (err) {
 
-        res.status(500).json({
-            success:false,
-            message:err.message
-        });
+    res.status(500).json({
+      success: false,
+      message: err.message
+    });
 
-    }
+  }
 
 }
 
@@ -280,11 +280,11 @@ export const martmerchantProducts = async (req, res) => {
     });
   }
 };
-  
+
 export const serviceType = async (req, res) => {
   try {
 
-     const id = req.Atoken.id;
+    const id = req.Atoken.id;
 
     const user = await usermodel.findById(id).lean();
 
@@ -295,7 +295,7 @@ export const serviceType = async (req, res) => {
       });
     }
 
-    if(!user.location){
+    if (!user.location) {
       return res.status(404).json({
         success: false,
         message: "location not found",
@@ -311,9 +311,9 @@ export const serviceType = async (req, res) => {
         isAvailable: true,
         currentLocation: {
           $near: {
-          $geometry: user.location,
-          $maxDistance: 5000, // 3 km
-        },
+            $geometry: user.location,
+            $maxDistance: 5000, // 3 km
+          },
         },
       }
     );
@@ -365,30 +365,30 @@ export const createBikeParcelOrder = async (req, res) => {
       Date.now() +
       Math.floor(Math.random() * 1000);
 
-      const pickupotp = Math.floor(1000 + Math.random() * 9000);
-const dropotp = Math.floor(1000 + Math.random() * 9000);
+    const pickupotp = Math.floor(1000 + Math.random() * 9000);
+    const dropotp = Math.floor(1000 + Math.random() * 9000);
 
-const BikeParcel = await BikeParcel_Order.create({
-  orderId,
-  customer: req.Atoken.id,
+    const BikeParcel = await BikeParcel_Order.create({
+      orderId,
+      customer: req.Atoken.id,
 
-  serviceType: "bike_parcel",
-  distance,
-  amount,
+      serviceType: "bike_parcel",
+      distance,
+      amount,
 
-  pickup,
-  drop,
+      pickup,
+      drop,
 
-  parcel,
-  payment,
+      parcel,
+      payment,
 
-  otp: {
-    pickup: pickupotp,
-    delivery: dropotp,
-  },
+      otp: {
+        pickup: pickupotp,
+        delivery: dropotp,
+      },
 
-  status: "pending",
-});
+      status: "pending",
+    });
 
 
     res.status(201).json({
@@ -401,7 +401,7 @@ const BikeParcel = await BikeParcel_Order.create({
 
     res.status(500).json({
       success: false,
-      message: err.message 
+      message: err.message
     })
   }
 }
@@ -500,14 +500,14 @@ export const nearby = async (req, res) => {
       post_model.find({
         author: { $in: merchantIds },
         category: "groceryFruitsANDvegetables",
-         open: true,
-      active: true,
+        open: true,
+        active: true,
       }),
       post_model.find({
         author: { $in: merchantIds },
         category: "foodANDbeverages",
-         open: true,
-      active: true,
+        open: true,
+        active: true,
       }),
     ]);
 
@@ -618,18 +618,18 @@ export const addtocart = async (req, res) => {
       cart = new Cart({ userId, shop: [], total: 0 });
     }
 
-// Allow only one merchant in cart
-if (
-  cart.shop.length > 0 &&
-  cart.shop[0].admin.toString() !== adminId
-) {
-  return res.status(400).json({
-    success: false,
-    differentMerchant: true,
-    message:
-      "Your cart contains items from another merchant. Clear the cart to continue.",
-  });
-}
+    // Allow only one merchant in cart
+    if (
+      cart.shop.length > 0 &&
+      cart.shop[0].admin.toString() !== adminId
+    ) {
+      return res.status(400).json({
+        success: false,
+        differentMerchant: true,
+        message:
+          "Your cart contains items from another merchant. Clear the cart to continue.",
+      });
+    }
 
     // 🔹 find shop
     let shop = cart.shop.find(
@@ -710,7 +710,7 @@ export const clearCart = async (req, res) => {
 
 
 
- 
+
 export const cartdata = async (req, res) => {
 
   const cart = await Cart.findOne({ userId: req.Atoken.id })
@@ -880,9 +880,9 @@ export const order = async (req, res) => {
   const order = await order_model.find({ userId: req.Atoken.id })
     .populate("shop.admin", "companyName")
     .populate("shop.items.productId", "image name")
-    .populate("deliveryBoy","name")
+    .populate("deliveryBoy", "name")
     .sort({ createdAt: -1 })
-    
+
 
   res.json(order || null);
 }
@@ -890,7 +890,7 @@ export const order = async (req, res) => {
 
 
 const getRoadDistanceKm = async (from, to) => {
-      const apiKey = process.env.GEOAPIFY_KEY;
+  const apiKey = process.env.GEOAPIFY_KEY;
 
   const res = await axios.get(
     "https://api.geoapify.com/v1/routing",
@@ -989,17 +989,17 @@ export const calculateDeliveryFee = async (req, res) => {
     if (category === "foodANDbeverages" || category === "FoodANDbeverages") {
       deliveryFee = 18;
 
-  if (totalDistance > 1) {
-    // Charge ₹10 for distance between 1 km and 3 km
-    const distance1to3 = Math.min(totalDistance, 3) - 1;
-    deliveryFee += Math.ceil(distance1to3) * 10;
-  }
+      if (totalDistance > 1) {
+        // Charge ₹10 for distance between 1 km and 3 km
+        const distance1to3 = Math.min(totalDistance, 3) - 1;
+        deliveryFee += Math.ceil(distance1to3) * 10;
+      }
 
-  if (totalDistance > 3) {
-    // Charge ₹15 for every km after 3 km
-    const distanceAfter3 = totalDistance - 3;
-    deliveryFee += Math.ceil(distanceAfter3) * 17;
-  }
+      if (totalDistance > 3) {
+        // Charge ₹15 for every km after 3 km
+        const distanceAfter3 = totalDistance - 3;
+        deliveryFee += Math.ceil(distanceAfter3) * 17;
+      }
 
     } else {
       deliveryFee = 31;
@@ -1025,40 +1025,40 @@ export const calculateDeliveryFee = async (req, res) => {
 
 export const distanceToParcel = async (req, res) => {
   try {
-    const {pickuplat, pickuplng, droplat, droplng} = req.body;
+    const { pickuplat, pickuplng, droplat, droplng } = req.body;
 
-    if(!pickuplat || !pickuplng || !droplat || !droplng){
-      return res.status(404).json({massage: "fill require"})
+    if (!pickuplat || !pickuplng || !droplat || !droplng) {
+      return res.status(404).json({ massage: "fill require" })
     }
 
     const platform = 5;
-        let deliveryFee = 18;
+    let deliveryFee = 18;
 
 
-const distance = await getRoadDistanceKm(
-  {
-    lat: pickuplat,
-    lng: pickuplng,
-  },
-  {
-    lat: droplat,
-    lng: droplng,
-  }
-)
+    const distance = await getRoadDistanceKm(
+      {
+        lat: pickuplat,
+        lng: pickuplng,
+      },
+      {
+        lat: droplat,
+        lng: droplng,
+      }
+    )
 
- if (distance > 1) {
-  const distance1to3 = Math.min(distance, 3) - 1;
-  deliveryFee += Math.ceil(distance1to3) * 10;
-}
+    if (distance > 1) {
+      const distance1to3 = Math.min(distance, 3) - 1;
+      deliveryFee += Math.ceil(distance1to3) * 10;
+    }
 
-if (distance > 3) {
-  const distanceAfter3 = distance - 3;
-  deliveryFee += Math.ceil(distanceAfter3) * 17;
-}
+    if (distance > 3) {
+      const distanceAfter3 = distance - 3;
+      deliveryFee += Math.ceil(distanceAfter3) * 17;
+    }
 
-  return res.json({
+    return res.json({
       distance: Number(distance.toFixed(2)),
-      amount : deliveryFee,
+      amount: deliveryFee,
       platform
     });
 
