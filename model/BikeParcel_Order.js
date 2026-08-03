@@ -10,14 +10,14 @@ const orderSchema = new mongoose.Schema(
     // Customer
     customer: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
+        ref: "user",
         required: true
     },
 
     // Driver
     driver: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Parcel_delivery_AND_transport_Partner",
+        ref: "ParcelANDTransport",
         default: null
     },
 

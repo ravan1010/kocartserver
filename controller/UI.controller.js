@@ -405,6 +405,33 @@ export const createBikeParcelOrder = async (req, res) => {
     })
   }
 }
+
+export const getBikeParcelOrders = async (req, res) => {
+  try {
+    const orders = await BikeParcel_Order.find({
+      customer: req.Atoken.id,
+      serviceType: "bike_parcel",
+    })
+      .sort({ createdAt: -1 })
+      .populate("driver", "name Number vehicalName vehicalNO")
+      .lean();
+
+    res.status(200).json({
+      success: true,
+      orders,
+    });
+  } catch (err) {
+    console.log(err);
+
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+
+
+
 export const explore = async (req, res) => {
   try {
     console.log("explore");
@@ -705,6 +732,7 @@ export const clearCart = async (req, res) => {
     });
   }
 };
+
 
 
 
