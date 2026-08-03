@@ -88,6 +88,7 @@ export const parceldashboard = async (req, res, next) => {
       id: parcel._id,
       kocartAmount: parcel.kocartAmount,
       activate: parcel.activate,
+      serviceType: parcel.serviceType,
     })
 
   } catch (error) {
@@ -159,3 +160,224 @@ export const getNearbyPendingOrders = async (req, res) => {
 };
 
 
+export const acceptBikeParcelOrder = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+
+    const order = await BikeParcel_Order.findOneAndUpdate(
+      {
+        _id: orderId,
+        status: "pending",
+      },
+      {
+        $set: {
+          driver: req.parcelandtransport.id,
+          status: "driver_assigned",
+        },
+      },
+      {
+        new: true,
+      }
+    );
+
+    if (!order) {
+      return res.status(400).json({
+        success: false,
+        message: "Order already accepted or not found.",
+      });
+    }
+
+    // Make partner unavailable
+    await parcelANDtransportDB.findByIdAndUpdate(
+      req.parcelandtransport.id,
+      {
+        $set: {
+          available: false,
+        },
+      }
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Order accepted successfully.",
+      order,
+    });
+  } catch (err) {
+    console.log(err);
+
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+
+
+
+
+export const getAcceptedBikeParcelOrder = async (req, res) => {
+  try {
+    const order = await BikeParcel_Order.findOne({
+      driver: req.parcelandtransport.id,
+      status: {
+        $in: [
+          "driver_assigned",
+        ],
+      },
+    })
+      .populate("customer", "name Number")
+      .sort({ updatedAt: -1 });
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "No active order found.",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      order,
+    });
+  } catch (err) {
+    console.log(err);
+
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+
+
+
+
+export const verifyPickupOtp = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const { otp } = req.body;
+
+    const order = await BikeParcel_Order.findOne({
+      _id: orderId,
+      driver: req.parcelandtransport.id,
+      status: "driver_assigned",
+    });
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found or not assigned to you.",
+      });
+    }
+
+    if (Number(otp) !== order.otp.pickup) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid Pickup OTP.",
+      });
+    }
+
+    order.status = "picked_up";
+    await order.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Pickup verified successfully.",
+      order,
+    });
+  } catch (err) {
+    console.log(err);
+
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+
+
+export const getPickedUpOrder = async (req, res) => {
+  try {
+    const order = await BikeParcel_Order.findOne({
+      driver: req.parcelandtransport.id,
+      status: "picked_up",
+    })
+      .populate("customer", "name Number")
+      .sort({ updatedAt: -1 });
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "No picked up order found.",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      order,
+    });
+  } catch (err) {
+    console.log(err);
+
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+
+
+export const verifyDeliveryOtp = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const { otp } = req.body;
+
+    const order = await BikeParcel_Order.findOne({
+      _id: orderId,
+      driver: req.parcelandtransport.id,
+      status: "picked_up",
+    });
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found or not assigned to you.",
+      });
+    }
+
+    if (Number(otp) !== order.otp.delivery) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid Delivery OTP.",
+      });
+    }
+
+    // Update order
+    order.status = "delivered";
+    order.deliveredAt = new Date(); // Optional
+    await order.save();
+
+    // Make partner available again
+    await parcelANDtransportDB.findByIdAndUpdate(
+      req.parcelandtransport.id,
+      {
+        $set: {
+          available: true,
+        },
+      }
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Order delivered successfully.",
+      order,
+    });
+  } catch (err) {
+    console.log(err);
+
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
