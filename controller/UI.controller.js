@@ -365,25 +365,31 @@ export const createBikeParcelOrder = async (req, res) => {
       Date.now() +
       Math.floor(Math.random() * 1000);
 
-    const BikeParcel = await BikeParcel_Order.create({
-      orderId,
+      const pickupotp = Math.floor(1000 + Math.random() * 9000);
+const dropotp = Math.floor(1000 + Math.random() * 9000);
 
-      customer: req.Atoken.id, // JWT user id
+const BikeParcel = await BikeParcel_Order.create({
+  orderId,
+  customer: req.Atoken.id,
 
-      serviceType: "bike_parcel",
-      distance,
-      amount,
+  serviceType: "bike_parcel",
+  distance,
+  amount,
 
-      pickup,
+  pickup,
+  drop,
 
-      drop,
+  parcel,
+  payment,
 
-      parcel,
+  otp: {
+    pickup: pickupotp,
+    delivery: dropotp,
+  },
 
-      payment,
+  status: "pending",
+});
 
-      status: "pending",
-    });
 
     res.status(201).json({
       success: true,
@@ -395,18 +401,9 @@ export const createBikeParcelOrder = async (req, res) => {
 
     res.status(500).json({
       success: false,
-      message: err.message,
-    });
+      message: err.message 
+    })
   }
-};
-
-
-
-
-
-
-
-
 export const explore = async (req, res) => {
   try {
     console.log("explore");
