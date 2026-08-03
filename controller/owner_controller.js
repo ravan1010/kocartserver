@@ -852,7 +852,7 @@ export const deliveryboykocartSettlement = async (req, res) => {
 export const getNearbyBikeParcelOrders = async (req, res) => {
   try {
     const branchId = req.owner.id;
-    const { status = "pending" } = req.query;
+    const { status } = req.query;
 
     const branch = await branch_model.findById(branchId);
 
