@@ -404,6 +404,7 @@ const BikeParcel = await BikeParcel_Order.create({
       message: err.message 
     })
   }
+}
 export const explore = async (req, res) => {
   try {
     console.log("explore");
