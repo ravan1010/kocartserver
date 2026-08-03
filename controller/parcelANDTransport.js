@@ -118,7 +118,7 @@ export const getNearbyPendingOrders = async (req, res) => {
   try {
     const partner = await parcelANDtransportDB.findById(req.parcelandtransport.id);
 
-    if (partner.isAvailable === false || partner.isOnline === false ) {
+    if (partner.isAvailable === false || partner.isOnline === false || partner.activate === false ) {
       return res.json({ success: false })
     }
 
