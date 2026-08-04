@@ -66,3 +66,23 @@ export const Address = async (req, res, next) => {
   }
 }
 
+export const userFCMtoken = async (req, res) => {
+  try {
+    const number = req.Atoken.id
+    const { fcmToken } = req.body;
+    console.log('number :', number)
+
+    if (!fcmToken) {
+      return res.status(400).json({ success: false });
+
+    }
+
+    await usermodel.updateMany({ _id: number }, {
+      fcmToken: fcmToken
+    });
+
+  } catch (error) {
+    res.status(500).json(error)
+  }
+}
+

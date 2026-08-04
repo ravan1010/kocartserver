@@ -129,15 +129,10 @@ const orderSchema = new mongoose.Schema(
     //---------------------------------------
 
     passenger: {
+        name: String,
+        phone: String,
         passengers: Number,
 
-        tripType: {
-            type: String,
-            enum: [
-                "one_way",
-                "round_trip"
-            ]
-        }
     },
 
     //---------------------------------------

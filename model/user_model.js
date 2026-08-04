@@ -24,6 +24,10 @@ const UserSchema =  mongoose.Schema({
     name: String,
     email: String,
     avatar: String,
+    fcmToken: {
+        type: String,
+        default: null,
+    },
     city:{
         type: String,
         require: true,

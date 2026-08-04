@@ -471,6 +471,266 @@ export const getBikeParcelOrders = async (req, res) => {
   }
 };
 
+export const createPassengerAutoOrder = async (req, res) => {
+  try {
+    const {
+      pickup,
+      drop,
+      passenger,
+      payment,
+      distance,
+      amount,
+    } = req.body;
+
+    // Validation
+    if (!pickup || !drop) {
+      return res.status(400).json({
+        success: false,
+        message: "Pickup and Drop are required.",
+      });
+    }
+
+    if (
+      pickup.location.coordinates.length !== 2 ||
+      drop.location.coordinates.length !== 2
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid coordinates.",
+      });
+    }
+
+    // Generate Order ID
+    const orderId =
+      "PA" +
+      Date.now() +
+      Math.floor(Math.random() * 1000);
+
+    const pickupOtp = Math.floor(1000 + Math.random() * 9000);
+    const dropOtp = Math.floor(1000 + Math.random() * 9000);
+
+    const order = await PassengerAuto_Order.create({
+      orderId,
+      customer: req.Atoken.id,
+
+      serviceType: "auto_passenger",
+
+      pickup,
+      drop,
+
+      passenger, // optional object
+      payment,
+
+      distance,
+      amount,
+
+      otp: {
+        pickup: pickupOtp,
+        delivery: dropOtp,
+      },
+
+      status: "pending",
+    });
+
+    // ==========================
+    // Find nearby auto partners
+    // ==========================
+    const nearbyPartners = await parcelANDtransport.find({
+      serviceType: "auto_passenger",
+      isOnline: true,
+      currentLocation: {
+        $near: {
+          $geometry: {
+            type: "Point",
+            coordinates: pickup.location.coordinates,
+          },
+          $maxDistance: 5000,
+        },
+      },
+    });
+
+    // ==========================
+    // Send notifications
+    // ==========================
+    await Promise.all(
+      nearbyPartners.map(async (partner) => {
+        if (!partner.fcmToken) return;
+
+        try {
+          await sendPushNotification(
+            partner.fcmToken,
+            "🚖 New Ride Request",
+            `${distance} km • ₹${amount}`,
+            "https://parcelandtransport.kocart.online/available/order"
+          );
+        } catch (err) {
+          console.log("Notification Error:", err.message);
+        }
+      })
+    );
+
+    return res.status(201).json({
+      success: true,
+      message: "Ride booked successfully.",
+      order,
+    });
+  } catch (err) {
+    console.log(err);
+
+    return res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+
+export const getpassengerAutoOrders = async (req, res) => {
+  try {
+    const orders = await BikeParcel_Order.find({
+      customer: req.Atoken.id,
+      serviceType: "auto_passenger",
+    })
+      .sort({ createdAt: -1 })
+      .populate("driver", "name Number vehicalName vehicalNO")
+      .lean();
+
+    res.status(200).json({
+      success: true,
+      orders,
+    });
+  } catch (err) {
+    console.log(err);
+
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+
+export const createGoodsAutoOrder = async (req, res) => {
+    try {
+
+        const {
+            pickup,
+            drop,
+            goods,
+            payment,
+            distance,
+            amount
+        } = req.body;
+
+        const orderId =
+            "GA" +
+            Date.now() +
+            Math.floor(Math.random() * 1000);
+
+        const pickupOtp = Math.floor(1000 + Math.random() * 9000);
+        const deliveryOtp = Math.floor(1000 + Math.random() * 9000);
+
+        const order = await GoodsAuto_Order.create({
+            orderId,
+            customer: req.Atoken.id,
+
+            serviceType: "goods_auto",
+
+            pickup,
+            drop,
+
+            goods,
+            payment,
+
+            distance,
+            amount,
+
+            otp: {
+                pickup: pickupOtp,
+                delivery: deliveryOtp,
+            },
+
+            status: "pending",
+        });
+
+        // Find nearby Goods Auto partners
+
+        const partners = await parcelANDtransport.find({
+            serviceType: "goods_auto",
+            isOnline: true,
+            currentLocation: {
+                $near: {
+                    $geometry: {
+                        type: "Point",
+                        coordinates: pickup.location.coordinates,
+                    },
+                    $maxDistance: 5000,
+                },
+            },
+        });
+
+        // Send notification
+
+        await Promise.all(
+            partners.map(async (partner) => {
+                if (!partner.fcmToken) return;
+
+                await sendPushNotification(
+                    partner.fcmToken,
+                    "🚚 New Goods Booking",
+                    `₹${amount}`,
+                    "https://parcelandtransport.kocart.online/"
+                );
+            })
+        );
+
+        return res.status(201).json({
+            success: true,
+            order,
+        });
+
+    } catch (err) {
+
+        return res.status(500).json({
+            success: false,
+            message: err.message,
+        });
+    }
+};
+
+export const getGoodsAutoOrders = async (req, res) => {
+  try {
+    const orders = await BikeParcel_Order.find({
+      customer: req.Atoken.id,
+      serviceType: "goods_auto",
+    })
+      .sort({ createdAt: -1 })
+      .populate("driver", "name Number vehicalName vehicalNO")
+      .lean();
+
+    res.status(200).json({
+      success: true,
+      orders,
+    });
+  } catch (err) {
+    console.log(err);
+
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
