@@ -130,7 +130,7 @@ export const getNearbyPendingOrders = async (req, res) => {
       });
     }
 
-    const orders = await BikeParcel_Order.find({
+    const bike_parcel = await BikeParcel_Order.find({
       status: "pending",
       serviceType: "bike_parcel",
       "pickup.location": {
@@ -144,10 +144,41 @@ export const getNearbyPendingOrders = async (req, res) => {
       },
     }).sort({ createdAt: -1 });
 
+     const auto_passenger = await BikeParcel_Order.find({
+      status: "pending",
+      serviceType: "auto_passenger",
+      "pickup.location": {
+        $near: {
+          $geometry: {
+            type: "Point",
+            coordinates: partner.currentLocation.coordinates,
+          },
+          $maxDistance: 5000, // 5 km
+        },
+      },
+    }).sort({ createdAt: -1 });
+
+    const goods_auto = await BikeParcel_Order.find({
+      status: "pending",
+      serviceType: "goods_auto",
+      "pickup.location": {
+        $near: {
+          $geometry: {
+            type: "Point",
+            coordinates: partner.currentLocation.coordinates,
+          },
+          $maxDistance: 5000, // 5 km
+        },
+      },
+    }).sort({ createdAt: -1 });
+
     res.json({
       success: true,
-      count: orders.length,
-      orders,
+      count: bike_parcel.length,
+      bike_parcel,
+      auto_passenger,
+      goods_auto,
+
     });
   } catch (err) {
     console.log(err);
@@ -213,7 +244,6 @@ export const acceptBikeParcelOrder = async (req, res) => {
 };
 
 
-
 export const getAcceptedBikeParcelOrder = async (req, res) => {
   try {
     const order = await BikeParcel_Order.findOne({
@@ -247,8 +277,6 @@ export const getAcceptedBikeParcelOrder = async (req, res) => {
     });
   }
 };
-
-
 
 
 export const verifyPickupOtp = async (req, res) => {

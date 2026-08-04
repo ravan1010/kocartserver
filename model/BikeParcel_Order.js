@@ -132,7 +132,6 @@ const orderSchema = new mongoose.Schema(
         name: String,
         phone: String,
         passengers: Number,
-
     },
 
     //---------------------------------------
