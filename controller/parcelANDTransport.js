@@ -381,6 +381,7 @@ export const verifyDeliveryOtp = async (req, res) => {
 
     // Update order
     order.status = "completed";
+    order.kocartAmount += 5;
     order.deliveredAt = new Date(); // Optional
     await order.save();
 
