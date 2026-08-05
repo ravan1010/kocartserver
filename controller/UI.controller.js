@@ -341,6 +341,7 @@ export const serviceType = async (req, res) => {
       category,
       city: user.city,
     });
+    
   } catch (err) {
     res.status(500).json({
       success: false,
