@@ -320,9 +320,28 @@ export const serviceType = async (req, res) => {
       }
     );
 
+    // Find nearby merchants within 7 km
+    const category = await admin_model.distinct(
+      "category",
+      {
+      active: true,
+      open: true,
+      location: {
+        $near: {
+          $geometry: user.location,
+          $maxDistance: 6000, // 6 km
+        },
+      },
+    })
+      .select("_id companyName")
+      .lean();
+
+
+
     res.json({
       success: true,
-      serviceTypes
+      serviceTypes,
+      category,
     });
   } catch (err) {
     res.status(500).json({
