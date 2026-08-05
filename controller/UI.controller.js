@@ -129,14 +129,15 @@ export const updateLocation = async (req, res) => {
   try {
     const id = req.Atoken.id;
 
-    const { latitude, longitude } = req.body;
+    const { latitude, longitude, city } = req.body;
 
     const user = await usermodel.findByIdAndUpdate(
       id,
       {
+        city,
         location: {
           type: "Point",
-          coordinates: [longitude, latitude],
+          coordinates: [Number(longitude), Number(latitude)],
         },
       },
       { new: true }
@@ -146,7 +147,6 @@ export const updateLocation = async (req, res) => {
       success: true,
       user,
     });
-
   } catch (err) {
     res.status(500).json({
       success: false,
@@ -285,7 +285,6 @@ export const martmerchantProducts = async (req, res) => {
 
 export const serviceType = async (req, res) => {
   try {
-
     const id = req.Atoken.id;
 
     const user = await usermodel.findById(id).lean();
@@ -297,53 +296,50 @@ export const serviceType = async (req, res) => {
       });
     }
 
-    if (!user.location) {
+    if (
+      !user.location ||
+      !user.location.coordinates ||
+      user.location.coordinates.length !== 2
+    ) {
       return res.status(404).json({
         success: false,
-        message: "location not found",
+        message: "Location not found",
       });
     }
 
-
-    const serviceTypes = await parcelANDtransport.distinct(
-      "serviceType",
-      {
-        activate: true,
-        isOnline: true,
-        isAvailable: true,
-        currentLocation: {
-          $near: {
-            $geometry: user.location,
-            $maxDistance: 5000, // 3 km
-          },
+    const serviceTypes = await parcelANDtransport.distinct("serviceType", {
+      activate: true,
+      isOnline: true,
+      isAvailable: true,
+      currentLocation: {
+        $near: {
+          $geometry: user.location,
+          $maxDistance: 5000,
         },
-      }
-    );
+      },
+    });
 
-    // Find nearby merchants within 7 km
-   const category = await admin_model.distinct("category", {
-  active: true,
-  open: true,
-  location: {
-    $near: {
-      $geometry: user.location,
-      $maxDistance: 6000,
-    },
-  },
-});
-     
+    const category = await admin_model.distinct("category", {
+      active: true,
+      open: true,
+      location: {
+        $near: {
+          $geometry: user.location,
+          $maxDistance: 6000,
+        },
+      },
+    });
 
-
-
-    res.json({
+    return res.status(200).json({
       success: true,
+      city: user.city || "",
       serviceTypes,
       category,
-      city: user.city,
     });
-    
   } catch (err) {
-    res.status(500).json({
+    console.error(err);
+
+    return res.status(500).json({
       success: false,
       message: err.message,
     });

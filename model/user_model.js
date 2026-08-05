@@ -30,7 +30,6 @@ const UserSchema =  mongoose.Schema({
     },
     city:{
         type: String,
-        require: true,
     },
      location: {
             type: {
