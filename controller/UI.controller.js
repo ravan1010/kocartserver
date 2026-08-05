@@ -339,6 +339,7 @@ export const serviceType = async (req, res) => {
       success: true,
       serviceTypes,
       category,
+      city: user.city,
     });
   } catch (err) {
     res.status(500).json({
