@@ -279,6 +279,58 @@ export const getAcceptedBikeParcelOrder = async (req, res) => {
 };
 
 
+export const cancelBikeParcelOrder = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+
+    const order = await BikeParcel_Order.findOneAndUpdate(
+      {
+        _id: orderId,
+        driver: req.parcelandtransport.id,
+        status: "driver_assigned",
+      },
+      {
+        $set: {
+          status: "pending",
+          driver: null,
+        },
+      },
+      { new: true }
+    );
+
+    if (!order) {
+      return res.status(400).json({
+        success: false,
+        message: "Order not found or cannot be cancelled.",
+      });
+    }
+
+    // Make partner available again
+    await parcelANDtransportDB.findByIdAndUpdate(
+      req.parcelandtransport.id,
+      {
+        $set: {
+          available: true,
+        },
+      }
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Order cancelled successfully.",
+      order,
+    });
+  } catch (err) {
+    console.log(err);
+
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+
+
 export const verifyPickupOtp = async (req, res) => {
   try {
     const { orderId } = req.params;
@@ -409,5 +461,7 @@ export const verifyDeliveryOtp = async (req, res) => {
     });
   }
 };
+
+
 
 

@@ -1,7 +1,7 @@
 import express from 'express';
 const router = express.Router()
 import {signat, authLocation, appAuth} from '../middleware/OGauth.js';
-import { home, setting, address, explore, cartdata, removecart, buy, order, addtocart, calculateDeliveryFee, nearby, updateLocation, merchantProducts, clearCart, mart, getmartMerchantVariants, martmerchantProducts, serviceType, createBikeParcelOrder, distanceToParcel, getBikeParcelOrders, createPassengerAutoOrder, getpassengerAutoOrders, createGoodsAutoOrder, getGoodsAutoOrders } from '../controller/UI.controller.js';
+import { home, setting, address, explore, cartdata, removecart, buy, order, addtocart, calculateDeliveryFee, nearby, updateLocation, merchantProducts, clearCart, mart, getmartMerchantVariants, martmerchantProducts, serviceType, createBikeParcelOrder, distanceToParcel, getBikeParcelOrders, createPassengerAutoOrder, getpassengerAutoOrders, createGoodsAutoOrder, getGoodsAutoOrders, getMyLocation } from '../controller/UI.controller.js';
 // const event_post_model = require('../model/event_post_model.js')
 import user_model from '../model/user_model.js';
 import { appplaceCODOrder, checkout, placeCODOrder, verifyPayment } from '../controller/orderController.js';
@@ -75,6 +75,7 @@ router.route("/app/order").get(appAuth, order )
 
 
 router.route("/services").get(signat, serviceType)
+router.route("/client/location").get(signat, getMyLocation)
 router.route('/parcel/distance').post(signat, distanceToParcel)
 
 router.route("/createparcel").post(signat, createBikeParcelOrder)
