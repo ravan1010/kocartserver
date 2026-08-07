@@ -533,7 +533,7 @@ export const createPassengerAutoOrder = async (req, res) => {
     const pickupOtp = Math.floor(1000 + Math.random() * 9000);
     const dropOtp = Math.floor(1000 + Math.random() * 9000);
 
-    const order = await PassengerAuto_Order.create({
+    const order = await BikeParcel_Order.create({
       orderId,
       customer: req.Atoken.id,
 
@@ -652,7 +652,7 @@ export const createGoodsAutoOrder = async (req, res) => {
         const pickupOtp = Math.floor(1000 + Math.random() * 9000);
         const deliveryOtp = Math.floor(1000 + Math.random() * 9000);
 
-        const order = await GoodsAuto_Order.create({
+        const order = await BikeParcel_Order.create({
             orderId,
             customer: req.Atoken.id,
 
@@ -705,6 +705,7 @@ export const createGoodsAutoOrder = async (req, res) => {
                 );
             })
         );
+
 
         return res.status(201).json({
             success: true,
