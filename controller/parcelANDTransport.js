@@ -219,7 +219,7 @@ export const acceptBikeParcelOrder = async (req, res) => {
       req.parcelandtransport.id,
       {
         $set: {
-          available: false,
+          isAvailable: false,
         },
       }
     );
