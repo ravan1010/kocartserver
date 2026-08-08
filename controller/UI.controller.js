@@ -612,8 +612,8 @@ export const createPassengerAutoOrder = async (req, res) => {
           await sendPushNotification(
             partner.fcmToken,
             "🚖 New Ride Request",
-            `${distance} km • ₹${amount}`,
-            "https://parcelandtransport.kocart.online/available/order"
+            `${distance} km `,
+            "https://parcelandtransport.kocart.online"
           );
         } catch (err) {
           console.log("Notification Error:", err.message);
