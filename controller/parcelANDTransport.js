@@ -684,6 +684,3 @@ export const verifyDeliveryOtp = async (req, res) => {
   }
 };
 
-
-
-
