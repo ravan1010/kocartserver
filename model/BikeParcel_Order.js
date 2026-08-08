@@ -209,8 +209,17 @@ const orderSchema = new mongoose.Schema(
             "customer",
             "driver",
         ]
-    }
+    },
 
+    driverEtaMinutes: {
+        type: Number,
+        default: null,
+    },
+
+    driverDistanceKm: {
+        type: Number,
+        default: null,
+    },
 },
 {
     timestamps: true

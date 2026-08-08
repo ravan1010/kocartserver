@@ -495,6 +495,34 @@ export const getBikeParcelOrders = async (req, res) => {
   }
 };
 
+export const getActivePassengerAutoOrder = async (req, res) => {
+  try {
+    const userId = req.Atoken.id;
+
+    const order = await BikeParcel_Order.findOne({
+      user: userId,
+      status: {
+        $in: [
+          "pending",
+          "driver_assigned",
+          "driver_arrived",
+          "picked_up",
+        ],
+      },
+    }).sort({ createdAt: -1 });
+
+    res.json({
+      success: true,
+      order: order || null,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 export const createPassengerAutoOrder = async (req, res) => {
   try {
     const {
@@ -604,6 +632,94 @@ export const createPassengerAutoOrder = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: err.message,
+    });
+  }
+};
+
+export const getPassengerAutoOrderStatus = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const userId = req.Atoken.id;
+
+    const order = await BikeParcel_Order.findOne({
+      _id: orderId,
+      customer: userId,
+    }).populate(
+      "driver",
+      "name Number vehicalNO vehicalName currentLocation"
+    );
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    // Order finished
+    if (
+      order.status === "completed" ||
+      order.status === "cancelled"
+    ) {
+      return res.json({
+        success: true,
+        order: null,
+        status: order.status,
+      });
+    }
+
+    // Still searching
+    if (order.status === "pending") {
+      return res.json({
+        success: true,
+        order: {
+          _id: order._id,
+          status: order.status,
+        },
+      });
+    }
+
+    // Driver assigned / arrived / picked up / ongoing
+    if (
+      [
+        "driver_assigned",
+        "driver_arrived",
+        "picked_up",
+        "ongoing",
+      ].includes(order.status)
+    ) {
+      let driver = null;
+
+      if (order.driver) {
+        driver = {
+          name: order.driver.name,
+          number: order.driver.Number,
+          vehicleNo: order.driver.vehicalNO,
+          vehicleName: order.driver.vehicalName,
+        };
+      }
+
+      return res.json({
+        success: true,
+        order: {
+          _id: order._id,
+          status: order.status,
+          driver,
+        },
+      });
+    }
+
+    return res.json({
+      success: true,
+      order: null,
+    });
+
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      message: error.message,
     });
   }
 };

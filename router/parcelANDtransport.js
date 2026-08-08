@@ -16,7 +16,7 @@ router.route('/parcelandtransport/details').put(parcelANDtransportAuth, updatePa
 router.route('/parcel/dashboard').get(parcelANDtransportAuth, parceldashboard)
 router.route('/parcel/onANDoff').post(parcelANDtransportAuth, parcelBoyIsOnline)
 
-router.route("/partner/orders/nearby").get(parcelANDtransportAuth, getNearbyPendingOrders);
+router.route("/partner/orders/nearby/:serviceType").get(parcelANDtransportAuth, getNearbyPendingOrders);
 router.route("/partner/orders/accept/:orderId").put(parcelANDtransportAuth, acceptBikeParcelOrder)
 
 router.route("/partner/orders/current").get(parcelANDtransportAuth, getAcceptedBikeParcelOrder);

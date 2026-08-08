@@ -117,11 +117,24 @@ export const parcelBoyIsOnline = async (req, res) => {
 
 export const getNearbyPendingOrders = async (req, res) => {
   try {
-    const partner = await parcelANDtransportDB.findById(req.parcelandtransport.id);
+    const { serviceType } = req.params;
 
-    if (partner.isAvailable === false || partner.isOnline === false || partner.activate === false ) {
-      return res.json({ success: false })
+    const allowedServiceTypes = [
+      "bike_parcel",
+      "auto_passenger",
+      "goods_auto",
+    ];
+
+    if (!allowedServiceTypes.includes(serviceType)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid service type",
+      });
     }
+
+    const partner = await parcelANDtransportDB.findById(
+      req.parcelandtransport.id
+    );
 
     if (!partner) {
       return res.status(404).json({
@@ -130,60 +143,43 @@ export const getNearbyPendingOrders = async (req, res) => {
       });
     }
 
-    const bike_parcel = await BikeParcel_Order.find({
+    if (
+      partner.isAvailable === false ||
+      partner.isOnline === false ||
+      partner.activate === false
+    ) {
+      return res.json({
+        success: false,
+        message: "Partner is not available",
+        orders: [],
+      });
+    }
+
+    const orders = await BikeParcel_Order.find({
       status: "pending",
-      serviceType: "bike_parcel",
+      serviceType,
       "pickup.location": {
         $near: {
           $geometry: {
             type: "Point",
             coordinates: partner.currentLocation.coordinates,
           },
-          $maxDistance: 5000, // 5 km
+          $maxDistance: 5000,
         },
       },
     }).sort({ createdAt: -1 });
 
-     const auto_passenger = await BikeParcel_Order.find({
-      status: "pending",
-      serviceType: "auto_passenger",
-      "pickup.location": {
-        $near: {
-          $geometry: {
-            type: "Point",
-            coordinates: partner.currentLocation.coordinates,
-          },
-          $maxDistance: 5000, // 5 km
-        },
-      },
-    }).sort({ createdAt: -1 });
-
-    const goods_auto = await BikeParcel_Order.find({
-      status: "pending",
-      serviceType: "goods_auto",
-      "pickup.location": {
-        $near: {
-          $geometry: {
-            type: "Point",
-            coordinates: partner.currentLocation.coordinates,
-          },
-          $maxDistance: 5000, // 5 km
-        },
-      },
-    }).sort({ createdAt: -1 });
-
-    res.json({
+    return res.json({
       success: true,
-      count: bike_parcel.length,
-      bike_parcel,
-      auto_passenger,
-      goods_auto,
-
+      serviceType,
+      count: orders.length,
+      orders,
     });
-  } catch (err) {
-    console.log(err);
 
-    res.status(500).json({
+  } catch (err) {
+    console.error(err);
+
+    return res.status(500).json({
       success: false,
       message: err.message,
     });
