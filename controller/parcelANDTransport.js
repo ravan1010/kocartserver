@@ -1,7 +1,135 @@
 import parcelANDtransportDB from "../model/parcelANDtransport.js";
 import BikeParcel_Order from "../model/BikeParcel_Order.js";
 
+import axios from "axios";
+import dotenv from 'dotenv'
 
+dotenv.config();
+
+
+const getDriverETA = async (driverLocation, pickupLocation) => {
+  try {
+    const apiKey = process.env.GEOAPIFY_KEY;
+
+    const driverLng = driverLocation.coordinates[0];
+    const driverLat = driverLocation.coordinates[1];
+
+    const pickupLng = pickupLocation.coordinates[0];
+    const pickupLat = pickupLocation.coordinates[1];
+
+    const res = await axios.get(
+      "https://api.geoapify.com/v1/routing",
+      {
+        params: {
+          waypoints: `${driverLat},${driverLng}|${pickupLat},${pickupLng}`,
+          mode: "drive",
+          apiKey,
+        },
+      }
+    );
+
+    const feature = res.data.features?.[0];
+
+    if (!feature) {
+      return null;
+    }
+
+    const seconds = feature.properties.time;
+    const distanceMeters = feature.properties.distance;
+
+    return {
+      distanceKm: Number((distanceMeters / 1000).toFixed(2)),
+      etaMinutes: Math.max(1, Math.ceil(seconds / 60)),
+    };
+  } catch (error) {
+    console.error("Driver ETA error:", error.message);
+    return null;
+  }
+};
+
+export const updateBikeParcelDriverLocation = async (req, res) => {
+  try {
+    const driverId = req.parcelandtransport.id;
+    const { latitude, longitude } = req.body;
+
+    // Validate location
+    if (
+      typeof latitude !== "number" ||
+      typeof longitude !== "number"
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Valid latitude and longitude are required.",
+      });
+    }
+
+    // 1. Update driver's current location
+    await parcelANDtransportDB.findByIdAndUpdate(
+      driverId,
+      {
+        $set: {
+          currentLocation: {
+            type: "Point",
+            coordinates: [longitude, latitude],
+          },
+        },
+      }
+    );
+
+    // 2. Find active order
+    const order = await BikeParcel_Order.findOne({
+      driver: driverId,
+      status: "driver_assigned",
+    });
+
+    // No active order
+    if (!order) {
+      return res.status(200).json({
+        success: true,
+        message: "Location updated.",
+      });
+    }
+
+    // 3. Create current driver location
+    const driverLocation = {
+      type: "Point",
+      coordinates: [longitude, latitude],
+    };
+
+    // 4. Calculate ETA and distance to pickup
+    const eta = await getDriverETA(
+      driverLocation,
+      order.pickup.location
+    );
+
+    // 5. Save ETA and distance
+    order.driverEtaMinutes = eta?.etaMinutes ?? null;
+    order.driverDistanceKm = eta?.distanceKm ?? null;
+
+     // Optional: save driver location inside order
+
+    await order.save();
+
+    // 6. Response
+    return res.status(200).json({
+      success: true,
+      driverLocation,
+      driverEtaMinutes: order.driverEtaMinutes,
+      driverDistanceKm: order.driverDistanceKm,
+    });
+
+  } catch (err) {
+    console.error(
+      "updateBikeParcelDriverLocation:",
+      err
+    );
+
+    return res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
 
 
 export const parcelandtransportFCMtoken = async (req, res) => {
@@ -190,7 +318,9 @@ export const getNearbyPendingOrders = async (req, res) => {
 export const acceptBikeParcelOrder = async (req, res) => {
   try {
     const { orderId } = req.params;
+    const partnerId = req.parcelandtransport.id;
 
+    // 1. Accept order
     const order = await BikeParcel_Order.findOneAndUpdate(
       {
         _id: orderId,
@@ -198,7 +328,7 @@ export const acceptBikeParcelOrder = async (req, res) => {
       },
       {
         $set: {
-          driver: req.parcelandtransport.id,
+          driver: partnerId,
           status: "driver_assigned",
         },
       },
@@ -214,9 +344,31 @@ export const acceptBikeParcelOrder = async (req, res) => {
       });
     }
 
-    // Make partner unavailable
+    // 2. Get driver current location
+    const driver = await parcelANDtransportDB.findById(partnerId);
+
+    if (!driver) {
+      return res.status(404).json({
+        success: false,
+        message: "Driver not found.",
+      });
+    }
+
+    // 3. Calculate ETA to pickup
+    const eta = await getDriverETA(
+      driver.currentLocation,
+      order.pickup.location
+    );
+
+    // 4. Save ETA and distance
+    order.driverEtaMinutes = eta?.etaMinutes || null;
+    order.driverDistanceKm = eta?.distanceKm || null;
+
+    await order.save();
+
+    // 5. Make partner unavailable
     await parcelANDtransportDB.findByIdAndUpdate(
-      req.parcelandtransport.id,
+      partnerId,
       {
         $set: {
           isAvailable: false,
@@ -224,15 +376,17 @@ export const acceptBikeParcelOrder = async (req, res) => {
       }
     );
 
-    res.status(200).json({
+    // 6. Response
+    return res.status(200).json({
       success: true,
       message: "Order accepted successfully.",
       order,
     });
-  } catch (err) {
-    console.log(err);
 
-    res.status(500).json({
+  } catch (err) {
+    console.error("acceptBikeParcelOrder:", err);
+
+    return res.status(500).json({
       success: false,
       message: err.message,
     });
