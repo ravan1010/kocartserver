@@ -696,6 +696,7 @@ export const getPassengerAutoOrderStatus = async (req, res) => {
           number: order.driver.Number,
           vehicleNo: order.driver.vehicalNO,
           vehicleName: order.driver.vehicalName,
+         
         };
       }
 
@@ -705,6 +706,8 @@ export const getPassengerAutoOrderStatus = async (req, res) => {
           _id: order._id,
           status: order.status,
           driver,
+          driverEtaMinutes: order.driverEtaMinutes,
+          driverDistanceKm: order.driverDistanceKm,
         },
       });
     }
