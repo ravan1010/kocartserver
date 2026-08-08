@@ -393,7 +393,6 @@ export const acceptBikeParcelOrder = async (req, res) => {
   }
 };
 
-
 export const getAcceptedBikeParcelOrder = async (req, res) => {
   try {
     const order = await BikeParcel_Order.findOne({
@@ -427,7 +426,6 @@ export const getAcceptedBikeParcelOrder = async (req, res) => {
     });
   }
 };
-
 
 export const driverArrivedUpdate = async (req, res) => {
   try {
@@ -471,7 +469,6 @@ export const driverArrivedUpdate = async (req, res) => {
   }
 
 }
-
 
 export const ReassignParcelOrder = async (req, res) => {
   try {
@@ -524,7 +521,6 @@ export const ReassignParcelOrder = async (req, res) => {
   }
 };
 
-
 export const getArrivedOrder = async (req, res) => {
   try {
     const order = await BikeParcel_Order.findOne({
@@ -559,8 +555,6 @@ export const getArrivedOrder = async (req, res) => {
   }
 };
 
-
-
 export const verifyPickupOtp = async (req, res) => {
   try {
     const { orderId } = req.params;
@@ -569,7 +563,7 @@ export const verifyPickupOtp = async (req, res) => {
     const order = await BikeParcel_Order.findOne({
       _id: orderId,
       driver: req.parcelandtransport.id,
-      status: "driver_",
+      status: "driver_arrived",
     });
 
     if (!order) {
@@ -604,7 +598,6 @@ export const verifyPickupOtp = async (req, res) => {
   }
 };
 
-
 export const getPickedUpOrder = async (req, res) => {
   try {
     const order = await BikeParcel_Order.findOne({
@@ -634,7 +627,6 @@ export const getPickedUpOrder = async (req, res) => {
     });
   }
 };
-
 
 export const verifyDeliveryOtp = async (req, res) => {
   try {
