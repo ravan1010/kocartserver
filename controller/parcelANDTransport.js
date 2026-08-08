@@ -371,6 +371,42 @@ export const ReassignParcelOrder = async (req, res) => {
 };
 
 
+export const getArrivedOrder = async (req, res) => {
+  try {
+    const order = await BikeParcel_Order.findOne({
+      driver: req.parcelandtransport.id,
+      status: {
+        $in: [
+          "driver_arrived",
+        ],
+      },
+    })
+      .populate("customer", "name Number")
+      .sort({ updatedAt: -1 });
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "No active order found.",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      order,
+    });
+  } catch (err) {
+    console.log(err);
+
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+
+
+
 export const verifyPickupOtp = async (req, res) => {
   try {
     const { orderId } = req.params;

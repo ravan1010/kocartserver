@@ -1,6 +1,6 @@
 import express from 'express';
 import { parcelANDtransportAuth } from '../middleware/OGauth.js';
-import { acceptBikeParcelOrder, driverArrivedUpdate, getAcceptedBikeParcelOrder, getNearbyPendingOrders, getPickedUpOrder, parcelandtransportFCMtoken, 
+import { acceptBikeParcelOrder, driverArrivedUpdate, getAcceptedBikeParcelOrder, getArrivedOrder, getNearbyPendingOrders, getPickedUpOrder, parcelandtransportFCMtoken, 
          parcelBoyIsOnline, 
          parceldashboard, 
          ReassignParcelOrder, 
@@ -25,7 +25,7 @@ router.route("/partner/orders/driverArrived/:orderId").put(parcelANDtransportAut
 router.route("/partner/orders/Reassign/:orderId").put(parcelANDtransportAuth, ReassignParcelOrder);
 
 
-
+router.route("/partner/orders/Arrived").get(parcelANDtransportAuth, getArrivedOrder );
 router.route("/partner/orders/verify-pickup/:orderId").put(parcelANDtransportAuth, verifyPickupOtp);
 
 router.route("/partner/orders/picked-up").get(parcelANDtransportAuth, getPickedUpOrder);
