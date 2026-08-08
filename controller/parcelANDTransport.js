@@ -504,7 +504,7 @@ export const ReassignParcelOrder = async (req, res) => {
       req.parcelandtransport.id,
       {
         $set: {
-          available: true,
+         isAvailable : true,
         },
       }
     );
@@ -672,7 +672,7 @@ export const verifyDeliveryOtp = async (req, res) => {
       req.parcelandtransport.id,
       {
         $set: {
-          available: true,
+          isAvailable: true,
         },
       }
     );
