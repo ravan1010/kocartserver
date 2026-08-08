@@ -500,7 +500,7 @@ export const getActivePassengerAutoOrder = async (req, res) => {
     const userId = req.Atoken.id;
 
     const order = await BikeParcel_Order.findOne({
-      user: userId,
+     customer : userId,
       status: {
         $in: [
           "pending",
