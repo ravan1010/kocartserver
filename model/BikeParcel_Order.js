@@ -21,11 +21,11 @@ const orderSchema = new mongoose.Schema(
         default: null
     },
 
-    distance : Number,
+    distance : Number,  
     amount: Number,
 
     // Service
-    serviceType: {
+    serviceType: { 
         type: String,
         enum: [
             "bike_parcel",

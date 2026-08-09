@@ -395,8 +395,10 @@ export const acceptBikeParcelOrder = async (req, res) => {
 
 export const getAcceptedBikeParcelOrder = async (req, res) => {
   try {
+    const partner = await parcelANDtransportDB.findById(req.parcelandtransport.id)
     const order = await BikeParcel_Order.findOne({
-      driver: req.parcelandtransport.id,
+      driver: partner._id,
+      serviceType: partner.serviceType,
       status: {
         $in: [
           "driver_assigned",
@@ -430,11 +432,13 @@ export const getAcceptedBikeParcelOrder = async (req, res) => {
 export const driverArrivedUpdate = async (req, res) => {
   try {
     const { orderId } = req.params;
+    const partner = await parcelANDtransportDB.findById(req.parcelandtransport.id)
 
     const order = await BikeParcel_Order.findOneAndUpdate(
       {
         _id: orderId,
-        driver: req.parcelandtransport.id,
+        driver: partner._id,
+        serviceType: partner.serviceType,
         status: "driver_assigned",
       },
       {
@@ -473,11 +477,13 @@ export const driverArrivedUpdate = async (req, res) => {
 export const ReassignParcelOrder = async (req, res) => {
   try {
     const { orderId } = req.params;
+    const partner = await parcelANDtransportDB.findById(req.parcelandtransport.id)
 
     const order = await BikeParcel_Order.findOneAndUpdate(
       {
         _id: orderId,
-        driver: req.parcelandtransport.id,
+        driver: partner._id,
+        serviceType: partner.serviceType,
         status: "driver_assigned",
       },
       {
@@ -523,8 +529,11 @@ export const ReassignParcelOrder = async (req, res) => {
 
 export const getArrivedOrder = async (req, res) => {
   try {
+    const partner = await parcelANDtransportDB.findById(req.parcelandtransport.id)
+
     const order = await BikeParcel_Order.findOne({
-      driver: req.parcelandtransport.id,
+      driver: partner._id,
+      serviceType: partner.serviceType,
       status: {
         $in: [
           "driver_arrived",
@@ -560,9 +569,12 @@ export const verifyPickupOtp = async (req, res) => {
     const { orderId } = req.params;
     const { otp } = req.body;
 
+    const partner = await parcelANDtransportDB.findById(req.parcelandtransport.id)
+
     const order = await BikeParcel_Order.findOne({
       _id: orderId,
-      driver: req.parcelandtransport.id,
+      driver: partner._id,
+      serviceType: partner.serviceType,
       status: "driver_arrived",
     });
 
@@ -600,8 +612,12 @@ export const verifyPickupOtp = async (req, res) => {
 
 export const getPickedUpOrder = async (req, res) => {
   try {
+
+    const partner = await parcelANDtransportDB.findById(req.parcelandtransport.id)
+
     const order = await BikeParcel_Order.findOne({
-      driver: req.parcelandtransport.id,
+      driver: partner._id,
+      serviceType: partner.serviceType,
       status: "picked_up",
     })
       .populate("customer", "name Number")
@@ -633,9 +649,12 @@ export const verifyDeliveryOtp = async (req, res) => {
     const { orderId } = req.params;
     const { otp } = req.body;
 
+    const partner = await parcelANDtransportDB.findById(req.parcelandtransport.id)
+
     const order = await BikeParcel_Order.findOne({
       _id: orderId,
-      driver: req.parcelandtransport.id,
+      driver: partner._id,
+      serviceType: partner.serviceType,
       status: "picked_up",
     });
 
