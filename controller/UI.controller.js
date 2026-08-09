@@ -711,7 +711,8 @@ export const getPassengerAutoOrderStatus = async (req, res) => {
           otp: {
             pickupOtp: order.otp.pickup,
             deliveryOtp: order.otp.delivery,
-          }
+          },
+          goods: order.goods,
         },
       });
     }
