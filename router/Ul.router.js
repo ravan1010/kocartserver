@@ -79,6 +79,7 @@ router.route("/client/location").get(signat, getMyLocation)
 router.route('/parcel/distance').post(signat, distanceToParcel)
 router.route("/auto/active").get(signat, getActivePassengerAutoOrder );
 
+
 router.route("/createparcel").post(signat, createBikeParcelOrder)
 router.route("/bike-parcel/orders").get(signat,  getBikeParcelOrders);
 
@@ -87,6 +88,7 @@ router.route("/passenger-auto/order/:orderId").get(signat, getPassengerAutoOrder
 router.route("/passenger-auto/all/orders").get(signat, getpassengerAutoOrders)
 
 router.route("/goods-auto/order").post(signat, createGoodsAutoOrder)
+router.route("/goods-auto/order/:orderId").get(signat, getPassengerAutoOrderStatus)
 router.route("/goods-auto/all/orders").get(signat, getGoodsAutoOrders)
 
 

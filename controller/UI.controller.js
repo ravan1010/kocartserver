@@ -494,7 +494,7 @@ export const getBikeParcelOrders = async (req, res) => {
     });
   }
 };
-
+///active 
 export const getActivePassengerAutoOrder = async (req, res) => {
   try {
     const userId = req.Atoken.id;
@@ -636,6 +636,7 @@ export const createPassengerAutoOrder = async (req, res) => {
   }
 };
 
+//order status
 export const getPassengerAutoOrderStatus = async (req, res) => {
   try {
     const { orderId } = req.params;
@@ -698,8 +699,6 @@ export const getPassengerAutoOrderStatus = async (req, res) => {
           vehicleName: order.driver.vehicalName,
         };
       }
-
-
 
       return res.json({
         success: true,
@@ -844,6 +843,8 @@ export const createGoodsAutoOrder = async (req, res) => {
         });
     }
 };
+
+
 
 export const getGoodsAutoOrders = async (req, res) => {
   try {
