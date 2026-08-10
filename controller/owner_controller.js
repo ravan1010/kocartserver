@@ -122,16 +122,6 @@ export const marchentActivate = async (req, res) => {
   }
 }
 
-//delivery
-export const deliveryActivate = async (req, res) => {
-  try {
-    
-  } catch (error) {
-    
-  }
-}
-
-
 
 //post get, add, remove, home
 
@@ -893,5 +883,6 @@ export const getNearbyBikeParcelOrders = async (req, res) => {
     });
   }
 };
+
 
 
