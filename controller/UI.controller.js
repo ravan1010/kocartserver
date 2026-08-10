@@ -908,9 +908,93 @@ export const getMyLocation = async (req, res) => {
   }
 };
 
+export const getMonthlyAutoOrders = async (req, res) => {
+  try {
+    const { year, month } = req.query;
 
+    const currentDate = new Date();
 
+    const selectedYear =
+      Number(year) || currentDate.getFullYear();
 
+    const selectedMonth =
+      month !== undefined
+        ? Number(month)
+        : currentDate.getMonth() + 1;
+
+    // Validate month
+    if (selectedMonth < 1 || selectedMonth > 12) {
+      return res.status(400).json({
+        success: false,
+        message: "Month must be between 1 and 12",
+      });
+    }
+
+    // Start of selected month
+    const startDate = new Date(
+      selectedYear,
+      selectedMonth - 1,
+      1
+    );
+
+    // Start of next month
+    const endDate = new Date(
+      selectedYear,
+      selectedMonth,
+      1
+    );
+
+    const [passengerOrders, goodsOrders] =
+      await Promise.all([
+        BikeParcel_Order.find({
+          serviceType: "auto_passenger",
+          createdAt: {
+            $gte: startDate,
+            $lt: endDate,
+          },
+        })
+          .sort({ createdAt: -1 })
+          .lean(),
+
+        BikeParcel_Order.find({
+          serviceType: "goods_auto",
+          createdAt: {
+            $gte: startDate,
+            $lt: endDate,
+          },
+        })
+          .sort({ createdAt: -1 })
+          .lean(),
+      ]);
+
+    res.json({
+      success: true,
+
+      year: selectedYear,
+      month: selectedMonth,
+
+      passengerOrders,
+      goodsOrders,
+
+      passengerCount: passengerOrders.length,
+      goodsCount: goodsOrders.length,
+      totalOrders:
+        passengerOrders.length +
+        goodsOrders.length,
+    });
+
+  } catch (error) {
+    console.error(
+      "getMonthlyAutoOrders error:",
+      error
+    );
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch monthly auto orders",
+    });
+  }
+};
 
 
 
@@ -1090,9 +1174,15 @@ export const setting = async (req, res) => {
       });
     }
 
+    const order = await order_model.find({ userId: req.Atoken.id })
+    const autobooking = await BikeParcel_Order.find({customer: req.Atoken.id})
+
+
     res.json({
       number: user.email,
-      user
+      user,
+      order,
+      autobooking,
     });
   } catch (error) {
     console.log(error);
@@ -1235,8 +1325,6 @@ export const cartdata = async (req, res) => {
 
   res.json(cart || null);
 };
-
-
 
 
 export const updateQuantity = async (req, res) => {

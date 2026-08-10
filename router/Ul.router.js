@@ -1,7 +1,7 @@
 import express from 'express';
 const router = express.Router()
 import {signat, authLocation, appAuth} from '../middleware/OGauth.js';
-import { home, setting, address, explore, cartdata, removecart, buy, order, addtocart, calculateDeliveryFee, nearby, updateLocation, merchantProducts, clearCart, mart, getmartMerchantVariants, martmerchantProducts, serviceType, createBikeParcelOrder, distanceToParcel, getBikeParcelOrders, createPassengerAutoOrder, getpassengerAutoOrders, createGoodsAutoOrder, getGoodsAutoOrders, getMyLocation, getActivePassengerAutoOrder, getPassengerAutoOrderStatus } from '../controller/UI.controller.js';
+import { home, setting, address, explore, cartdata, removecart, buy, order, addtocart, calculateDeliveryFee, nearby, updateLocation, merchantProducts, clearCart, mart, getmartMerchantVariants, martmerchantProducts, serviceType, createBikeParcelOrder, distanceToParcel, getBikeParcelOrders, createPassengerAutoOrder, getpassengerAutoOrders, createGoodsAutoOrder, getGoodsAutoOrders, getMyLocation, getActivePassengerAutoOrder, getPassengerAutoOrderStatus, getMonthlyAutoOrders } from '../controller/UI.controller.js';
 // const event_post_model = require('../model/event_post_model.js')
 import user_model from '../model/user_model.js';
 import { appplaceCODOrder, checkout, placeCODOrder, verifyPayment } from '../controller/orderController.js';
@@ -90,6 +90,8 @@ router.route("/passenger-auto/all/orders").get(signat, getpassengerAutoOrders)
 router.route("/goods-auto/order").post(signat, createGoodsAutoOrder)
 router.route("/goods-auto/order/:orderId").get(signat, getPassengerAutoOrderStatus)
 router.route("/goods-auto/all/orders").get(signat, getGoodsAutoOrders)
+
+router.route("/auto/orders/monthly").get(signat, getMonthlyAutoOrders);
 
 
 
