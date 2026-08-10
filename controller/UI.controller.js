@@ -756,6 +756,9 @@ export const getpassengerAutoOrders = async (req, res) => {
   }
 };
 
+
+
+
 export const createGoodsAutoOrder = async (req, res) => {
     try {
 
@@ -824,8 +827,8 @@ export const createGoodsAutoOrder = async (req, res) => {
                 await sendPushNotification(
                     partner.fcmToken,
                     "🚚 New Goods Booking",
-                    `₹${amount}`,
-                    "https://parcelandtransport.kocart.online/"
+                    `${distance}km`,
+                    "https://parcelandtransport.kocart.online"
                 );
             })
         );
