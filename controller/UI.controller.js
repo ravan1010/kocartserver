@@ -1181,8 +1181,8 @@ export const setting = async (req, res) => {
     res.json({
       number: user.email,
       user,
-      order,
-      autobooking,
+      order: order.length,
+      autobooking: autobooking.length,
     });
   } catch (error) {
     console.log(error);
