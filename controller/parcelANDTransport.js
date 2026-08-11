@@ -47,6 +47,8 @@ const getDriverETA = async (driverLocation, pickupLocation) => {
   }
 };
 
+
+
 export const updateBikeParcelDriverLocation = async (req, res) => {
   try {
     const driverId = req.parcelandtransport.id;
@@ -328,8 +330,7 @@ export const acceptBikeParcelOrder = async (req, res) => {
       },
       {
         $set: {
-          driver: partnerId,
-          status: "driver_assigned",
+          status: "search_auto",
         },
       },
       {
@@ -353,18 +354,6 @@ export const acceptBikeParcelOrder = async (req, res) => {
         message: "Driver not found.",
       });
     }
-
-    // 3. Calculate ETA to pickup
-    const eta = await getDriverETA(
-      driver.currentLocation,
-      order.pickup.location
-    );
-
-    // 4. Save ETA and distance
-    order.driverEtaMinutes = eta?.etaMinutes || null;
-    order.driverDistanceKm = eta?.distanceKm || null;
-
-    await order.save();
 
     // 5. Make partner unavailable
     await parcelANDtransportDB.findByIdAndUpdate(
@@ -397,11 +386,10 @@ export const getAcceptedBikeParcelOrder = async (req, res) => {
   try {
     const partner = await parcelANDtransportDB.findById(req.parcelandtransport.id)
     const order = await BikeParcel_Order.findOne({
-      driver: partner._id,
       serviceType: partner.serviceType,
       status: {
         $in: [
-          "driver_assigned",
+          "search_auto",
         ],
       },
     })
@@ -428,6 +416,16 @@ export const getAcceptedBikeParcelOrder = async (req, res) => {
     });
   }
 };
+
+
+
+
+
+
+
+
+
+
 
 export const driverArrivedUpdate = async (req, res) => {
   try {
