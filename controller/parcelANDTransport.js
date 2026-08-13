@@ -547,8 +547,11 @@ export const submitDriverAmount = async (req, res) => {
 
     await order.save();
 
-    driver.onPending?.Pending = false;
-    driver.onPending.orderId = null;
+    // Driver has submitted quote
+    if (driver.onPending) {
+      driver.onPending.Pending = false;
+      driver.onPending.orderId = null;
+    }
 
     await driver.save();
 
