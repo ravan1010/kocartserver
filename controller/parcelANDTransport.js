@@ -420,10 +420,10 @@ export const getacceptedPendingOrders = async (req, res) => {
       });
     }
 
-    const orders = await BikeParcel_Order.find({
+    const order = await BikeParcel_Order.findOne({
       _id: orderId,
       status: "pending",
-      // serviceType: partner.serviceType,
+      serviceType: partner.serviceType,
       "pickup.location": {
         $near: {
           $geometry: {
@@ -437,8 +437,8 @@ export const getacceptedPendingOrders = async (req, res) => {
 
     return res.json({
       success: true,
-      count: orders.length,
-      orders,
+      count: order.length,
+      order,
     });
 
   } catch (err) {
