@@ -245,6 +245,8 @@ export const parcelBoyIsOnline = async (req, res) => {
 }
 
 
+
+////availble orders 
 export const getNearbyPendingOrders = async (req, res) => {
   try {
     const { serviceType } = req.params;
@@ -276,7 +278,7 @@ export const getNearbyPendingOrders = async (req, res) => {
     if (
       partner.isAvailable === false ||
       partner.isOnline === false ||
-      partner.activate === false
+      partner.activate === false 
     ) {
       return res.json({
         success: false,
@@ -284,6 +286,14 @@ export const getNearbyPendingOrders = async (req, res) => {
         orders: [],
       });
     }
+
+if (partner.onPending?.Pending === true) {
+  return res.json({
+    success: false,
+    message: "Partner is on another order",
+    orders: [],
+  });
+}
 
     const orders = await BikeParcel_Order.find({
       status: "pending",
@@ -316,34 +326,21 @@ export const getNearbyPendingOrders = async (req, res) => {
   }
 };
 
-
+//accespt order to auto driver
 export const acceptBikeParcelOrder = async (req, res) => {
   try {
     const { orderId } = req.params;
     const partnerId = req.parcelandtransport.id;
 
     // 1. Accept order
-    const order = await BikeParcel_Order.findOneAndUpdate(
-      {
-        _id: orderId,
-        status: "pending",
-      },
-      {
-        $set: {
-          status: "search_auto",
-        },
-      },
-      {
-        new: true,
-      }
-    );
+    const order = await BikeParcel_Order.findById(orderId);
 
-    if (!order) {
-      return res.status(400).json({
-        success: false,
-        message: "Order already accepted or not found.",
-      });
-    }
+    // if (!order) {
+    //   return res.status(400).json({
+    //     success: false,
+    //     message: "Order already accepted or not found.",
+    //   });
+    // }
 
     // 2. Get driver current location
     const driver = await parcelANDtransportDB.findById(partnerId);
@@ -360,7 +357,11 @@ export const acceptBikeParcelOrder = async (req, res) => {
       partnerId,
       {
         $set: {
-          isAvailable: false,
+          onPending:
+          {
+            orderId: orderId,
+            Pending: false,
+          }
         },
       }
     );
@@ -382,6 +383,92 @@ export const acceptBikeParcelOrder = async (req, res) => {
   }
 };
 
+//get accepted order to auto driver
+export const getacceptedPendingOrders = async (req, res) => {
+  try {
+  
+    const partner = await parcelANDtransportDB.findById(
+      req.parcelandtransport.id
+    );
+
+    if (!partner) {
+      return res.status(404).json({
+        success: false,
+        message: "Partner not found",
+      });
+    }
+
+    if (
+      partner.isAvailable === false ||
+      partner.isOnline === false ||
+      partner.activate === false || 
+    ) {
+      return res.json({
+        success: false,
+        message: "Partner is not available",
+        orders: [],
+      });
+    }
+
+     const orderId = partner.onPending?.orderId;
+
+    if (!orderId) {
+      return res.json({
+        success: true,
+        message: "No accepted order",
+        order: null,
+      });
+    }
+
+    const orders = await BikeParcel_Order.find({
+      _id: orderId,
+      status: "pending",
+      serviceType: partner.serviceType,
+      "pickup.location": {
+        $near: {
+          $geometry: {
+            type: "Point",
+            coordinates: partner.currentLocation.coordinates,
+          },
+          $maxDistance: 5000,
+        },
+      },
+    }).sort({ createdAt: -1 });
+
+    return res.json({
+      success: true,
+      serviceType,
+      count: orders.length,
+      orders,
+    });
+
+  } catch (err) {
+    console.error(err);
+
+    return res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 export const getAcceptedBikeParcelOrder = async (req, res) => {
   try {
     const partner = await parcelANDtransportDB.findById(req.parcelandtransport.id)
@@ -389,7 +476,7 @@ export const getAcceptedBikeParcelOrder = async (req, res) => {
       serviceType: partner.serviceType,
       status: {
         $in: [
-          "search_auto",
+          "driver_assigned",
         ],
       },
     })

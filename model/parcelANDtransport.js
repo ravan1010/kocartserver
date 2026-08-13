@@ -20,6 +20,17 @@ const ParceldeliveryANDtransportPartnerSchema = new mongoose.Schema({
         ],
         default: "bike_parcel"
     },
+    onPending:{
+        orderId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "parcelSchema",
+            default: null
+        },
+        Pending: {
+            type: Boolean,
+            default: false,
+        },
+    },
     activate: {
         type: Boolean,
         default: false

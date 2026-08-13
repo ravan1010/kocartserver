@@ -3,6 +3,7 @@ import { parcelANDtransportAuth } from '../middleware/OGauth.js';
 import { acceptBikeParcelOrder, 
          driverArrivedUpdate, 
          getAcceptedBikeParcelOrder, 
+         getacceptedPendingOrders, 
          getArrivedOrder, 
          getNearbyPendingOrders, 
          getPickedUpOrder, 
@@ -28,6 +29,8 @@ router.route("/update/location").put(parcelANDtransportAuth, updateBikeParcelDri
 
 router.route("/partner/orders/nearby/:serviceType").get(parcelANDtransportAuth, getNearbyPendingOrders);
 router.route("/partner/orders/accept/:orderId").put(parcelANDtransportAuth, acceptBikeParcelOrder)
+
+router.route("/parter/accepted/order").get(parcelANDtransportAuth, getacceptedPendingOrders)
 
 router.route("/partner/orders/current").get(parcelANDtransportAuth, getAcceptedBikeParcelOrder);
 router.route("/partner/orders/driverArrived/:orderId").put(parcelANDtransportAuth, driverArrivedUpdate);
