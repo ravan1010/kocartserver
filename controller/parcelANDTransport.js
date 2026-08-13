@@ -401,7 +401,7 @@ export const getacceptedPendingOrders = async (req, res) => {
     if (
       partner.isAvailable === false ||
       partner.isOnline === false ||
-      partner.activate === false || 
+      partner.activate === false 
     ) {
       return res.json({
         success: false,
