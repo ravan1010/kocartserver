@@ -11,6 +11,7 @@ import { acceptBikeParcelOrder,
          parcelBoyIsOnline, 
          parceldashboard, 
          ReassignParcelOrder, 
+         submitDriverAmount, 
          updateBikeParcelDriverLocation, 
          updatePartnerDetails, 
          verifyDeliveryOtp, 
@@ -31,6 +32,7 @@ router.route("/partner/orders/nearby/:serviceType").get(parcelANDtransportAuth, 
 router.route("/partner/orders/accept/:orderId").put(parcelANDtransportAuth, acceptBikeParcelOrder)
 
 router.route("/parter/accepted/order").get(parcelANDtransportAuth, getacceptedPendingOrders)
+router.route("/parter/accepted/order/amount/:orderId").post(parcelANDtransportAuth, submitDriverAmount)
 
 router.route("/partner/orders/current").get(parcelANDtransportAuth, getAcceptedBikeParcelOrder);
 router.route("/partner/orders/driverArrived/:orderId").put(parcelANDtransportAuth, driverArrivedUpdate);

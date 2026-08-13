@@ -452,6 +452,95 @@ export const getacceptedPendingOrders = async (req, res) => {
   }
 };
 
+//save amount and distance
+export const submitDriverAmount = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const { amount } = req.body;
+
+    const partnerId = req.parcelandtransport.id;
+
+    if (!amount || Number(amount) <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Valid amount is required",
+      });
+    }
+
+    const driver = await parcelANDtransportDB.findById(partnerId);
+
+    if (!driver) {
+      return res.status(404).json({
+        success: false,
+        message: "Driver not found",
+      });
+    }
+
+    const order = await BikeParcel_Order.findOne({
+      _id: orderId,
+    });
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Accepted order not found",
+      });
+    }
+
+    // Calculate driver → pickup ETA
+    const eta = await getDriverETA(
+      driver.currentLocation,
+      order.pickup.location
+    );
+
+    if (!eta) {
+      return res.status(500).json({
+        success: false,
+        message: "Unable to calculate driver ETA",
+      });
+    }
+
+    // Add driver's quote
+    const existingDriverIndex = order.selectDriver.findIndex(
+      (item) => item.driver.toString() === partnerId.toString()
+    );
+
+    if (existingDriverIndex >= 0) {
+      order.selectDriver[existingDriverIndex].amount = Number(amount);
+      order.selectDriver[existingDriverIndex].EtaMinutes =
+        eta.etaMinutes;
+      order.selectDriver[existingDriverIndex].DistanceKm =
+        eta.distanceKm;
+    } else {
+      order.selectDriver.push({
+        driver: partnerId,
+        amount: Number(amount),
+        EtaMinutes: eta.etaMinutes,
+        DistanceKm: eta.distanceKm,
+      });
+    }
+
+    // Also save current driver's ETA
+    order.driverEtaMinutes = eta.etaMinutes;
+    order.driverDistanceKm = eta.distanceKm;
+
+    await order.save();
+    return res.json({
+      success: true,
+      message: "Amount submitted successfully",
+      order,
+      eta,
+    });
+
+  } catch (err) {
+    console.error("submitDriverAmount:", err);
+
+    return res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
 
 
 

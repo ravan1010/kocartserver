@@ -25,6 +25,7 @@ const orderSchema = new mongoose.Schema(
                 driver: {
                     type: mongoose.Schema.Types.ObjectId,
                     ref: "ParcelANDTransport",
+                    default: null
                 },
                 amount: Number,
                 EtaMinutes: {
