@@ -1,6 +1,7 @@
 import express from 'express';
 import { parcelANDtransportAuth } from '../middleware/OGauth.js';
 import { acceptBikeParcelOrder, 
+         assignSelectedDriver, 
          driverArrivedUpdate, 
          getAcceptedBikeParcelOrder, 
          getacceptedPendingOrders, 
@@ -33,6 +34,8 @@ router.route("/partner/orders/accept/:orderId").put(parcelANDtransportAuth, acce
 
 router.route("/parter/accepted/order").get(parcelANDtransportAuth, getacceptedPendingOrders)
 router.route("/parter/accepted/order/amount/:orderId").post(parcelANDtransportAuth, submitDriverAmount)
+
+router.route("/partner/driver/assign").post(parcelANDtransportAuth, assignSelectedDriver)
 
 router.route("/partner/orders/current").get(parcelANDtransportAuth, getAcceptedBikeParcelOrder);
 router.route("/partner/orders/driverArrived/:orderId").put(parcelANDtransportAuth, driverArrivedUpdate);

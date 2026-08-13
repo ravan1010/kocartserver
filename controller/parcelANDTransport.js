@@ -450,6 +450,7 @@ export const getacceptedPendingOrders = async (req, res) => {
         message: "Amount already submitted. Waiting for customer confirmation.",
         loading: true,
         order,
+        driverId: partner._id,
         driverQuote: {
           amount: driverQuote.amount,
           etaMinutes: driverQuote.EtaMinutes,
@@ -464,6 +465,7 @@ export const getacceptedPendingOrders = async (req, res) => {
       type: "normal",
       message: "Order accepted. Please enter your amount.",
       loading: false,
+      driverId: partner._id,
       order,
     });
 
@@ -547,14 +549,6 @@ export const submitDriverAmount = async (req, res) => {
 
     await order.save();
 
-    // Driver has submitted quote
-    if (driver.onPending) {
-      driver.onPending.Pending = false;
-      driver.onPending.orderId = null;
-    }
-
-    await driver.save();
-
     return res.json({
       success: true,
       message: "Amount submitted successfully",
@@ -568,6 +562,130 @@ export const submitDriverAmount = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: err.message,
+    });
+  }
+};
+
+//driver assign
+export const assignSelectedDriver = async (req, res) => {
+  try {
+    const { orderId, driverId } = req.body;
+
+    // 1. Find order
+    const order = await BikeParcel_Order.findById(orderId);
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    // 2. Make sure selectDriver exists
+    if (!Array.isArray(order.selectDriver)) {
+      return res.status(400).json({
+        success: false,
+        message: "No drivers have submitted quotes",
+      });
+    }
+
+    // 3. Find selected driver's quote
+    const selectedDriver = order.selectDriver.find(
+      (item) =>
+        item.driver &&
+        item.driver.toString() === driverId.toString()
+    );
+
+    if (!selectedDriver) {
+      return res.status(404).json({
+        success: false,
+        message: "Selected driver quote not found",
+      });
+    }
+
+    // 4. Find selected driver
+    const driver = await parcelANDtransportDB.findById(driverId);
+
+    if (!driver) {
+      return res.status(404).json({
+        success: false,
+        message: "Driver not found",
+      });
+    }
+
+    // 5. Copy selected driver's quote into main order
+    order.driver = selectedDriver.driver;
+
+    order.amount = selectedDriver.amount;
+
+    order.driverEtaMinutes =
+      selectedDriver.EtaMinutes;
+
+    order.driverDistanceKm =
+      selectedDriver.DistanceKm;
+
+    // 6. Change order status
+    order.status = "driver_assigned";
+
+    // 7. Selected driver is now assigned
+    driver.isAvailable = false;
+
+    if (driver.onPending) {
+      driver.onPending.Pending = false;
+      driver.onPending.orderId = null;
+    }
+
+    await driver.save();
+
+    // 8. Find all other drivers who submitted quotes
+    const otherDriverIds = order.selectDriver
+      .filter(
+        (item) =>
+          item.driver &&
+          item.driver.toString() !== driverId.toString()
+      )
+      .map((item) => item.driver);
+
+    // 9. Clear pending state for other drivers
+    if (otherDriverIds.length > 0) {
+      await parcelANDtransportDB.updateMany(
+        {
+          _id: { $in: otherDriverIds },
+        },
+        {
+          $set: {
+            "onPending.orderId": null,
+            "onPending.Pending": false,
+          },
+        }
+      );
+    }
+
+    // 10. Save order
+    await order.save();
+
+    return res.json({
+      success: true,
+      message: "Driver assigned successfully",
+
+      orderId: order._id,
+
+      selectedDriverId: driverId,
+
+      driver: {
+        id: order.driver,
+        amount: order.amount,
+        EtaMinutes: order.driverEtaMinutes,
+        DistanceKm: order.driverDistanceKm,
+      },
+    });
+
+  } catch (error) {
+    console.error("assignSelectedDriver:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: error.message,
     });
   }
 };
