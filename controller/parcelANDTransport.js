@@ -545,11 +545,13 @@ export const submitDriverAmount = async (req, res) => {
       });
     }
 
-    // Also save current driver's ETA
-    order.driverEtaMinutes = eta.etaMinutes;
-    order.driverDistanceKm = eta.distanceKm;
-
     await order.save();
+
+    driver.onPending?.Pending = false;
+    driver.onPending.orderId = null;
+
+    await driver.save();
+
     return res.json({
       success: true,
       message: "Amount submitted successfully",
@@ -587,6 +589,7 @@ export const getAcceptedBikeParcelOrder = async (req, res) => {
   try {
     const partner = await parcelANDtransportDB.findById(req.parcelandtransport.id)
     const order = await BikeParcel_Order.findOne({
+      driver: partner._id,
       serviceType: partner.serviceType,
       status: {
         $in: [
