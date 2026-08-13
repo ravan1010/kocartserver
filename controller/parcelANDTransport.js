@@ -386,7 +386,6 @@ export const acceptBikeParcelOrder = async (req, res) => {3
 //get accepted order to auto driver
 export const getacceptedPendingOrders = async (req, res) => {
   try {
-  
     const partner = await parcelANDtransportDB.findById(
       req.parcelandtransport.id
     );
@@ -398,51 +397,78 @@ export const getacceptedPendingOrders = async (req, res) => {
       });
     }
 
+    // Driver must be online and activated
     if (
-      partner.isAvailable === false ||
-      partner.isOnline === false ||
-      partner.activate === false 
+      partner.isOnline !== true ||
+      partner.activate !== true ||
+      partner.isAvailable !== true
     ) {
       return res.json({
         success: false,
         message: "Partner is not available",
-        orders: [],
+        order: null,
       });
     }
 
-     const orderId = partner.onPending?.orderId;
+    // Get accepted order ID
+    const orderId = partner.onPending?.orderId;
 
     if (!orderId) {
-      return res.status(404).json({
-        success: false,
+      return res.json({
+        success: true,
         message: "No accepted order",
-        order: [],
+        order: null,
       });
     }
 
+    // Get order
     const order = await BikeParcel_Order.findOne({
       _id: orderId,
-      status: "pending",
       serviceType: partner.serviceType,
-      "pickup.location": {
-        $near: {
-          $geometry: {
-            type: "Point",
-            coordinates: partner.currentLocation.coordinates,
-          },
-          $maxDistance: 5000,
-        },
-      },
-    }).sort({ createdAt: -1 });
+      status: "pending",
+    });
 
+    if (!order) {
+      return res.json({
+        success: true,
+        message: "Order not found",
+        order: null,
+      });
+    }
+
+    // Check whether this driver already submitted amount
+    const driverQuote = order.selectDriver?.find(
+      (item) =>
+        item.driver?.toString() === partner._id.toString()
+    );
+
+    // Driver already submitted amount
+    if (driverQuote) {
+      return res.json({
+        success: true,
+        type: "confirm",
+        message: "Amount already submitted. Waiting for customer confirmation.",
+        loading: true,
+        order,
+        driverQuote: {
+          amount: driverQuote.amount,
+          etaMinutes: driverQuote.EtaMinutes,
+          distanceKm: driverQuote.DistanceKm,
+        },
+      });
+    }
+
+    // Driver has accepted but has not submitted amount
     return res.json({
       success: true,
-      count: order.length,
+      type: "normal",
+      message: "Order accepted. Please enter your amount.",
+      loading: false,
       order,
     });
 
   } catch (err) {
-    console.error(err);
+    console.error("getacceptedPendingOrders:", err);
 
     return res.status(500).json({
       success: false,
