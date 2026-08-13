@@ -360,7 +360,7 @@ export const acceptBikeParcelOrder = async (req, res) => {
           onPending:
           {
             orderId: orderId,
-            Pending: false,
+            Pending: true,
           }
         },
       }
