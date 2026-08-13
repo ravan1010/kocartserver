@@ -327,7 +327,7 @@ if (partner.onPending?.Pending === true) {
 };
 
 //accespt order to auto driver
-export const acceptBikeParcelOrder = async (req, res) => {
+export const acceptBikeParcelOrder = async (req, res) => {3
   try {
     const { orderId } = req.params;
     const partnerId = req.parcelandtransport.id;
