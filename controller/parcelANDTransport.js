@@ -413,7 +413,7 @@ export const getacceptedPendingOrders = async (req, res) => {
      const orderId = partner.onPending?.orderId;
 
     if (!orderId) {
-      return res.json({
+      return res.status(404).json({
         success: false,
         message: "No accepted order",
         order: [],
