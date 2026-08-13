@@ -414,9 +414,9 @@ export const getacceptedPendingOrders = async (req, res) => {
 
     if (!orderId) {
       return res.json({
-        success: true,
+        success: false,
         message: "No accepted order",
-        order: null,
+        order: [],
       });
     }
 
