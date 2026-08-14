@@ -845,7 +845,7 @@ if (exists) {
       {
         $set: {
           "onPending.orderId": null,
-          "onPending.pending": false,
+          "onPending.Pending": false,
         },
       }
     );
