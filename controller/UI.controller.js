@@ -714,6 +714,7 @@ export const getPassengerAutoOrderStatus = async (req, res) => {
             deliveryOtp: order.otp.delivery,
           },
           goods: order.goods,
+          amount: order.amount,
         },
       });
     }
