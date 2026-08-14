@@ -1,7 +1,8 @@
 import express from 'express';
-import { parcelANDtransportAuth } from '../middleware/OGauth.js';
+import { parcelANDtransportAuth, signat } from '../middleware/OGauth.js';
 import { acceptBikeParcelOrder, 
          assignSelectedDriver, 
+         cancelParcelOrder, 
          driverArrivedUpdate, 
          getAcceptedBikeParcelOrder, 
          getacceptedPendingOrders, 
@@ -52,6 +53,9 @@ router.route("/partner/orders/verify-delivery/:orderId").put(parcelANDtransportA
 router.get('/parcelandtransport/token', parcelANDtransportAuth, async (req, res) => {
     res.json({ user: req.parcelandtransport }); 
 });
+
+//user side
+router.route('/parcel/cancel-order/:orderId').post(signat, cancelParcelOrder)
 
 export default router;
 

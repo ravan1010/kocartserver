@@ -1042,3 +1042,77 @@ export const verifyDeliveryOtp = async (req, res) => {
   }
 };
 
+
+
+//user side
+export const cancelParcelOrder = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+
+    const order = await BikeParcel_Order.findById(orderId);
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    // Don't allow cancellation after completion/cancellation
+    if (
+      order.status === "completed" ||
+      order.status === "cancelled"
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Order cannot be cancelled",
+      });
+    }
+
+    /*
+     * Get all drivers who were selected/offered this order
+     */
+    const driverIds = (order.selectDriver || [])
+      .map((item) => item.driver)
+      .filter(Boolean);
+
+    /*
+     * Reset onPending for all those drivers
+     */
+    if (driverIds.length > 0) {
+      await parcelANDtransportDB.updateMany(
+        {
+          _id: { $in: driverIds },
+        },
+        {
+          $set: {
+            "onPending.orderId": null,
+            "onPending.pending": false,
+          },
+        }
+      );
+    }
+
+    /*
+     * Update order status
+     */
+    order.status = "cancelled";
+    order.driver = null;
+
+    await order.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Order cancelled successfully",
+      order,
+    });
+
+  } catch (err) {
+    console.error(err);
+
+    return res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
