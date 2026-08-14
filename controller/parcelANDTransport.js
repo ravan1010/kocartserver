@@ -997,10 +997,10 @@ export const verifyDeliveryOtp = async (req, res) => {
 
     // Update order
     order.status = "completed";
-    order.kocartAmount += 5;
+    order.kocartAmount += 49;
     order.deliveredAt = new Date(); // Optional
     await order.save();
-
+    
     // Make partner available again
     await parcelANDtransportDB.findByIdAndUpdate(
       req.parcelandtransport.id,
