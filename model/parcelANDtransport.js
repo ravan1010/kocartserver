@@ -25,7 +25,7 @@ const ParceldeliveryANDtransportPartnerSchema = new mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: "parcelSchema",
             default: null
-        },
+        },  
         Pending: {
             type: Boolean,
             default: false,

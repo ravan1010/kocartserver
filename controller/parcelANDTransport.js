@@ -1087,7 +1087,7 @@ export const cancelParcelOrder = async (req, res) => {
         {
           $set: {
             "onPending.orderId": null,
-            "onPending.pending": false,
+            "onPending.Pending": false,
           },
         }
       );
