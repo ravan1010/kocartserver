@@ -800,50 +800,59 @@ export const driverArrivedUpdate = async (req, res) => {
 export const ReassignParcelOrder = async (req, res) => {
   try {
     const { orderId } = req.params;
-    const partner = await parcelANDtransportDB.findById(req.parcelandtransport.id)
 
-    const order = await BikeParcel_Order.findOneAndUpdate(
-      {
-        _id: orderId,
-        driver: partner._id,
-        serviceType: partner.serviceType,
-        status: "driver_assigned",
-      },
-      {
-        $set: {
-          status: "pending",
-          driver: null,
-        },
-      },
-      { new: true }
+    const partner = await parcelANDtransportDB.findById(
+      req.parcelandtransport.id
     );
+
+    if (!partner) {
+      return res.status(404).json({
+        success: false,
+        message: "Partner not found.",
+      });
+    }
+
+    // Find order first
+    const order = await BikeParcel_Order.findOne({
+      _id: orderId,
+    });
 
     if (!order) {
       return res.status(400).json({
         success: false,
-        message: "Order not found or cannot be cancelled.",
+        message: "Order not found or cannot be reassigned.",
       });
     }
 
-    // Make partner available again
+    // Remove this partner from selectDriver
+    order.selectDriver = (order.selectDriver || []).filter(
+      (driver) =>
+        String(driver.driver) !== String(partner._id)
+    );
+
+    await order.save();
+
+    // Make partner available + clear pending order
     await parcelANDtransportDB.findByIdAndUpdate(
-      req.parcelandtransport.id,
+      partner._id,
       {
         $set: {
-         isAvailable : true,
+          "onPending.orderId": null,
+          "onPending.pending": false,
         },
       }
     );
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
-      message: "Order cancelled successfully.",
+      message: "Order reassigned successfully.",
       order,
     });
-  } catch (err) {
-    console.log(err);
 
-    res.status(500).json({
+  } catch (err) {
+    console.error(err);
+
+    return res.status(500).json({
       success: false,
       message: err.message,
     });
