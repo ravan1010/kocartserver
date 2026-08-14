@@ -825,10 +825,17 @@ export const ReassignParcelOrder = async (req, res) => {
     }
 
     // Remove this partner from selectDriver
-    order.selectDriver = (order.selectDriver || []).filter(
-      (driver) =>
-        String(driver.driver) !== String(partner._id)
-    );
+    const exists = order.selectDriver?.some(
+  (driver) =>
+    String(driver.driver) === String(partner._id)
+);
+
+if (exists) {
+  order.selectDriver = order.selectDriver.filter(
+    (driver) =>
+      String(driver.driver) !== String(partner._id)
+  );
+}
 
     await order.save();
 
