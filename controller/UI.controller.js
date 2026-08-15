@@ -1086,6 +1086,8 @@ export const nearby = async (req, res) => {
       },
     });
 
+
+
     // If no merchants found
     if (merchantIds.length === 0) {
       return res.json({
@@ -1119,6 +1121,8 @@ export const nearby = async (req, res) => {
       grocery,
       restaurant,
       branch,
+      update: 0,
+      link: "kocart.online"
     });
   } catch (error) {
     console.error("Nearby error:", error);
