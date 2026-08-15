@@ -22,6 +22,8 @@ router.route('/explore').get( signat, explore )
 //web
 router.route('/setting').get( signat, setting )
 
+//
+router.route('/nearby').get(appAuth, nearby)
 //app
 router.route('/app/setting').get( appAuth, setting )
 

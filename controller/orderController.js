@@ -274,7 +274,7 @@ export const appplaceCODOrder = async (req, res) => {
   try {
     const { items, addressId, delivery, Number, totalAmount, distance  } = req.body;
 
-    const platform = 6;
+    const platform = 6;    
 
     const id = req.Atoken.id;
     const user = await user_model.findById(id);
