@@ -1121,7 +1121,7 @@ export const nearby = async (req, res) => {
       grocery,
       restaurant,
       branch,
-      update: 0,
+      update: 1,
       link: "kocart.online"
     });
   } catch (error) {
