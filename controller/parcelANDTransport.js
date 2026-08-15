@@ -1013,19 +1013,22 @@ export const verifyDeliveryOtp = async (req, res) => {
 
     // Update order
     order.status = "completed";
-    order.kocartAmount += 49;
     order.deliveredAt = new Date(); // Optional
     await order.save();
     
     // Make partner available again
     await parcelANDtransportDB.findByIdAndUpdate(
-      req.parcelandtransport.id,
-      {
-        $set: {
-          isAvailable: true,
-        },
-      }
-    );
+  req.parcelandtransport.id,
+  {
+    $set: {
+      isAvailable: true,
+    },
+    $inc: {
+      kocartAmount: 39,
+    },
+  },
+  { new: true }
+);
 
     res.status(200).json({
       success: true,
