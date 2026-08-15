@@ -83,7 +83,11 @@ router.route("/services").get(signat, serviceType)
 //app
 router.route("/app/services").get(appAuth, serviceType)
 
+//wweb
 router.route("/client/location").get(signat, getMyLocation)
+//app
+router.route("/app/client/location").get(appAuth, getMyLocation)
+
 router.route('/parcel/distance').post(signat, distanceToParcel)
 router.route("/auto/active").get(signat, getActivePassengerAutoOrder );
 
