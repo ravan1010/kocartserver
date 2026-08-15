@@ -335,7 +335,7 @@ export const serviceType = async (req, res) => {
       location: {
         $near: {
           $geometry: user.location,
-          $maxDistance: 6000,
+          $maxDistance: 4000,
         },
       },
     });
