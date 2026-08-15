@@ -11,7 +11,11 @@ router.route('/liveupdate').post(liveupdate)
  
 router.route('/home').get( signat, home );
 router.route('/mart').get(signat, mart);
+//web
 router.put("/user/location", signat, updateLocation);
+//app
+router.put("/app/user/location", appAuth, updateLocation);
+
 router.get("/merchant/:id", signat, merchantProducts);
 
 router.get('/mart/variants/:id', signat, getmartMerchantVariants)
@@ -74,9 +78,11 @@ router.route("/order").get(signat, order )
 //app
 router.route("/app/order").get(appAuth, order )
 
-
-
+//web
 router.route("/services").get(signat, serviceType)
+//app
+router.route("/app/services").get(appAuth, serviceType)
+
 router.route("/client/location").get(signat, getMyLocation)
 router.route('/parcel/distance').post(signat, distanceToParcel)
 router.route("/auto/active").get(signat, getActivePassengerAutoOrder );
