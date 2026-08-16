@@ -708,34 +708,41 @@ export const assignSelectedDriver = async (req, res) => {
 
 export const getAcceptedBikeParcelOrder = async (req, res) => {
   try {
-    const partner = await parcelANDtransportDB.findById(req.parcelandtransport.id)
+    const partnerId = req.parcelandtransport.id;
+
+    const partner = await parcelANDtransportDB.findById(partnerId);
+
+    if (!partner) {
+      return res.status(404).json({
+        success: false,
+        message: "Partner not found",
+      });
+    }
+
     const order = await BikeParcel_Order.findOne({
       driver: partner._id,
       serviceType: partner.serviceType,
-      status: {
-        $in: [
-          "driver_assigned",
-        ],
-      },
+      status: "driver_assigned",
     })
       .populate("customer", "name Number")
       .sort({ updatedAt: -1 });
 
     if (!order) {
-      return res.status(404).json({
-        success: false,
-        message: "No active order found.",
+      return res.status(200).json({
+        success: true,
+        order: null,
       });
     }
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       order,
     });
-  } catch (err) {
-    console.log(err);
 
-    res.status(500).json({
+  } catch (err) {
+    console.error("GET CURRENT ORDER ERROR:", err);
+
+    return res.status(500).json({
       success: false,
       message: err.message,
     });
