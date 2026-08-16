@@ -721,7 +721,7 @@ export const getAcceptedBikeParcelOrder = async (req, res) => {
 
     const order = await BikeParcel_Order.findOne({
       driver: partner._id,
-      // serviceType: partner.serviceType,
+      serviceType: partner.serviceType,
       status: "driver_assigned",
     })
       .populate("customer", "name Number")
