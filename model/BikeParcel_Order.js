@@ -20,7 +20,7 @@ const orderSchema = new mongoose.Schema(
             ref: "ParcelANDTransport",
             default: null
         },
-        
+
         selectDriver: [
             {
                 driver: {
@@ -242,6 +242,10 @@ const orderSchema = new mongoose.Schema(
             default: null,
         },
 
+        deliveredAt: {
+            type: Date,
+            default: null,
+        },
     },
     {
         timestamps: true
