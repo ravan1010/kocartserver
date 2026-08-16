@@ -1015,6 +1015,9 @@ export const verifyDeliveryOtp = async (req, res) => {
     order.status = "completed";
     order.deliveredAt = new Date(); // Optional
     await order.save();
+
+    let commissionRate = 0.05;
+    const platformCommission = order.amount * commissionRate;
     
     // Make partner available again
     await parcelANDtransportDB.findByIdAndUpdate(
@@ -1024,7 +1027,7 @@ export const verifyDeliveryOtp = async (req, res) => {
       isAvailable: true,
     },
     $inc: {
-      kocartAmount: 39,
+      kocartAmount: platformCommission,
     },
   },
   { new: true }
