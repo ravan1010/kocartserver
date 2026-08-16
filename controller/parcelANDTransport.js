@@ -252,7 +252,7 @@ export const getNearbyPendingOrders = async (req, res) => {
     const { serviceType } = req.params;
 
     const allowedServiceTypes = [
-      "bike_parcel",
+      "4_wheel_goods_auto",
       "auto_passenger",
       "goods_auto",
     ];
