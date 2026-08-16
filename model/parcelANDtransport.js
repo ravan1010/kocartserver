@@ -14,11 +14,11 @@ const ParceldeliveryANDtransportPartnerSchema = new mongoose.Schema({
     serviceType: {
         type: String,
         enum: [
-            "bike_parcel",
             "goods_auto",
+            "4_wheel_goods_auto",
             "auto_passenger",
         ],
-        default: "bike_parcel"
+        default: "goods_auto"
     },
     onPending:{
         orderId: {
