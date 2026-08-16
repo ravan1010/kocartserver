@@ -110,7 +110,11 @@ router.route("/goods-auto/order").post(signat, createGoodsAutoOrder)
 //app
 router.route("/app/goods-auto/order").post(appAuth, createGoodsAutoOrder)
 
+//web
 router.route("/goods-auto/order/:orderId").get(signat, getPassengerAutoOrderStatus)
+//app
+router.route("/app/goods-auto/order/:orderId").get(appAuth, getPassengerAutoOrderStatus)
+
 router.route("/goods-auto/all/orders").get(signat, getGoodsAutoOrders)
 
 router.route("/auto/orders/monthly").get(signat, getMonthlyAutoOrders);
