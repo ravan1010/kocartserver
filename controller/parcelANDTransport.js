@@ -732,7 +732,9 @@ export const getAcceptedBikeParcelOrder = async (req, res) => {
         success: true,
         order: order,
         partner: partner._id,
-        
+        id: req.parcelandtransport.id,
+        p: partner,
+
       });
     }
 
