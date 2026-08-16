@@ -763,7 +763,6 @@ export const getpassengerAutoOrders = async (req, res) => {
 
 export const createGoodsAutoOrder = async (req, res) => {
     try {
-
         const {
             pickup,
             drop,
@@ -774,14 +773,45 @@ export const createGoodsAutoOrder = async (req, res) => {
             type,
         } = req.body;
 
+        console.log("GOODS AUTO BODY:", req.body);
+
+        // Validate pickup coordinates
+        if (
+            !pickup?.location?.coordinates ||
+            !Array.isArray(pickup.location.coordinates) ||
+            pickup.location.coordinates.length !== 2
+        ) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid pickup location coordinates",
+            });
+        }
+
+        const coordinates = pickup.location.coordinates;
+
+        // Make sure coordinates are numbers
+        if (
+            typeof coordinates[0] !== "number" ||
+            typeof coordinates[1] !== "number"
+        ) {
+            return res.status(400).json({
+                success: false,
+                message: "Pickup coordinates must be numbers",
+            });
+        }
+
         const orderId =
             "GA" +
             Date.now() +
             Math.floor(Math.random() * 1000);
 
-        const pickupOtp = Math.floor(1000 + Math.random() * 9000);
-        const deliveryOtp = Math.floor(1000 + Math.random() * 9000);
+        const pickupOtp =
+            Math.floor(1000 + Math.random() * 9000);
 
+        const deliveryOtp =
+            Math.floor(1000 + Math.random() * 9000);
+
+        // Create order
         const order = await BikeParcel_Order.create({
             orderId,
             customer: req.Atoken.id,
@@ -805,37 +835,50 @@ export const createGoodsAutoOrder = async (req, res) => {
             status: "pending",
         });
 
-        // Find nearby Goods Auto partners
+        console.log("ORDER CREATED:", order._id);
 
+        // Find nearby goods auto partners
         const partners = await parcelANDtransport.find({
             serviceType: type,
             isOnline: true,
+
             currentLocation: {
                 $near: {
                     $geometry: {
                         type: "Point",
-                        coordinates: pickup.location.coordinates,
+                        coordinates: coordinates,
                     },
                     $maxDistance: 5000,
                 },
             },
         });
 
-        // Send notification
+        console.log(
+            "NEARBY PARTNERS:",
+            partners.length
+        );
 
+        // Send notification
         await Promise.all(
             partners.map(async (partner) => {
                 if (!partner.fcmToken) return;
 
-                await sendPushNotification(
-                    partner.fcmToken,
-                    "🚚 New Goods Booking",
-                    `${distance}km`,
-                    "https://parcelandtransport.kocart.online"
-                );
+                try {
+                    await sendPushNotification(
+                        partner.fcmToken,
+                        "🚚 New Goods Booking",
+                        `${distance} km`,
+                        "https://parcelandtransport.kocart.online"
+                    );
+                } catch (notificationError) {
+                    console.error(
+                        "Notification failed:",
+                        partner._id,
+                        notificationError.message
+                    );
+                }
             })
         );
-
 
         return res.status(201).json({
             success: true,
@@ -843,6 +886,10 @@ export const createGoodsAutoOrder = async (req, res) => {
         });
 
     } catch (err) {
+        console.error(
+            "CREATE GOODS AUTO ORDER ERROR:",
+            err
+        );
 
         return res.status(500).json({
             success: false,
