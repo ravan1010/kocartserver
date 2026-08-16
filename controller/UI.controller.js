@@ -808,7 +808,7 @@ export const createGoodsAutoOrder = async (req, res) => {
         // Find nearby Goods Auto partners
 
         const partners = await parcelANDtransport.find({
-            serviceType: "goods_auto",
+            serviceType: type,
             isOnline: true,
             currentLocation: {
                 $near: {
@@ -857,7 +857,6 @@ export const getGoodsAutoOrders = async (req, res) => {
   try {
     const orders = await BikeParcel_Order.find({
       customer: req.Atoken.id,
-      serviceType: "goods_auto",
     })
       .sort({ createdAt: -1 })
       .populate("driver", "name Number vehicalName vehicalNO")
