@@ -666,6 +666,7 @@ export const getPassengerAutoOrderStatus = async (req, res) => {
         success: true,
         order: null,
         status: order.status,
+        redirect: true,
       });
     }
 

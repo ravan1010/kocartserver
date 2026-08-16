@@ -117,7 +117,10 @@ router.route("/app/goods-auto/order/:orderId").get(appAuth, getPassengerAutoOrde
 
 router.route("/goods-auto/all/orders").get(signat, getGoodsAutoOrders)
 
+//web
 router.route("/auto/orders/monthly").get(signat, getMonthlyAutoOrders);
+//app
+router.route("/app/auto/orders/monthly").get(appAuth, getMonthlyAutoOrders);
 
 
 
