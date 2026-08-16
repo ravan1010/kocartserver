@@ -335,12 +335,12 @@ export const acceptBikeParcelOrder = async (req, res) => {3
     // 1. Accept order
     const order = await BikeParcel_Order.findById(orderId);
 
-    // if (!order) {
-    //   return res.status(400).json({
-    //     success: false,
-    //     message: "Order already accepted or not found.",
-    //   });
-    // }
+    if (!order) {
+      return res.status(400).json({
+        success: false,
+        message: "Order already accepted or not found.",
+      });
+    }
 
     // 2. Get driver current location
     const driver = await parcelANDtransportDB.findById(partnerId);

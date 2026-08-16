@@ -770,7 +770,8 @@ export const createGoodsAutoOrder = async (req, res) => {
             goods,
             payment,
             distance,
-            amount
+            amount,
+            type,
         } = req.body;
 
         const orderId =
@@ -785,7 +786,7 @@ export const createGoodsAutoOrder = async (req, res) => {
             orderId,
             customer: req.Atoken.id,
 
-            serviceType: "goods_auto",
+            serviceType: type,
 
             pickup,
             drop,
