@@ -731,6 +731,8 @@ export const getAcceptedBikeParcelOrder = async (req, res) => {
       return res.status(200).json({
         success: true,
         order: order,
+        partner: partner._id,
+        
       });
     }
 
