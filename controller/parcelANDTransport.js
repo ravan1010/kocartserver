@@ -431,6 +431,7 @@ export const getacceptedPendingOrders = async (req, res) => {
     if (!order) {
       return res.status(200).json({
         success: true,
+        redirect: true,
         message: "Order not found",
         order: null,
         partner: partner.isAvailable,
