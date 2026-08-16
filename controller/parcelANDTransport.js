@@ -429,10 +429,12 @@ export const getacceptedPendingOrders = async (req, res) => {
     });
 
     if (!order) {
-      return res.json({
+      return res.status(200).json({
         success: true,
         message: "Order not found",
         order: null,
+        partner,
+        
       });
     }
 
