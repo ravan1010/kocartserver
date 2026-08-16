@@ -51,7 +51,8 @@ const orderSchema = new mongoose.Schema(
             enum: [
                 "bike_parcel",
                 "goods_auto",
-                "auto_passenger"
+                "auto_passenger",
+                "4_wheel_goods_auto",            
             ],
             required: true
         },
