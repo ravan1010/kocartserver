@@ -730,7 +730,7 @@ export const getAcceptedBikeParcelOrder = async (req, res) => {
     if (!order) {
       return res.status(200).json({
         success: true,
-        order: null,
+        order: order,
       });
     }
 
