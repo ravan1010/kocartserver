@@ -434,7 +434,6 @@ export const getacceptedPendingOrders = async (req, res) => {
         message: "Order not found",
         order: null,
         partner: partner.isAvailable,
-
       });
     }
 
