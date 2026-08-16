@@ -87,9 +87,15 @@ router.route("/app/services").get(appAuth, serviceType)
 router.route("/client/location").get(signat, getMyLocation)
 //app
 router.route("/app/client/location").get(appAuth, getMyLocation)
-
+//web
 router.route('/parcel/distance').post(signat, distanceToParcel)   
-router.route("/auto/active").get(signat, getActivePassengerAutoOrder );
+//app
+router.route('/app/parcel/distance').post(appAuth, distanceToParcel)   
+
+///web
+router.route("/auto/active").get(signat, getActivePassengerAutoOrder ); 
+//app
+router.route("/app/auto/active").get(appAuth, getActivePassengerAutoOrder ); 
 
 
 router.route("/createparcel").post(signat, createBikeParcelOrder)
@@ -99,7 +105,11 @@ router.route("/passenger-auto/order").post(signat, createPassengerAutoOrder)
 router.route("/passenger-auto/order/:orderId").get(signat, getPassengerAutoOrderStatus)
 router.route("/passenger-auto/all/orders").get(signat, getpassengerAutoOrders)
 
+//web
 router.route("/goods-auto/order").post(signat, createGoodsAutoOrder)
+//app
+router.route("/app/goods-auto/order").post(appAuth, createGoodsAutoOrder)
+
 router.route("/goods-auto/order/:orderId").get(signat, getPassengerAutoOrderStatus)
 router.route("/goods-auto/all/orders").get(signat, getGoodsAutoOrders)
 

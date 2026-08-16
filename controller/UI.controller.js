@@ -496,7 +496,7 @@ export const getBikeParcelOrders = async (req, res) => {
 };
 ///active 
 export const getActivePassengerAutoOrder = async (req, res) => {
-  try {
+  // try {
     const userId = req.Atoken.id;
 
     const order = await BikeParcel_Order.findOne({
@@ -515,12 +515,12 @@ export const getActivePassengerAutoOrder = async (req, res) => {
       success: true,
       order: order || null,
     });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
+  // } catch (error) {
+  //   res.status(500).json({
+  //     success: false,
+  //     message: error.message,
+  //   });
+  // }
 };
 
 export const createPassengerAutoOrder = async (req, res) => {
