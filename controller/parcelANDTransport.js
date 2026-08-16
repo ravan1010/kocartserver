@@ -879,7 +879,10 @@ if (exists) {
 
 export const getArrivedOrder = async (req, res) => {
   try {
-    const partner = await parcelANDtransportDB.findById(req.parcelandtransport.id)
+
+        const partnerId = req.parcelandtransport.id;
+
+    const partner = await parcelANDtransportDB.findById(partnerId)
 
     const order = await BikeParcel_Order.findOne({
       driver: partner._id,
