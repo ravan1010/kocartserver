@@ -345,6 +345,8 @@ export const serviceType = async (req, res) => {
       city: user.city || "",
       serviceTypes,
       category,
+      update: 1,
+      link: "kocart.online"
     });
   } catch (err) {
     console.error(err);
