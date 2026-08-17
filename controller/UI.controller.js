@@ -346,7 +346,7 @@ export const serviceType = async (req, res) => {
       serviceTypes,
       category,
       update: 1,
-      link: "kocart.online"
+      link: "https://www.kocart.online"
     });
   } catch (err) {
     console.error(err);
