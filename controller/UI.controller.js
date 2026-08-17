@@ -345,7 +345,7 @@ export const serviceType = async (req, res) => {
       city: user.city || "",
       serviceTypes,
       category,
-      update: 1,
+      update: 0,
       link: "https://www.kocart.online"
     });
   } catch (err) {
