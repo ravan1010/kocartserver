@@ -988,18 +988,19 @@ export const getMyLocation = async (req, res) => {
   }
 };
 
-export const getMonthlyAutoOrders = async (req, res) => {
+export const getMonthlyGoodsAutoOrders = async (req, res) => {
   try {
     const { year, month } = req.query;
+
     const id = req.Atoken.id;
 
-    const user = await usermodel.findById(id)
+    const user = await usermodel.findById(id);
 
-    if(!user){
+    if (!user) {
       return res.status(404).json({
         success: false,
-        massage: "not found"
-      })
+        message: "User not found",
+      });
     }
 
     const currentDate = new Date();
@@ -1012,56 +1013,69 @@ export const getMonthlyAutoOrders = async (req, res) => {
         ? Number(month)
         : currentDate.getMonth() + 1;
 
-    // Validate month
-    if (selectedMonth < 1 || selectedMonth > 12) {
+    if (
+      selectedMonth < 1 ||
+      selectedMonth > 12
+    ) {
       return res.status(400).json({
         success: false,
         message: "Month must be between 1 and 12",
       });
     }
 
-    // Start of selected month
     const startDate = new Date(
       selectedYear,
       selectedMonth - 1,
       1
     );
 
-    // Start of next month
     const endDate = new Date(
       selectedYear,
       selectedMonth,
       1
     );
 
-    const goodsOrders = await BikeParcel_Order.find({
-          customer: user._id})
-          .sort({ createdAt: -1 })
-          .lean()
+    const goodsOrders =
+      await BikeParcel_Order.find({
+        customer: user._id,
 
-    res.json({
+        serviceType: {
+          $in: [
+            "goods_auto",
+            "4_wheel_goods_auto",
+          ],
+        },
+
+        createdAt: {
+          $gte: startDate,
+          $lt: endDate,
+        },
+      })
+        .sort({ createdAt: -1 })
+        .lean();
+
+    return res.json({
       success: true,
 
       year: selectedYear,
       month: selectedMonth,
 
       goodsOrders,
-      user,
 
       goodsCount: goodsOrders.length,
-      totalOrders:
-        goodsOrders.length,
+
+      totalOrders: goodsOrders.length,
     });
 
   } catch (error) {
     console.error(
-      "getMonthlyAutoOrders error:",
+      "getMonthlyGoodsAutoOrders error:",
       error
     );
 
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
-      message: "Failed to fetch monthly auto orders",
+      message: "Failed to fetch monthly goods auto orders",
     });
   }
 };
