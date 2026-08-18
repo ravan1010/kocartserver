@@ -1035,12 +1035,7 @@ export const getMonthlyAutoOrders = async (req, res) => {
     );
 
     const goodsOrders = await BikeParcel_Order.find({
-          customer: user._id,
-          createdAt: {
-            $gte: startDate,
-            $lt: endDate,
-          },
-        })
+          customer: user._id})
           .sort({ createdAt: -1 })
           .lean()
 
@@ -1051,6 +1046,7 @@ export const getMonthlyAutoOrders = async (req, res) => {
       month: selectedMonth,
 
       goodsOrders,
+      user,
 
       goodsCount: goodsOrders.length,
       totalOrders:
