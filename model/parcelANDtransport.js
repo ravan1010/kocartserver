@@ -61,7 +61,7 @@ const ParceldeliveryANDtransportPartnerSchema = new mongoose.Schema({
         type: {
             type: String,
             enum: ["Point"],
-            default: "Point"
+            default: "Point"  
         },
         coordinates: {
             type: [Number],
@@ -71,9 +71,5 @@ const ParceldeliveryANDtransportPartnerSchema = new mongoose.Schema({
 });
 
 ParceldeliveryANDtransportPartnerSchema.index({ currentLocation: "2dsphere" });
-
-// deliveryBoySchema.index({
-//   currentLocation: "2dsphere"
-// });
 
 export default new mongoose.model("ParcelANDTransport", ParceldeliveryANDtransportPartnerSchema);

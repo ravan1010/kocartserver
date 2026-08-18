@@ -306,9 +306,11 @@ export const serviceType = async (req, res) => {
       });
     }
 
+    // Validate user location
     if (
       !user.location ||
-      !user.location.coordinates ||
+      user.location.type !== "Point" ||
+      !Array.isArray(user.location.coordinates) ||
       user.location.coordinates.length !== 2
     ) {
       return res.status(404).json({
@@ -317,39 +319,59 @@ export const serviceType = async (req, res) => {
       });
     }
 
-    const serviceTypes = await parcelANDtransport.distinct("serviceType", {
-      activate: true,
-      isOnline: true,
-      isAvailable: true,
-      currentLocation: {
-        $near: {
-          $geometry: user.location,
-          $maxDistance: 5000,
-        },
-      },
-    });
+    // Find available transport services
+    const serviceTypes = await parcelANDtransport.distinct(
+      "serviceType",
+      {
+        activate: true,
+        isOnline: true,
+        isAvailable: true,
 
-    const category = await admin_model.distinct("category", {
-      active: true,
-      open: true,
-      location: {
-        $near: {
-          $geometry: user.location,
-          $maxDistance: 4000,
+        currentLocation: {
+          $near: {
+            $geometry: {
+              type: "Point",
+              coordinates: user.location.coordinates,
+            },
+            $maxDistance: 5000,
+          },
         },
-      },
-    });
+      }
+    );
+
+    // Find available shop categories
+    const category = await admin_model.distinct(
+      "category",
+      {
+        active: true,
+        open: true,
+
+        location: {
+          $near: {
+            $geometry: {
+              type: "Point",
+              coordinates: user.location.coordinates,
+            },
+            $maxDistance: 4000,
+          },
+        },
+      }
+    );
 
     return res.status(200).json({
       success: true,
+
       city: user.city || "",
+
       serviceTypes,
       category,
+
       update: 0,
-      link: "https://www.kocart.online"
+      link: "https://www.kocart.online",
     });
+
   } catch (err) {
-    console.error(err);
+    console.error("serviceType error:", err);
 
     return res.status(500).json({
       success: false,
