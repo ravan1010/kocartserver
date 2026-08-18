@@ -580,7 +580,9 @@ export const assignSelectedDriver = async (req, res) => {
       return res.status(404).json({
         success: false,
         message: "Order not found",
-        order
+        order,
+        orderId,
+        driverId
       });
     }
 
