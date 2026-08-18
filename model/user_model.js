@@ -31,7 +31,7 @@ const UserSchema =  mongoose.Schema({
     city:{
         type: String,
     },
-     location: {
+    location: {
             type: {
             type: String,
             enum: ["Point"],

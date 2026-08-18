@@ -307,17 +307,22 @@ export const serviceType = async (req, res) => {
     }
 
     // Validate user location
-    if (
-      !user.location ||
-      user.location.type !== "Point" ||
-      !Array.isArray(user.location.coordinates) ||
-      user.location.coordinates.length !== 2
-    ) {
-      return res.status(404).json({
-        success: false,
-        message: "Location not found",
-      });
-    }
+ if (
+  !user.location ||
+  user.location.type !== "Point" ||
+  !Array.isArray(user.location.coordinates) ||
+  user.location.coordinates.length !== 2 ||
+  (
+    user.location.coordinates[0] === 0 &&
+    user.location.coordinates[1] === 0
+  )
+) {
+  return res.status(200).json({
+    success: false,
+    message: "Location not found",
+    user: false,
+  });
+}
 
     // Find available transport services
     const serviceTypes = await parcelANDtransport.distinct(
@@ -365,6 +370,7 @@ export const serviceType = async (req, res) => {
 
       serviceTypes,
       category,
+      user: true,
 
       update: 0,
       link: "https://www.kocart.online",
