@@ -988,7 +988,7 @@ export const getMyLocation = async (req, res) => {
   }
 };
 
-export const getMonthlyGoodsAutoOrders = async (req, res) => {
+export const getMonthlyAutoOrders = async (req, res) => {
   try {
     const { year, month } = req.query;
 
