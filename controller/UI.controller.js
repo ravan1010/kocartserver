@@ -991,6 +991,16 @@ export const getMyLocation = async (req, res) => {
 export const getMonthlyAutoOrders = async (req, res) => {
   try {
     const { year, month } = req.query;
+    const id = req.Atoken.id;
+
+    const user = await usermodel.findById(id)
+
+    if(!user){
+      return res.status(404).json({
+        success: false,
+        massage: "not found"
+      })
+    }
 
     const currentDate = new Date();
 
@@ -1024,28 +1034,15 @@ export const getMonthlyAutoOrders = async (req, res) => {
       1
     );
 
-    const [passengerOrders, goodsOrders] =
-      await Promise.all([
-        BikeParcel_Order.find({
-          serviceType: "auto_passenger",
+    const goodsOrders = await BikeParcel_Order.find({
+          customer: user._id,
           createdAt: {
             $gte: startDate,
             $lt: endDate,
           },
         })
           .sort({ createdAt: -1 })
-          .lean(),
-
-        BikeParcel_Order.find({
-          serviceType: "goods_auto",
-          createdAt: {
-            $gte: startDate,
-            $lt: endDate,
-          },
-        })
-          .sort({ createdAt: -1 })
-          .lean(),
-      ]);
+          .lean()
 
     res.json({
       success: true,
@@ -1053,13 +1050,10 @@ export const getMonthlyAutoOrders = async (req, res) => {
       year: selectedYear,
       month: selectedMonth,
 
-      passengerOrders,
       goodsOrders,
 
-      passengerCount: passengerOrders.length,
       goodsCount: goodsOrders.length,
       totalOrders:
-        passengerOrders.length +
         goodsOrders.length,
     });
 
@@ -1076,11 +1070,6 @@ export const getMonthlyAutoOrders = async (req, res) => {
   }
 };
 
-
-
-
-
-   
 
 
 
