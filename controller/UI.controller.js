@@ -1061,6 +1061,7 @@ export const getMonthlyGoodsAutoOrders = async (req, res) => {
       month: selectedMonth,
 
       goodsOrders,
+      
 
       goodsCount: goodsOrders.length,
 
