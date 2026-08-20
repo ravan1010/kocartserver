@@ -701,7 +701,8 @@ export const getPassengerAutoOrderStatus = async (req, res) => {
     }
 
     // Still searching
-    if (order.status === "pending") {
+    if (order.status === "pending") {       
+
       return res.json({
         success: true,
         order: {

@@ -27,19 +27,37 @@ app.use(express.urlencoded({extended:true, limit: '200mb'}))
 app.use(express.json({ limit: '200mb' }))
 app.use(cookieParser())
 
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://www.kocart.online",
+  "https://kocart.online",
+  "https://delivery.kocart.online",
+  "https://branch.kocart.online",
+  "https://parcelandtransport.kocart.online",
+];
 
-app.use(cors({
-  origin: [
-      "http://localhost:5173",
-      "https://www.kocart.online",
-      "https://kocart.online",
-      "https://delivery.kocart.online",
-      "https://branch.kocart.online",
-      "https://parcelandtransport.kocart.online"
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      console.log("CORS Origin:", origin);
 
-    ], // reflects request origin automatically
-  credentials: true
-}));
+      // React Native/mobile requests may have no Origin
+      if (!origin) {
+        return callback(null, true);
+      }
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      console.log("Blocked by CORS:", origin);
+
+      return callback(new Error("Not allowed by CORS"));
+    },
+
+    credentials: true,
+  })
+);
 
 
 app.get('/i', (req, res) => { 
