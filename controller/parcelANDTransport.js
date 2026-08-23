@@ -249,7 +249,7 @@ export const parcelBoyIsOnline = async (req, res) => {
       admin.onPending?.orderId !== null ||
       admin.isAvailable !== true
     ) {
-      return res.status(400).json({
+      return res.status(200).json({
         success: false,
         message:
           "You cannot go offline while an order is active.",
@@ -462,27 +462,34 @@ export const getacceptedPendingOrders = async (req, res) => {
       });
     }
 
-    // Driver must be online and activated
+    // ================================
+    // DRIVER HAS ACTIVE ASSIGNED ORDER
+    // ================================
+    if (partner.isAvailable === false) {
+      return res.status(200).json({
+        success: true,
+        redirect: "assign",
+        order: null,
+      });
+    }
+
+    // ================================
+    // DRIVER MUST BE ONLINE + ACTIVE
+    // ================================
     if (
       partner.isOnline !== true ||
-      partner.activate !== true ||
-      partner.isAvailable !== true
+      partner.activate !== true
     ) {
-      return res.json({
+      return res.status(200).json({
         success: false,
         message: "Partner is not available",
         order: null,
       });
     }
 
-    if(partner.isAvailable === false){
-      return res.status(200).json({
-            redirect: "assign",
-            partner: partner.serviceType,
-      })
-    }
-
-    // Get accepted order ID
+    // ================================
+    // GET ACCEPTED ORDER ID
+    // ================================
     const orderId = partner.onPending?.orderId;
 
     if (!orderId) {
@@ -491,11 +498,13 @@ export const getacceptedPendingOrders = async (req, res) => {
         message: "No accepted order",
         order: null,
         partner: partner.serviceType,
-        redirect: "pending"
+        redirect: "pending",
       });
     }
 
-    // Get order
+    // ================================
+    // GET ORDER
+    // ================================
     const order = await BikeParcel_Order.findOne({
       _id: orderId,
       serviceType: partner.serviceType,
@@ -508,21 +517,27 @@ export const getacceptedPendingOrders = async (req, res) => {
         message: "Order not found",
         order: null,
         partner: partner.isAvailable,
+        redirect: "pending",
       });
     }
 
-    // Check whether this driver already submitted amount
+    // ================================
+    // CHECK DRIVER QUOTE
+    // ================================
     const driverQuote = order.selectDriver?.find(
       (item) =>
         item.driver?.toString() === partner._id.toString()
     );
 
-    // Driver already submitted amount
+    // ================================
+    // DRIVER ALREADY SUBMITTED AMOUNT
+    // ================================
     if (driverQuote) {
       return res.json({
         success: true,
         type: "confirm",
-        message: "Amount already submitted. Waiting for customer confirmation.",
+        message:
+          "Amount already submitted. Waiting for customer confirmation.",
         loading: true,
         order,
         driverId: partner._id,
@@ -534,7 +549,9 @@ export const getacceptedPendingOrders = async (req, res) => {
       });
     }
 
-    // Driver has accepted but has not submitted amount
+    // ================================
+    // ACCEPTED BUT NO QUOTE YET
+    // ================================
     return res.json({
       success: true,
       type: "normal",
@@ -545,7 +562,10 @@ export const getacceptedPendingOrders = async (req, res) => {
     });
 
   } catch (err) {
-    console.error("getacceptedPendingOrders:", err);
+    console.error(
+      "getacceptedPendingOrders:",
+      err
+    );
 
     return res.status(500).json({
       success: false,
