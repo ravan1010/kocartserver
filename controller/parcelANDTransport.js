@@ -412,7 +412,8 @@ export const getacceptedPendingOrders = async (req, res) => {
 
     if(partner.isAvailable === true){
       return res.status(200).json({
-            redirect: "assign"
+            redirect: "assign",
+            partner: partner.serviceType,
       })
     }
 
@@ -438,7 +439,6 @@ export const getacceptedPendingOrders = async (req, res) => {
     if (!order) {
       return res.status(200).json({
         success: true,
-        redirect: true,
         message: "Order not found",
         order: null,
         partner: partner.isAvailable,
@@ -701,8 +701,6 @@ export const assignSelectedDriver = async (req, res) => {
     });
   }
 };
-
-
 
 
 
