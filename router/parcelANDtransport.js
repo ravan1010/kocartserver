@@ -12,6 +12,7 @@ import { acceptBikeParcelOrder,
          parcelandtransportFCMtoken, 
          parcelBoyIsOnline, 
          parceldashboard, 
+         ratePartner, 
          ReassignParcelOrder, 
          submitDriverAmount, 
          updateBikeParcelDriverLocation, 
@@ -61,6 +62,12 @@ router.get('/parcelandtransport/token', parcelANDtransportAuth, async (req, res)
 router.route('/parcel/cancel-order/:orderId').post(signat, cancelParcelOrder)
 
 router.route('/app/parcel/cancel-order/:orderId').post(appAuth, cancelParcelOrder)
+
+router.post(
+  "/partner/rating",
+  signat,
+  ratePartner
+);
 
 
 export default router;

@@ -67,7 +67,22 @@ const ParceldeliveryANDtransportPartnerSchema = new mongoose.Schema({
             type: [Number],
             default: [0, 0]
         }
-    }
+    },
+
+     rating: {
+  average: {
+    type: Number,
+    default: 0,
+    min: 0,
+    max: 5,
+  },
+  count: {
+    type: Number,
+    default: 0,
+    min: 0,
+  },
+},
+
 });
 
 ParceldeliveryANDtransportPartnerSchema.index({ currentLocation: "2dsphere" });

@@ -247,6 +247,13 @@ const orderSchema = new mongoose.Schema(
             type: Date,
             default: null,
         },
+
+        rating: {
+            type: Number,
+            default: null,
+            min: 1,
+            max: 5,
+        },
     },
     {
         timestamps: true

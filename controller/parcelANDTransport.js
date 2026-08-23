@@ -1,5 +1,6 @@
 import parcelANDtransportDB from "../model/parcelANDtransport.js";
 import BikeParcel_Order from "../model/BikeParcel_Order.js";
+import mongoose from "mongoose";
 
 import axios from "axios";
 import dotenv from 'dotenv'
@@ -1226,4 +1227,230 @@ export const cancelParcelOrder = async (req, res) => {
       message: err.message, 
     }); 
   } 
+};
+
+
+
+
+
+//ratin
+
+export const ratePartner = async (req, res) => {
+  try {
+    const customerId = req.user.id;
+
+    const {
+      orderId,
+      partnerId,
+      rating,
+    } = req.body;
+
+    // --------------------------------
+    // 1. Validate fields
+    // --------------------------------
+
+    if (!orderId || !partnerId || rating === undefined) {
+      return res.status(400).json({
+        success: false,
+        message: "orderId, partnerId and rating are required",
+      });
+    }
+
+    // --------------------------------
+    // 2. Validate ObjectIds
+    // --------------------------------
+
+    if (
+      !mongoose.Types.ObjectId.isValid(orderId) ||
+      !mongoose.Types.ObjectId.isValid(partnerId)
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid orderId or partnerId",
+      });
+    }
+
+    // --------------------------------
+    // 3. Validate rating
+    // --------------------------------
+
+    const numericRating = Number(rating);
+
+    if (
+      !Number.isInteger(numericRating) ||
+      numericRating < 1 ||
+      numericRating > 5
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Rating must be between 1 and 5",
+      });
+    }
+
+    // --------------------------------
+    // 4. Find order
+    // --------------------------------
+
+    const order = await BikeParcel_Order.findById(orderId);
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    // --------------------------------
+    // 5. Verify customer owns order
+    // --------------------------------
+
+    if (
+      !order.customer ||
+      order.customer.toString() !== customerId.toString()
+    ) {
+      return res.status(403).json({
+        success: false,
+        message: "You cannot rate this order",
+      });
+    }
+
+    // --------------------------------
+    // 6. Order must be completed
+    // --------------------------------
+
+    if (order.status !== "completed") {
+      return res.status(400).json({
+        success: false,
+        message: "You can rate only completed orders",
+      });
+    }
+
+    // --------------------------------
+    // 7. Verify assigned driver
+    // --------------------------------
+
+    if (!order.driver) {
+      return res.status(400).json({
+        success: false,
+        message: "No driver was assigned to this order",
+      });
+    }
+
+    if (order.driver.toString() !== partnerId.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: "This partner did not deliver this order",
+      });
+    }
+
+    // --------------------------------
+    // 8. Prevent duplicate rating
+    // --------------------------------
+
+    if (order.rating !== null && order.rating !== undefined) {
+      return res.status(400).json({
+        success: false,
+        message: "You have already rated this order",
+        rating: order.rating,
+      });
+    }
+
+    // --------------------------------
+    // 9. Find partner
+    // --------------------------------
+
+    const partner = await parcelANDtransportDB.findById(
+      partnerId
+    );
+
+    if (!partner) {
+      return res.status(404).json({
+        success: false,
+        message: "Delivery partner not found",
+      });
+    }
+
+    // --------------------------------
+    // 10. Save rating in order
+    // --------------------------------
+
+    order.rating = numericRating;
+
+    await order.save();
+
+    // --------------------------------
+    // 11. Recalculate partner rating
+    // --------------------------------
+
+    const ratingStats = await BikeParcel_Order.aggregate([
+      {
+        $match: {
+          driver: new mongoose.Types.ObjectId(partnerId),
+          status: "completed",
+          rating: {
+            $gte: 1,
+            $lte: 5,
+          },
+        },
+      },
+
+      {
+        $group: {
+          _id: "$driver",
+
+          averageRating: {
+            $avg: "$rating",
+          },
+
+          totalRatings: {
+            $sum: 1,
+          },
+        },
+      },
+    ]);
+
+    let averageRating = 0;
+    let totalRatings = 0;
+
+    if (ratingStats.length > 0) {
+      averageRating = Number(
+        ratingStats[0].averageRating.toFixed(1)
+      );
+
+      totalRatings = ratingStats[0].totalRatings;
+    }
+
+    // --------------------------------
+    // 12. Update partner
+    // --------------------------------
+
+    partner.rating.average = averageRating;
+    partner.rating.count = totalRatings;
+
+    await partner.save();
+
+    // --------------------------------
+    // 13. Response
+    // --------------------------------
+
+    return res.status(200).json({
+      success: true,
+      message: "Partner rated successfully",
+
+      rating: numericRating,
+
+      partnerRating: {
+        average: averageRating,
+        count: totalRatings,
+      },
+    });
+  } catch (error) {
+    console.error("Rate partner error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to rate partner",
+      error: error.message,
+    });
+  }
 };
