@@ -721,7 +721,21 @@ export const getPassengerAutoOrderStatus = async (req, res) => {
         order: {
           _id: order._id,
           status: order.status,
-          selectDriver: order.selectDriver,
+          selectDriver: [
+  {
+    driver: {
+      _id: "...",
+      name: "Ravi",
+      Number: "9876543210",
+      vehicalNO: "KA-36-1234",
+      vehicalName: "Goods Auto",
+      currentLocation: {
+        coordinates: [76.6, 16.2]
+      }
+    },
+    amount: 350
+  }
+]
         },
       });
     }
