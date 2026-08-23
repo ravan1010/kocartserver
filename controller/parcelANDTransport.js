@@ -228,21 +228,85 @@ export const parceldashboard = async (req, res, next) => {
 
 export const parcelBoyIsOnline = async (req, res) => {
   try {
-    const id = req.parcelandtransport.id
-    console.log(id, req.body)
-    const admin = await parcelANDtransportDB.findById(id)
-    // const post = await post_model.findOne({ author: admin._id })
+    const id = req.parcelandtransport.id;
 
+    const admin = await parcelANDtransportDB.findById(id);
+
+    if (!admin) {
+      return res.status(404).json({
+        success: false,
+        message: "Delivery partner not found",
+      });
+    }
+
+    /*
+     * If partner has an active/pending order,
+     * don't allow manually going offline.
+     */
+    if (
+      admin.onPending?.Pending === true ||
+      admin.onPending?.orderId !== null ||
+      admin.isAvailable !== true
+    ) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "You cannot go offline while an order is active.",
+        isOnline: true,
+        isAvailable: false,
+        onPending: admin.onPending,
+      });
+    }
+
+    // Toggle online status
     admin.isOnline = !admin.isOnline;
+
+    if (admin.isOnline) {
+      // Partner is going ONLINE
+      admin.isAvailable = true;
+
+      admin.onPending = {
+        Pending: false,
+        orderId: null,
+      };
+    } else {
+      // Partner is going OFFLINE
+      admin.isAvailable = false;
+
+      admin.onPending = {
+        Pending: false,
+        orderId: null,
+      };
+    }
+
     await admin.save();
-    console.log(admin._id, admin.isOnline)
 
-    res.json({ success: true })
+    console.log(
+      "Partner:",
+      admin._id,
+      "Online:",
+      admin.isOnline,
+      "Available:",
+      admin.isAvailable,
+      "Pending:",
+      admin.onPending
+    );
 
+    return res.json({
+      success: true,
+      isOnline: admin.isOnline,
+      isAvailable: admin.isAvailable,
+      onPending: admin.onPending,
+    });
   } catch (error) {
-    res.json({ message: error })
+    console.error("Online status error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
-}
+};
 
 
 
