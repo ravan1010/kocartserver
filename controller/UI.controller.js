@@ -689,7 +689,6 @@ export const getPassengerAutoOrderStatus = async (req, res) => {
 
     // Order finished
     if (
-      order.status === "completed" ||
       order.status === "cancelled"
     ) {
       return res.json({
@@ -697,6 +696,15 @@ export const getPassengerAutoOrderStatus = async (req, res) => {
         order: null,
         status: order.status,
         redirect: true,
+      });
+    }
+
+    if(
+        order.status === "completed" 
+    ) {
+      return res.json({
+        success: true,
+        order: order,
       });
     }
 
