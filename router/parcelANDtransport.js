@@ -68,7 +68,11 @@ router.post(
   signat,
   ratePartner
 );
-
+router.post(
+  "/app/partner/rating",
+  signat,
+  ratePartner
+);
 
 export default router;
 
