@@ -1076,74 +1076,89 @@ export const verifyDeliveryOtp = async (req, res) => {
 
 
 //user side
-export const cancelParcelOrder = async (req, res) => {
-  try {
-    const { orderId } = req.params;
+export const cancelParcelOrder = async (req, res) => { 
+  try { 
+    const { orderId } = req.params; 
+ 
+    const order = await BikeParcel_Order.findById(orderId); 
+ 
+    if (!order) { 
+      return res.status(404).json({ 
+        success: false, 
+        message: "Order not found", 
+      }); 
+    } 
+ 
+    // Don't allow cancellation after completion/cancellation 
+    if (order.status === "completed" || order.status === "cancelled") { 
+      return res.status(400).json({ 
+        success: false, 
+        message: "Order cannot be cancelled", 
+      }); 
+    } 
+ 
+    /* 
+     * Collect all relevant driver IDs: 
+     * 1. From order.selectDriver array 
+     * 2. From order.driver (if a single driver was directly assigned)
+     */ 
+    const driverIdsSet = new Set();
+    
+    (order.selectDriver || []).forEach((item) => {
+      if (item?.driver) driverIdsSet.add(item.driver.toString());
+    });
 
-    const order = await BikeParcel_Order.findById(orderId);
-
-    if (!order) {
-      return res.status(404).json({
-        success: false,
-        message: "Order not found",
-      });
+    if (order.driver) {
+      driverIdsSet.add(order.driver.toString());
     }
 
-    // Don't allow cancellation after completion/cancellation
-    if (
-      order.status === "completed" ||
-      order.status === "cancelled"
-    ) {
-      return res.status(400).json({
-        success: false,
-        message: "Order cannot be cancelled",
-      });
-    }
+    const driverIds = Array.from(driverIdsSet); 
+ 
+    /* 
+     * Reset onPending for all associated drivers in a single query,
+     * OR fallback to matching by "onPending.orderId" to catch orphans.
+     */ 
+    const queryFilter = {
+      $or: []
+    };
 
-    /*
-     * Get all drivers who were selected/offered this order
-     */
-    const driverIds = (order.selectDriver || [])
-      .map((item) => item.driver)
-      .filter(Boolean);
-
-    /*
-     * Reset onPending for all those drivers
-     */
     if (driverIds.length > 0) {
-      await parcelANDtransportDB.updateMany(
-        {
-          _id: { $in: driverIds },
-        },
-        {
-          $set: {
-            "onPending.orderId": null,
-            "onPending.Pending": false,
-          },
-        }
-      );
+      queryFilter.$or.push({ _id: { $in: driverIds } });
     }
+    queryFilter.$or.push({ "onPending.orderId": order._id });
 
-    /*
-     * Update order status
-     */
-    order.status = "cancelled";
-    order.driver = null;
+    await parcelANDtransportDB.updateMany(
+      queryFilter, 
+      { 
+        $set: { 
+          "onPending.orderId": null, 
+          "onPending.Pending": false, 
+        }, 
+      } 
+    ); 
+ 
+    /* 
+     * Update order status 
+     */ 
+    order.status = "cancelled"; 
+    order.driver = null; 
+    // Optional: clear out selectDriver if required by your business logic
+    // order.selectDriver = []; 
 
-    await order.save();
-
-    return res.status(200).json({
-      success: true,
-      message: "Order cancelled successfully",
-      order,
-    });
-
-  } catch (err) {
-    console.error(err);
-
-    return res.status(500).json({
-      success: false,
-      message: err.message,
-    });
-  }
+    await order.save(); 
+ 
+    return res.status(200).json({ 
+      success: true, 
+      message: "Order cancelled successfully", 
+      order, 
+    }); 
+ 
+  } catch (err) { 
+    console.error("Error cancelling parcel order:", err); 
+ 
+    return res.status(500).json({ 
+      success: false, 
+      message: err.message, 
+    }); 
+  } 
 };
