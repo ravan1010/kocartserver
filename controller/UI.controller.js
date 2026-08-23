@@ -673,15 +673,17 @@ export const getPassengerAutoOrderStatus = async (req, res) => {
     const userId = req.Atoken.id;
 
     const order = await BikeParcel_Order.findOne({
-      _id: orderId,
-      customer: userId,
-    }).populate(
-      "driver",
-      "name Number vehicalNO vehicalName currentLocation"
-    ).populate(
-      "selectDriver.driver",
-      "name Number vehicalNO vehicalName currentLocation" 
-    )
+  _id: orderId,
+  customer: userId,
+})
+  .populate(
+    "driver",
+    "name Number vehicalNO vehicalName currentLocation rating"
+  )
+  .populate(
+    "selectDriver.driver",
+    "name Number vehicalNO vehicalName currentLocation rating"
+  );
 
     if (!order) {
       return res.status(404).json({
