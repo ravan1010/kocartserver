@@ -717,7 +717,6 @@ export const getPassengerAutoOrderStatus = async (req, res) => {
           _id: order._id,
           status: order.status,
           selectDriver: order.selectDriver,
-          vehicleName: order.driver.vehicalName,
         },
       });
     }
