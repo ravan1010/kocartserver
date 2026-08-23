@@ -410,7 +410,7 @@ export const getacceptedPendingOrders = async (req, res) => {
       });
     }
 
-    if(partner.isAvailable === false){
+    if(partner.isAvailable !== true){
       return res.status(200).json({
             redirect: "assign",
             partner: partner.serviceType,
