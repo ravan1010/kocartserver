@@ -1256,9 +1256,20 @@ export const cancelParcelOrder = async (req, res) => {
 
 //ratin
 
+import mongoose from "mongoose";
+
+
 export const ratePartner = async (req, res) => {
   try {
+    // =====================================================
+    // CUSTOMER ID
+    // =====================================================
+
     const customerId = req.user.id;
+
+    // =====================================================
+    // REQUEST DATA
+    // =====================================================
 
     const {
       orderId,
@@ -1266,9 +1277,9 @@ export const ratePartner = async (req, res) => {
       rating,
     } = req.body;
 
-    // --------------------------------
-    // 1. Validate fields
-    // --------------------------------
+    // =====================================================
+    // 1. VALIDATE REQUIRED FIELDS
+    // =====================================================
 
     if (!orderId || !partnerId || rating === undefined) {
       return res.status(400).json({
@@ -1277,23 +1288,27 @@ export const ratePartner = async (req, res) => {
       });
     }
 
-    // --------------------------------
-    // 2. Validate ObjectIds
-    // --------------------------------
+    // =====================================================
+    // 2. VALIDATE OBJECT IDS
+    // =====================================================
 
-    if (
-      !mongoose.Types.ObjectId.isValid(orderId) ||
-      !mongoose.Types.ObjectId.isValid(partnerId)
-    ) {
+    if (!mongoose.Types.ObjectId.isValid(orderId)) {
       return res.status(400).json({
         success: false,
-        message: "Invalid orderId or partnerId",
+        message: `Invalid orderId: ${orderId}`,
       });
     }
 
-    // --------------------------------
-    // 3. Validate rating
-    // --------------------------------
+    if (!mongoose.Types.ObjectId.isValid(partnerId)) {
+      return res.status(400).json({
+        success: false,
+        message: `Invalid partnerId: ${partnerId}`,
+      });
+    }
+
+    // =====================================================
+    // 3. VALIDATE RATING
+    // =====================================================
 
     const numericRating = Number(rating);
 
@@ -1308,9 +1323,9 @@ export const ratePartner = async (req, res) => {
       });
     }
 
-    // --------------------------------
-    // 4. Find order
-    // --------------------------------
+    // =====================================================
+    // 4. FIND ORDER
+    // =====================================================
 
     const order = await BikeParcel_Order.findById(orderId);
 
@@ -1321,13 +1336,20 @@ export const ratePartner = async (req, res) => {
       });
     }
 
-    // --------------------------------
-    // 5. Verify customer owns order
-    // --------------------------------
+    // =====================================================
+    // 5. CHECK CUSTOMER
+    // =====================================================
+
+    if (!order.customer) {
+      return res.status(403).json({
+        success: false,
+        message: "This order has no customer",
+      });
+    }
 
     if (
-      !order.customer ||
-      order.customer.toString() !== customerId.toString()
+      order.customer.toString() !==
+      customerId.toString()
     ) {
       return res.status(403).json({
         success: false,
@@ -1335,20 +1357,20 @@ export const ratePartner = async (req, res) => {
       });
     }
 
-    // --------------------------------
-    // 6. Order must be completed
-    // --------------------------------
+    // =====================================================
+    // 6. ORDER MUST BE COMPLETED
+    // =====================================================
 
     if (order.status !== "completed") {
       return res.status(400).json({
         success: false,
-        message: "You can rate only completed orders",
+        message: `You can rate only completed orders. Current status: ${order.status}`,
       });
     }
 
-    // --------------------------------
-    // 7. Verify assigned driver
-    // --------------------------------
+    // =====================================================
+    // 7. CHECK DRIVER
+    // =====================================================
 
     if (!order.driver) {
       return res.status(400).json({
@@ -1357,18 +1379,30 @@ export const ratePartner = async (req, res) => {
       });
     }
 
-    if (order.driver.toString() !== partnerId.toString()) {
+    // =====================================================
+    // 8. VERIFY DRIVER
+    // =====================================================
+
+    if (
+      order.driver.toString() !==
+      partnerId.toString()
+    ) {
       return res.status(403).json({
         success: false,
         message: "This partner did not deliver this order",
+        orderDriver: order.driver,
+        requestedPartner: partnerId,
       });
     }
 
-    // --------------------------------
-    // 8. Prevent duplicate rating
-    // --------------------------------
+    // =====================================================
+    // 9. PREVENT DUPLICATE RATING
+    // =====================================================
 
-    if (order.rating !== null && order.rating !== undefined) {
+    if (
+      order.rating !== null &&
+      order.rating !== undefined
+    ) {
       return res.status(400).json({
         success: false,
         message: "You have already rated this order",
@@ -1376,13 +1410,12 @@ export const ratePartner = async (req, res) => {
       });
     }
 
-    // --------------------------------
-    // 9. Find partner
-    // --------------------------------
+    // =====================================================
+    // 10. FIND DELIVERY PARTNER
+    // =====================================================
 
-    const partner = await parcelANDtransportDB.findById(
-      partnerId
-    );
+    const partner =
+      await parcelANDtransportDB.findById(partnerId);
 
     if (!partner) {
       return res.status(404).json({
@@ -1391,44 +1424,53 @@ export const ratePartner = async (req, res) => {
       });
     }
 
-    // --------------------------------
-    // 10. Save rating in order
-    // --------------------------------
+    // =====================================================
+    // 11. SAVE RATING TO ORDER
+    // =====================================================
 
     order.rating = numericRating;
 
     await order.save();
 
-    // --------------------------------
-    // 11. Recalculate partner rating
-    // --------------------------------
+    // =====================================================
+    // 12. CALCULATE PARTNER RATING
+    // =====================================================
 
-    const ratingStats = await BikeParcel_Order.aggregate([
-      {
-        $match: {
-          driver: new mongoose.Types.ObjectId(partnerId),
-          status: "completed",
-          rating: {
-            $gte: 1,
-            $lte: 5,
+    const ratingStats =
+      await BikeParcel_Order.aggregate([
+        {
+          $match: {
+            driver: new mongoose.Types.ObjectId(
+              partnerId
+            ),
+
+            status: "completed",
+
+            rating: {
+              $gte: 1,
+              $lte: 5,
+            },
           },
         },
-      },
 
-      {
-        $group: {
-          _id: "$driver",
+        {
+          $group: {
+            _id: "$driver",
 
-          averageRating: {
-            $avg: "$rating",
-          },
+            averageRating: {
+              $avg: "$rating",
+            },
 
-          totalRatings: {
-            $sum: 1,
+            totalRatings: {
+              $sum: 1,
+            },
           },
         },
-      },
-    ]);
+      ]);
+
+    // =====================================================
+    // 13. DEFAULT RATING
+    // =====================================================
 
     let averageRating = 0;
     let totalRatings = 0;
@@ -1438,25 +1480,30 @@ export const ratePartner = async (req, res) => {
         ratingStats[0].averageRating.toFixed(1)
       );
 
-      totalRatings = ratingStats[0].totalRatings;
+      totalRatings =
+        ratingStats[0].totalRatings;
     }
 
-    // --------------------------------
-    // 12. Update partner
-    // --------------------------------
+    // =====================================================
+    // 14. UPDATE PARTNER RATING
+    // =====================================================
+
+    partner.rating = partner.rating || {};
 
     partner.rating.average = averageRating;
     partner.rating.count = totalRatings;
 
     await partner.save();
 
-    // --------------------------------
-    // 13. Response
-    // --------------------------------
+    // =====================================================
+    // 15. SUCCESS RESPONSE
+    // =====================================================
 
     return res.status(200).json({
       success: true,
-      message: "Partner rated successfully",
+
+      message:
+        "Partner rated successfully",
 
       rating: numericRating,
 
@@ -1465,8 +1512,16 @@ export const ratePartner = async (req, res) => {
         count: totalRatings,
       },
     });
+
   } catch (error) {
-    console.error("Rate partner error:", error);
+    // =====================================================
+    // ERROR
+    // =====================================================
+
+    console.error(
+      "Rate partner error:",
+      error
+    );
 
     return res.status(500).json({
       success: false,
