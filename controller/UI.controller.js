@@ -678,7 +678,10 @@ export const getPassengerAutoOrderStatus = async (req, res) => {
     }).populate(
       "driver",
       "name Number vehicalNO vehicalName currentLocation"
-    );
+    ).populate(
+      "selectDriver.driver",
+      "name Number vehicalNO vehicalName currentLocation" 
+    )
 
     if (!order) {
       return res.status(404).json({
