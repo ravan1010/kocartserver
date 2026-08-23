@@ -1265,7 +1265,7 @@ export const ratePartner = async (req, res) => {
     // CUSTOMER ID
     // =====================================================
 
-    const customerId = req.user.id;
+    const customerId = req.Atoken.id;
 
     // =====================================================
     // REQUEST DATA
