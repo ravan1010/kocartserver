@@ -1256,8 +1256,6 @@ export const cancelParcelOrder = async (req, res) => {
 
 //ratin
 
-import mongoose from "mongoose";
-
 
 export const ratePartner = async (req, res) => {
   try {
