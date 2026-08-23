@@ -70,7 +70,7 @@ router.post(
 );
 router.post(
   "/app/partner/rating",
-  signat,
+  appAuth,
   ratePartner
 );
 
