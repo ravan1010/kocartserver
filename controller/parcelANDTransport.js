@@ -425,6 +425,7 @@ export const getacceptedPendingOrders = async (req, res) => {
         success: true,
         message: "No accepted order",
         order: null,
+        partner: partner.serviceType,
         redirect: "pending"
       });
     }
