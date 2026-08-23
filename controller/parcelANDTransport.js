@@ -961,6 +961,7 @@ if (exists) {
       success: true,
       message: "Order reassigned successfully.",
       order,
+      partner: partner.serviceType,
     });
 
   } catch (err) {
