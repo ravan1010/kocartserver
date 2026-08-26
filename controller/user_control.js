@@ -383,7 +383,7 @@ export const AppserviceType = async (req, res) => {
       upcomingServices.length === 0
     ) {
       return res.status(200).json({
-        success: true,
+        success: false,
 
         city: user.city || "",
 
