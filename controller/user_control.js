@@ -2,10 +2,9 @@ import usermodel from '../model/user_model.js';
 import jwt from 'jsonwebtoken';
 import addressmodel from '../model/address_model.js';
 import dotenv from 'dotenv';
-const serviceLocations = require("../data/serviceLocations.json");
 
 
-dotenv.config();
+dotenv.config(); 
 
 export const liveupdate = async (req, res) => {
 
@@ -86,6 +85,25 @@ export const userFCMtoken = async (req, res) => {
     res.status(500).json(error)
   }
 }
+
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const serviceLocationsPath = path.join(
+  __dirname,
+  "../data/serviceLocations.json"
+);
+
+const serviceLocations = JSON.parse(
+  fs.readFileSync(
+    serviceLocationsPath,
+    "utf-8"
+  )
+);
 
 
 const getDistanceInKm = (
