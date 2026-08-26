@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import addressmodel from '../model/address_model.js';
 import dotenv from 'dotenv';
 
+import parcelANDtransport from "../model/parcelANDtransport.js"
 
 dotenv.config(); 
 
@@ -236,3 +237,240 @@ export const checkServiceAvailability = (
   }
 };
 
+
+
+
+// Haversine distance
+
+export const AppserviceType = async (req, res) => {
+  try {
+    const id = req.Atoken.id;
+
+    // --------------------------------
+    // 1. Get user
+    // --------------------------------
+
+    const user = await usermodel
+      .findById(id)
+      .lean();
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // --------------------------------
+    // 2. Validate user location
+    // --------------------------------
+
+    if (
+      !user.location ||
+      user.location.type !== "Point" ||
+      !Array.isArray(user.location.coordinates) ||
+      user.location.coordinates.length !== 2 ||
+      (
+        user.location.coordinates[0] === 0 &&
+        user.location.coordinates[1] === 0
+      )
+    ) {
+      return res.status(200).json({
+        success: false,
+        message: "Location not found",
+        user: false,
+        service: null,
+        countdown: null,
+      });
+    }
+
+    // GeoJSON = [longitude, latitude]
+    const [
+      userLng,
+      userLat,
+    ] = user.location.coordinates;
+
+    // --------------------------------
+    // 3. Current date/time
+    // --------------------------------
+
+    const now = new Date();
+
+    // --------------------------------
+    // 4. Check configured JSON services
+    // --------------------------------
+
+    const availableServices = [];
+    const upcomingServices = [];
+
+    for (const service of serviceLocations) {
+
+      const distanceKm = getDistanceInKm(
+        userLat,
+        userLng,
+        service.latitude,
+        service.longitude
+      );
+
+      // --------------------------------
+      // Outside configured radius
+      // --------------------------------
+
+      if (distanceKm > service.radiusKm) {
+        continue;
+      }
+
+      // --------------------------------
+      // Check available date/time
+      // --------------------------------
+
+      const availableAt = new Date(
+        service.availableAt
+      );
+
+      if (Number.isNaN(availableAt.getTime())) {
+        continue;
+      }
+
+      // --------------------------------
+      // Service available now
+      // --------------------------------
+
+      if (availableAt <= now) {
+
+        availableServices.push({
+          distanceKm: Number(
+            distanceKm.toFixed(2)
+          ),
+
+          radiusKm: service.radiusKm,
+
+          availableAt:
+            service.availableAt,
+        });
+
+      }
+
+      // --------------------------------
+      // Service available in future
+      // --------------------------------
+
+      else {
+
+        upcomingServices.push({
+          distanceKm: Number(
+            distanceKm.toFixed(2)
+          ),
+
+          radiusKm: service.radiusKm,
+
+          availableAt:
+            service.availableAt,
+
+          remainingMs:
+            availableAt.getTime() -
+            now.getTime(),
+        });
+      }
+    }
+
+    // --------------------------------
+    // 5. Nothing configured nearby
+    // --------------------------------
+
+    if (
+      availableServices.length === 0 &&
+      upcomingServices.length === 0
+    ) {
+      return res.status(200).json({
+        success: true,
+
+        city: user.city || "",
+
+        user: true,
+
+        service: null,
+
+        countdown: null,
+
+        update: 0,
+
+        link: "https://www.kocart.online",
+      });
+    }
+
+    // --------------------------------
+    // 6. Check actual DB service
+    // --------------------------------
+
+    let dbServiceTypes = [];
+
+    // Only check DB when configured
+    // service is already available
+
+    if (availableServices.length > 0) {
+
+      dbServiceTypes =
+        await parcelANDtransport.distinct(
+          "serviceType",
+          {
+            activate: true,
+            isOnline: true,
+            isAvailable: true,
+
+            currentLocation: {
+              $near: {
+                $geometry: {
+                  type: "Point",
+                  coordinates:
+                    user.location.coordinates,
+                },
+
+                $maxDistance: 5000,
+              },
+            },
+          }
+        );
+    }
+
+    // --------------------------------
+    // 7. Response
+    // --------------------------------
+
+    return res.status(200).json({
+      success: true,
+
+      city: user.city || "",
+
+      user: true,
+
+      // Actual available services
+      service:
+        dbServiceTypes.length > 0
+          ? dbServiceTypes
+          : null,
+
+      // Future services
+      countdown:
+        upcomingServices.length > 0
+          ? upcomingServices
+          : null,
+
+      update: 0,
+
+      link: "https://www.kocart.online",
+    });
+
+  } catch (err) {
+
+    console.error(
+      "serviceType error:",
+      err
+    );
+
+    return res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};

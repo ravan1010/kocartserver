@@ -5,7 +5,7 @@ import { home, setting, address, explore, cartdata, removecart, buy, order, addt
 // const event_post_model = require('../model/event_post_model.js')
 import user_model from '../model/user_model.js';
 import { appplaceCODOrder, checkout, placeCODOrder, verifyPayment } from '../controller/orderController.js';
-import { liveupdate } from '../controller/user_control.js';
+import { AppserviceType, liveupdate } from '../controller/user_control.js';
 
 router.route('/liveupdate').post(liveupdate)
  
@@ -81,7 +81,7 @@ router.route("/app/order").get(appAuth, order )
 //web
 router.route("/services").get(signat, serviceType)
 //app
-router.route("/app/services").get(appAuth, serviceType)
+router.route("/app/services").get(appAuth, AppserviceType)
 
 //wweb
 router.route("/client/location").get(signat, getMyLocation)
