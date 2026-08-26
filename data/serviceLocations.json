@@ -1,0 +1,30 @@
+[
+  {
+    "id": "area_1",
+    "name": "kollegal",
+    "latitude": 12.1529,
+    "longitude": 77.1090,
+    "radiusKm": 5
+  },
+  {
+    "id": "area_2",
+    "name": "yelandur",
+    "latitude": 12.04629,
+    "longitude": 77.03034,
+    "radiusKm": 4
+  },
+  {
+    "id": "area_3",
+    "name": "chamarajanagara",
+    "latitude": 11.9261,
+    "longitude":76.9437 ,
+    "radiusKm": 5
+  },
+  {
+    "id": "area_4",
+    "name": "hanur",
+    "latitude": 12.0874,
+    "longitude": 77.3020,
+    "radiusKm": 4
+  }
+]

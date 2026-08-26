@@ -1,10 +1,15 @@
 import express from 'express';
-import { Address } from '../controller/user_control.js';
+import { Address, checkServiceAvailability } from '../controller/user_control.js';
 import { appAuth, authLocation, deliveryBoyAuth, signat } from '../middleware/OGauth.js';
 import user_model from '../model/user_model.js';
 const router = express.Router()
 
 router.route('/to/address').post( signat, Address)
+
+router.post(
+  "/check",
+  checkServiceAvailability
+);
 
 //auth check for frontend
 

@@ -2,6 +2,7 @@ import usermodel from '../model/user_model.js';
 import jwt from 'jsonwebtoken';
 import addressmodel from '../model/address_model.js';
 import dotenv from 'dotenv';
+const serviceLocations = require("../data/serviceLocations.json");
 
 
 dotenv.config();
@@ -85,4 +86,135 @@ export const userFCMtoken = async (req, res) => {
     res.status(500).json(error)
   }
 }
+
+
+const getDistanceInKm = (
+  lat1,
+  lng1,
+  lat2,
+  lng2
+) => {
+  const R = 6371;
+
+  const dLat =
+    ((lat2 - lat1) * Math.PI) / 180;
+
+  const dLng =
+    ((lng2 - lng1) * Math.PI) / 180;
+
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLng / 2) ** 2;
+
+  const c =
+    2 * Math.atan2(
+      Math.sqrt(a),
+      Math.sqrt(1 - a)
+    );
+
+  return R * c;
+};
+
+export const checkServiceAvailability = (
+  req,
+  res
+) => {
+  try {
+    const {
+      latitude,
+      longitude,
+    } = req.body;
+
+    const lat = Number(latitude);
+    const lng = Number(longitude);
+
+    if (
+      !Number.isFinite(lat) ||
+      !Number.isFinite(lng)
+    ) {
+      return res.status(400).json({
+        success: false,
+        available: false,
+        message: "Invalid latitude or longitude",
+      });
+    }
+
+    let nearestLocation = null;
+    let nearestDistance = Infinity;
+
+    for (const service of serviceLocations) {
+      const distance = getDistanceInKm(
+        lat,
+        lng,
+        Number(service.latitude),
+        Number(service.longitude)
+      );
+
+      if (distance < nearestDistance) {
+        nearestDistance = distance;
+        nearestLocation = service;
+      }
+
+      const radius =
+        Number(service.radiusKm) || 5;
+
+      if (distance <= radius) {
+        return res.json({
+          success: true,
+          available: true,
+
+          message:
+            "Service is available in your location",
+
+          serviceArea: {
+            id: service.id,
+            name: service.name,
+          },
+
+          distanceKm: Number(
+            distance.toFixed(2)
+          ),
+
+          latitude: lat,
+          longitude: lng,
+        });
+      }
+    }
+
+    return res.json({
+      success: true,
+      available: false,
+
+      message:
+        "Service is not available in your location. Coming soon!",
+
+      nearestServiceArea:
+        nearestLocation
+          ? {
+              id: nearestLocation.id,
+              name: nearestLocation.name,
+            }
+          : null,
+
+      distanceToNearestKm:
+        Number(nearestDistance.toFixed(2)),
+
+      latitude: lat,
+      longitude: lng,
+    });
+  } catch (error) {
+    console.error(
+      "Service availability error:",
+      error
+    );
+
+    return res.status(500).json({
+      success: false,
+      available: false,
+      message: "Unable to check service availability",
+    });
+  }
+};
 
