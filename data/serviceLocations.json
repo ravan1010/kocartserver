@@ -5,7 +5,7 @@
     "latitude": 12.1529,
     "longitude": 77.1090,
     "radiusKm": 2,
-    "availableAt": "2026-08-28T10:00:00+05:30"
+    "availableAt": "2026-08-24T10:00:00+05:30"
   },
   {
     "id": "area_2",
@@ -21,7 +21,7 @@
     "latitude": 11.9261,
     "longitude":76.9437 ,
     "radiusKm": 4,
-    "availableAt": "2026-08-24T10:00:00+05:30"
+    "availableAt": "2026-08-29T10:00:00+05:30"
   },
   {
     "id": "area_4",
