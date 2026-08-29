@@ -29,7 +29,7 @@ router.route('/setting').get( signat, setting )
 //
 router.route('/app/nearby').get(appAuth, nearby)
 //Nimma
-router.route('/app/setting').get( appAuth, Nimmasetting )
+router.route('/app/setting').get( appAuth, setting )
 
 //web
 router.route('/address-list').get(signat, address )
