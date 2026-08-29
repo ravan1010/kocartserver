@@ -1240,7 +1240,7 @@ export const setting = async (req, res) => {
       });
     }
 
-    const user = await usermodel.findById(id);
+    const user = await client.findById(id);
 
     if (!user) {
       return res.status(404).json({
