@@ -12,6 +12,7 @@ import branch_model from '../model/branch_model.js';
 import parcelANDtransport from '../model/parcelANDtransport.js';
 import BikeParcel_Order from '../model/BikeParcel_Order.js';
 import { sendPushNotification } from '../utils/firebase.js';
+import client from '../model/client.js';
 
 dotenv.config();
 
@@ -524,34 +525,7 @@ export const getBikeParcelOrders = async (req, res) => {
     });
   }
 };
-///active 
-export const getActivePassengerAutoOrder = async (req, res) => {
-  // try {
-    const userId = req.Atoken.id;
 
-    const order = await BikeParcel_Order.findOne({
-     customer : userId,
-      status: {
-        $in: [
-          "pending",
-          "driver_assigned",
-          "driver_arrived",
-          "picked_up",
-        ],
-      },
-    }).sort({ createdAt: -1 });
-
-    res.json({
-      success: true,
-      order: order || null,
-    });
-  // } catch (error) {
-  //   res.status(500).json({
-  //     success: false,
-  //     message: error.message,
-  //   });
-  // }
-};
 
 export const createPassengerAutoOrder = async (req, res) => {
   try {
@@ -1008,7 +982,7 @@ export const getMonthlyAutoOrders = async (req, res) => {
 
     const id = req.Atoken.id;
 
-    const user = await usermodel.findById(id);
+    const user = await client.findById(id);
 
     if (!user) {
       return res.status(404).json({

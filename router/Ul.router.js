@@ -1,20 +1,20 @@
 import express from 'express';
 const router = express.Router()
 import {signat, authLocation, appAuth} from '../middleware/OGauth.js';
-import { home, setting, address, explore, cartdata, removecart, buy, order, addtocart, calculateDeliveryFee, nearby, updateLocation, merchantProducts, clearCart, mart, getmartMerchantVariants, martmerchantProducts, serviceType, createBikeParcelOrder, distanceToParcel, getBikeParcelOrders, createPassengerAutoOrder, getpassengerAutoOrders, createGoodsAutoOrder, getGoodsAutoOrders, getMyLocation, getActivePassengerAutoOrder, getPassengerAutoOrderStatus, getMonthlyAutoOrders } from '../controller/UI.controller.js';
+import { home, setting, address, explore, cartdata, removecart, buy, order, addtocart, calculateDeliveryFee, nearby, updateLocation, merchantProducts, clearCart, mart, getmartMerchantVariants, martmerchantProducts, serviceType, createBikeParcelOrder, distanceToParcel, getBikeParcelOrders, createPassengerAutoOrder, getpassengerAutoOrders, createGoodsAutoOrder, getGoodsAutoOrders, getMyLocation, getPassengerAutoOrderStatus, getMonthlyAutoOrders } from '../controller/UI.controller.js';
 // const event_post_model = require('../model/event_post_model.js')
 import user_model from '../model/user_model.js';
 import { appplaceCODOrder, checkout, placeCODOrder, verifyPayment } from '../controller/orderController.js';
-import { AppserviceType, liveupdate } from '../controller/user_control.js';
+import { AppserviceType, liveupdate, NimmagetActivePassengerAutoOrder, Nimmasetting, NimmaupdateLocation } from '../controller/user_control.js';
 
 router.route('/liveupdate').post(liveupdate)
  
 router.route('/home').get( signat, home );
 router.route('/mart').get(signat, mart);
-//web
+//web   
 router.put("/user/location", signat, updateLocation);
-//app
-router.put("/app/user/location", appAuth, updateLocation);
+//nimma sarige app
+router.put("/app/user/location", appAuth, NimmaupdateLocation);
 
 router.get("/merchant/:id", signat, merchantProducts);
 
@@ -28,8 +28,8 @@ router.route('/setting').get( signat, setting )
 
 //
 router.route('/app/nearby').get(appAuth, nearby)
-//app
-router.route('/app/setting').get( appAuth, setting )
+//Nimma
+router.route('/app/setting').get( appAuth, Nimmasetting )
 
 //web
 router.route('/address-list').get(signat, address )
@@ -93,9 +93,9 @@ router.route('/parcel/distance').post(signat, distanceToParcel)
 router.route('/app/parcel/distance').post(appAuth, distanceToParcel)   
 
 ///web
-router.route("/auto/active").get(signat, getActivePassengerAutoOrder ); 
-//app
-router.route("/app/auto/active").get(appAuth, getActivePassengerAutoOrder ); 
+// router.route("/auto/active").get(signat, getActivePassengerAutoOrder ); 
+//Nimma
+router.route("/app/auto/active").get(appAuth, NimmagetActivePassengerAutoOrder ); 
 
 
 router.route("/createparcel").post(signat, createBikeParcelOrder)

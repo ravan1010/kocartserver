@@ -2,6 +2,7 @@ import usermodel from '../model/user_model.js';
 import jwt from 'jsonwebtoken';
 import addressmodel from '../model/address_model.js';
 import dotenv from 'dotenv';
+import client from '../model/client.js';
 
 import parcelANDtransport from "../model/parcelANDtransport.js"
 
@@ -250,7 +251,7 @@ export const AppserviceType = async (req, res) => {
     // 1. Get user
     // --------------------------------
 
-    const user = await usermodel
+    const user = await client
       .findById(id)
       .lean();
 
@@ -473,4 +474,101 @@ export const AppserviceType = async (req, res) => {
       message: err.message,
     });
   }
+};
+
+export const NimmaupdateLocation = async (req, res) => {
+  try {
+    const id = req.Atoken.id;
+
+    const { latitude, longitude, city } = req.body;
+
+    const user = await client.findByIdAndUpdate(
+      id,
+      {
+        city,
+        location: {
+          type: "Point",
+          coordinates: [Number(longitude), Number(latitude)],
+        },
+      },
+      { new: true }
+    );
+
+    res.json({
+      success: true,
+      user,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+
+export const Nimmasetting = async (req, res) => {
+  console.log(req.Atoken);
+
+  const id = req.Atoken.id;
+  console.log("User ID:", id);
+
+  try {
+    if (!id) {
+      return res.status(401).json({
+        message: "Unauthorized",
+      });
+    }
+
+    const user = await client.findById(id);
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    const autobooking = await BikeParcel_Order.find({customer: req.Atoken.id})
+
+
+    res.json({
+      number: user.email,
+      user,
+      order: [],
+      autobooking: autobooking.length,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+///active 
+export const NimmagetActivePassengerAutoOrder = async (req, res) => {
+  // try {
+    const userId = req.Atoken.id;
+
+    const order = await BikeParcel_Order.findOne({
+     customer : userId,
+      status: {
+        $in: [
+          "pending",
+          "driver_assigned",
+          "driver_arrived",
+          "picked_up",
+        ],
+      },
+    }).sort({ createdAt: -1 });
+
+    res.json({
+      success: true,
+      order: order || null,
+    });
+  // } catch (error) {
+  //   res.status(500).json({
+  //     success: false,
+  //     message: error.message,
+  //   });
+  // }
 };

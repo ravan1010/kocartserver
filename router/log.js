@@ -8,6 +8,7 @@ import admin_model from "../model/admin_model.js";
 import user_model from "../model/user_model.js";
 import deliveryBoy_model from "../model/deliveryBoy_model.js";
 import parcelANDtransport from "../model/parcelANDtransport.js";
+import ClientData from "../model/client.js"
 dotenv.config()
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -44,10 +45,10 @@ router.post("/app/google/user", async (req, res) => {
 
     switch (state) {
       case "client":
-        account = await user_model.findOne({ googleId });
+        account = await ClientData.findOne({ googleId });
 
         if (!account) {
-          account = await user_model.create({
+          account = await ClientData.create({
             googleId,
             email,
             name,
