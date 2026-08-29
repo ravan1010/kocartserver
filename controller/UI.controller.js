@@ -946,7 +946,7 @@ export const getMyLocation = async (req, res) => {
   try {
     const userId = req.Atoken.id;
 
-    const user = await usermodel
+    const user = await client
       .findById(userId)
       .select("location");
 
