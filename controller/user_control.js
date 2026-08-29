@@ -513,11 +513,11 @@ export const Nimmasetting = async (req, res) => {
     console.log("User ID:", id);
   
     try {
-      if (!id) {
-        return res.status(401).json({
-          message: "Unauthorized",
-        });
-      }
+      // if (!id) {
+      //   return res.status(401).json({
+      //     message: "Unauthorized",
+      //   });
+      // }
   
       const user = await client.findById(id);
   
