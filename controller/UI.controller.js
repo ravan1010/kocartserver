@@ -143,7 +143,7 @@ export const updateLocation = async (req, res) => {
     const { latitude, longitude, city } = req.body;
 
     const user = await usermodel.findByIdAndUpdate(
-      id,
+      id,     
       {
         city,
         location: {
@@ -976,7 +976,7 @@ export const getMyLocation = async (req, res) => {
   }
 };
 //ko
-export const kogetMyLocation = async (req, res) => {
+export const koLocation = async (req, res) => {
   try {
     const userId = req.Atoken.id;
 
