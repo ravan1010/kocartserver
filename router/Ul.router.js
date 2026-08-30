@@ -1,7 +1,7 @@
 import express from 'express';
 const router = express.Router()
 import {signat, authLocation, appAuth} from '../middleware/OGauth.js';
-import { home, setting, address, explore, cartdata, removecart, buy, order, addtocart, calculateDeliveryFee, nearby, updateLocation, merchantProducts, clearCart, mart, getmartMerchantVariants, martmerchantProducts, serviceType, createBikeParcelOrder, distanceToParcel, getBikeParcelOrders, createPassengerAutoOrder, getpassengerAutoOrders, createGoodsAutoOrder, getGoodsAutoOrders, getMyLocation, getPassengerAutoOrderStatus, getMonthlyAutoOrders, Kosetting } from '../controller/UI.controller.js';
+import { home, setting, address, explore, cartdata, removecart, buy, order, addtocart, calculateDeliveryFee, nearby, updateLocation, merchantProducts, clearCart, mart, getmartMerchantVariants, martmerchantProducts, serviceType, createBikeParcelOrder, distanceToParcel, getBikeParcelOrders, createPassengerAutoOrder, getpassengerAutoOrders, createGoodsAutoOrder, getGoodsAutoOrders, getMyLocation, getPassengerAutoOrderStatus, getMonthlyAutoOrders, Kosetting, kogetMyLocation } from '../controller/UI.controller.js';
 // const event_post_model = require('../model/event_post_model.js')
 import user_model from '../model/user_model.js';
 import { appplaceCODOrder, checkout, placeCODOrder, verifyPayment } from '../controller/orderController.js';
@@ -13,6 +13,8 @@ router.route('/home').get( signat, home );
 router.route('/mart').get(signat, mart);
 //web   
 router.put("/user/location", signat, updateLocation);
+//ko
+router.put("/app/ko/user/location", appAuth, updateLocation);
 //nimma sarige app
 router.put("/app/user/location", appAuth, NimmaupdateLocation);
 
@@ -87,7 +89,10 @@ router.route("/app/services").get(appAuth, AppserviceType)
 
 //wweb
 router.route("/client/location").get(signat, getMyLocation)
-//app
+//ko
+router.route("/app/ko/client/location").get(appAuth, kogetMyLocation)
+
+//nimma
 router.route("/app/client/location").get(appAuth, getMyLocation)
 //web
 router.route('/parcel/distance').post(signat, distanceToParcel)   

@@ -941,12 +941,46 @@ export const getGoodsAutoOrders = async (req, res) => {
     });
   }
 };
-
+//nimma
 export const getMyLocation = async (req, res) => {
   try {
     const userId = req.Atoken.id;
 
     const user = await client
+      .findById(userId)
+      .select("location");
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    const coordinates = user.location?.coordinates || [0, 0];
+
+    res.json({
+      success: true,
+      location: {
+        longitude: coordinates[0],
+        latitude: coordinates[1],
+      },
+    });
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to get saved location",
+    });
+  }
+};
+//ko
+export const kogetMyLocation = async (req, res) => {
+  try {
+    const userId = req.Atoken.id;
+
+    const user = await usermodel
       .findById(userId)
       .select("location");
 
