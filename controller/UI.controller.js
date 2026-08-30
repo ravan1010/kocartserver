@@ -1240,6 +1240,45 @@ export const setting = async (req, res) => {
       });
     }
 
+    const user = await client.findById(id);
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    const order = await order_model.find({ userId: req.Atoken.id })
+    const autobooking = await BikeParcel_Order.find({customer: req.Atoken.id})
+
+
+    res.json({
+      number: user.email,
+      user,
+      order: order.length,
+      autobooking: autobooking.length,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+export const Kosetting = async (req, res) => {
+  console.log(req.Atoken);
+
+  const id = req.Atoken.id;
+  console.log("User ID:", id);
+
+  try {
+    if (!id) {
+      return res.status(401).json({
+        message: "Unauthorized",
+      });
+    }
+
     const user = await usermodel.findById(id);
 
     if (!user) {
@@ -1265,6 +1304,7 @@ export const setting = async (req, res) => {
     });
   }
 };
+
 
 export const addtocart = async (req, res) => {
   try {

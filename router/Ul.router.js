@@ -1,7 +1,7 @@
 import express from 'express';
 const router = express.Router()
 import {signat, authLocation, appAuth} from '../middleware/OGauth.js';
-import { home, setting, address, explore, cartdata, removecart, buy, order, addtocart, calculateDeliveryFee, nearby, updateLocation, merchantProducts, clearCart, mart, getmartMerchantVariants, martmerchantProducts, serviceType, createBikeParcelOrder, distanceToParcel, getBikeParcelOrders, createPassengerAutoOrder, getpassengerAutoOrders, createGoodsAutoOrder, getGoodsAutoOrders, getMyLocation, getPassengerAutoOrderStatus, getMonthlyAutoOrders } from '../controller/UI.controller.js';
+import { home, setting, address, explore, cartdata, removecart, buy, order, addtocart, calculateDeliveryFee, nearby, updateLocation, merchantProducts, clearCart, mart, getmartMerchantVariants, martmerchantProducts, serviceType, createBikeParcelOrder, distanceToParcel, getBikeParcelOrders, createPassengerAutoOrder, getpassengerAutoOrders, createGoodsAutoOrder, getGoodsAutoOrders, getMyLocation, getPassengerAutoOrderStatus, getMonthlyAutoOrders, Kosetting } from '../controller/UI.controller.js';
 // const event_post_model = require('../model/event_post_model.js')
 import user_model from '../model/user_model.js';
 import { appplaceCODOrder, checkout, placeCODOrder, verifyPayment } from '../controller/orderController.js';
@@ -24,12 +24,12 @@ router.get("/mart/marchent/product", signat, martmerchantProducts);
 
 router.route('/explore').get( signat, explore )
 //web
-router.route('/setting').get( signat, setting )
+router.route('/setting').get( signat, Kosetting )
 
 //
 router.route('/app/nearby').get(appAuth, nearby)
 //Nimma
-router.route('/app/setting').get( appAuth, Nimmasetting )
+router.route('/app/setting').get( appAuth, setting )
 
 //web
 router.route('/address-list').get(signat, address )
