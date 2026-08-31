@@ -13,10 +13,8 @@ router.route('/home').get( signat, home );
 router.route('/mart').get(signat, mart);
 //web   
 router.put("/user/location", signat, updateLocation);
-//ko
-router.put("/app/ko/user/location", appAuth, updateLocation);
-//nimma sarige app
-router.put("/app/user/location", appAuth, NimmaupdateLocation);
+//ko app
+router.put("/app/user/location", appAuth, updateLocation);
 
 router.get("/merchant/:id", signat, merchantProducts);
 
@@ -28,11 +26,8 @@ router.route('/explore').get( signat, explore )
 //web
 router.route('/setting').get( signat, Kosetting )
 //
-router.route('/app/ko/setting').get( signat, Kosetting )
-
-//
 router.route('/app/nearby').get(appAuth, nearby)
-//Nimma
+//ko
 router.route('/app/setting').get( appAuth, setting )
 
 //web
@@ -85,14 +80,11 @@ router.route("/app/order").get(appAuth, order )
 //web
 router.route("/services").get(signat, serviceType)
 //app
-router.route("/app/services").get(appAuth, AppserviceType)
+router.route("/app/services").get(appAuth, serviceType)
 
 //wweb
 router.route("/client/location").get(signat, getMyLocation)
 //ko
-router.route("/app/ko/client/location").get(appAuth, koLocation)
-
-//nimma
 router.route("/app/client/location").get(appAuth, getMyLocation)
 //web
 router.route('/parcel/distance').post(signat, distanceToParcel)   
