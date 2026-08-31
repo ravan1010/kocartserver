@@ -10,6 +10,9 @@ import { AppserviceType, liveupdate, NimmagetActivePassengerAutoOrder, Nimmaupda
 router.route('/liveupdate').post(liveupdate)
  
 router.route('/home').get( signat, home );
+//app
+router.route('/app/home').get( appAuth, home );
+
 router.route('/mart').get(signat, mart);
 //web   
 router.put("/user/location", signat, updateLocation);
