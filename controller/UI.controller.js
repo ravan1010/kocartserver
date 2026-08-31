@@ -370,7 +370,7 @@ export const serviceType = async (req, res) => {
       city: user.city || "",
 
       serviceTypes,
-      category,
+      category,  
       user: true,
 
       update: 0,

@@ -45,10 +45,10 @@ router.post("/app/google/user", async (req, res) => {
 
     switch (state) {
       case "client":
-        account = await ClientData.findOne({ googleId });
+        account = await user_model.findOne({ googleId });
 
         if (!account) {
-          account = await ClientData.create({
+          account = await user_model.create({
             googleId,
             email,
             name,
