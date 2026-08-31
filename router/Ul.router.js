@@ -15,8 +15,11 @@ router.route('/mart').get(signat, mart);
 router.put("/user/location", signat, updateLocation);
 //ko app
 router.put("/app/user/location", appAuth, updateLocation);
-
+//web
 router.get("/merchant/:id", signat, merchantProducts);
+//app
+router.get("/app/merchant/:id", appAuth, merchantProducts);
+
 
 router.get('/mart/variants/:id', signat, getmartMerchantVariants)
 
