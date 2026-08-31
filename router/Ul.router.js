@@ -48,6 +48,9 @@ router.route("/app/cart/add").post( appAuth, addtocart )
 
 //web
 router.route("/cart/clear").delete(signat, clearCart)
+//app
+router.route("/app/cart/clear").delete(appAuth, clearCart)
+
 
 // Get cart
 router.route("/cart/get").get(signat, cartdata )
