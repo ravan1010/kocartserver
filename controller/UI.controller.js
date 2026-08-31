@@ -941,7 +941,7 @@ export const getGoodsAutoOrders = async (req, res) => {
     });
   }
 };
-//nimma
+//ko
 export const getMyLocation = async (req, res) => {
   try {
     const userId = req.Atoken.id;
