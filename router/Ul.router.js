@@ -82,7 +82,7 @@ router.route("/services").get(signat, serviceType)
 //app
 router.route("/app/services").get(appAuth, serviceType)
 
-//wweb
+//wweb  
 router.route("/client/location").get(signat, getMyLocation)
 //ko
 router.route("/app/client/location").get(appAuth, getMyLocation)
