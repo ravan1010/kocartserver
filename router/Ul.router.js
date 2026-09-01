@@ -30,7 +30,7 @@ router.get("/mart/marchent/product", signat, martmerchantProducts);
 
 router.route('/explore').get( signat, explore )
 //web
-router.route('/setting').get( signat, Kosetting )
+router.route('/setting').get( signat, setting )
 //
 router.route('/app/nearby').get(appAuth, nearby)
 //ko
