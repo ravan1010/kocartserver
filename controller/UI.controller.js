@@ -983,7 +983,7 @@ export const getMonthlyAutoOrders = async (req, res) => {
 
     const id = req.Atoken.id;
 
-    const user = await client.findById(id);
+    const user = await usermodel.findById(id);
 
     if (!user) {
       return res.status(404).json({
