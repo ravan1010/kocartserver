@@ -1,26 +1,16 @@
 import express from 'express';
 const router = express.Router()
 import {signat, appAuth} from '../middleware/user_auth.js';
-import { home, setting, address, explore, cartdata, removecart, buy, order, addtocart, calculateDeliveryFee, nearby, merchantProducts, clearCart, mart, getmartMerchantVariants, martmerchantProducts, serviceType, createBikeParcelOrder, distanceToParcel, getBikeParcelOrders, createPassengerAutoOrder, getpassengerAutoOrders, createGoodsAutoOrder, getGoodsAutoOrders, getMyLocation, getPassengerAutoOrderStatus, getMonthlyAutoOrders, Kosetting } from '../controller/UI_controller.js';
+import { setting, address, explore, cartdata, removecart, buy, order, addtocart, calculateDeliveryFee, nearby, clearCart, serviceType, createBikeParcelOrder, distanceToParcel, getBikeParcelOrders, createPassengerAutoOrder, getpassengerAutoOrders, createGoodsAutoOrder, getGoodsAutoOrders, getMyLocation, getPassengerAutoOrderStatus, getMonthlyAutoOrders } from '../controller/UI_controller.js';
 // const event_post_model = require('../model/event_post_model.js')
 import user_model from '../model/user_model.js';
 import { AppserviceType, NimmagetActivePassengerAutoOrder, NimmaupdateLocation } from '../controller/user_control.js';
  
-router.route('/home').get( signat, home );
-//app
-router.route('/app/home').get( appAuth, home );
-
-router.route('/mart').get(signat, mart);
-
-//web
-router.get("/merchant/:id", signat, merchantProducts);
-//app
-router.get("/app/merchant/:id", appAuth, merchantProducts);
 
 
-router.get('/mart/variants/:id', signat, getmartMerchantVariants)
 
-router.get("/mart/marchent/product", signat, martmerchantProducts);
+
+
 
 router.route('/explore').get( signat, explore )
 //web
