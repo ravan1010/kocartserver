@@ -4,15 +4,13 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import passport from "passport";
 
-import admin_router from './router/admin_router.js';
-import OG_router from './router/OG_router.js';
-import getpost from './router/Ul.router.js';
-import owner from './router/owner_router.js';
-import long from './router/long_route.js'
-import log from './router/log.js'
-import parcel from './router/parcelANDtransport.js'
+import user from './router/user_route.js';
+import UI from './router/Ul_router.js';
+import owner from './router/owner_route.js';
+import log from './router/login.js'
+import parcel from './router/partner_route.js'
 import path from 'path'; 
-
+   
 import { fileURLToPath } from "url";
 
 import "./config/passport.js";
@@ -67,11 +65,9 @@ app.get('/i', (req, res) => {
 app.use(passport.initialize());
 
 app.use('/auth', log)
-app.use('/api', admin_router)
-app.use('/api', OG_router)
-app.use('/api', getpost)
+app.use('/api', user)
+app.use('/api', UI)
 app.use('/api', owner)
-app.use('/api', long) 
 app.use('/api', parcel)
 
 

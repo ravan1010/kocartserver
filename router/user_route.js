@@ -1,15 +1,18 @@
 import express from 'express';
-import { Address, checkServiceAvailability } from '../controller/user_control.js';
-import { appAuth, authLocation, deliveryBoyAuth, signat } from '../middleware/OGauth.js';
+import { checkServiceAvailability, Locationupdate } from '../controller/user_control.js';
+import { appAuth, authLocation, signat } from '../middleware/user_auth.js';
 import user_model from '../model/user_model.js';
 const router = express.Router()
 
-router.route('/to/address').post( signat, Address)
-
-router.post(
+router.post( 
   "/check",
   checkServiceAvailability
 );
+
+//web   
+router.put("/user/location", signat, Locationupdate);
+//ko app
+router.put("/app/user/location", appAuth, Locationupdate);
 
 //auth check for frontend
 
@@ -17,10 +20,6 @@ router.get('/token', signat, async (req, res) => {
     res.json({ user: req.Atoken });
 });
 
-router.get('/deliveryboy/token', deliveryBoyAuth, async (req, res) => {
-    
-    res.json({ user: req.deliveryBoy });
-});
 
 router.get('/authlocation', authLocation, async(req, res) => {
     res.json({user: req.location})
@@ -42,6 +41,5 @@ router.get('/appAuth', appAuth, async(req, res) => {
     }
 })
 
-router.route('/app/address').post(appAuth, Address);
 
 export default router;

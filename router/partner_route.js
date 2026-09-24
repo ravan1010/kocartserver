@@ -1,5 +1,5 @@
 import express from 'express';
-import { appAuth, parcelANDtransportAuth, signat } from '../middleware/OGauth.js';
+import { appAuth, parcelANDtransportAuth, signat } from '../middleware/user_auth.js';
 import { acceptBikeParcelOrder, 
          assignSelectedDriver, 
          cancelParcelOrder, 
@@ -18,7 +18,7 @@ import { acceptBikeParcelOrder,
          updateBikeParcelDriverLocation, 
          updatePartnerDetails, 
          verifyDeliveryOtp, 
-         verifyPickupOtp} from '../controller/parcelANDTransport.js';
+         verifyPickupOtp} from '../controller/partner_controller.js';
 
 const router = express.Router();
 

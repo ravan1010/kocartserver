@@ -1,10 +1,4 @@
-import admin_model from '../model/admin_model.js';
-import post_model from '../model/event_post_model.js';
 import usermodel from '../model/user_model.js';
-import book_model from '../model/cart_model.js';
-import address_model from '../model/address_model.js';
-import Cart from "../model/cart_model.js";
-import order_model from '../model/order_model.js';
 import nodemailer from "nodemailer";
 import dotenv from 'dotenv';
 import axios from "axios";
@@ -12,7 +6,6 @@ import branch_model from '../model/branch_model.js';
 import parcelANDtransport from '../model/parcelANDtransport.js';
 import BikeParcel_Order from '../model/BikeParcel_Order.js';
 import { sendPushNotification } from '../utils/firebase.js';
-import client from '../model/client.js';
 
 dotenv.config();
 
@@ -136,35 +129,7 @@ export const mart = async (req, res) => {
   }
 };
 
-export const updateLocation = async (req, res) => {
-  try {
-    const id = req.Atoken.id;
 
-    const { latitude, longitude, city } = req.body;
-
-    const user = await usermodel.findByIdAndUpdate(
-      id,     
-      {
-        city,
-        location: {
-          type: "Point",
-          coordinates: [Number(longitude), Number(latitude)],
-        },
-      },
-      { new: true }
-    );
-
-    res.json({
-      success: true,
-      user,
-    });
-  } catch (err) {
-    res.status(500).json({
-      success: false,
-      message: err.message,
-    });
-  }
-};
 
 export const merchantProducts = async (req, res) => {
 

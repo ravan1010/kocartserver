@@ -1,99 +1,22 @@
 import usermodel from '../model/user_model.js';
 import jwt from 'jsonwebtoken';
-import addressmodel from '../model/address_model.js';
 import dotenv from 'dotenv';
-import client from '../model/client.js';
 
 import parcelANDtransport from "../model/parcelANDtransport.js"
 
 dotenv.config(); 
 
-export const liveupdate = async (req, res) => {
-
-    const { latitude, longitude, city } = req.body
-
-    const userId = req.Atoken.id;
-    const user = await usermodel.findById(userId);
-    
-    if (user) {
-
-      const updatedLive = await user.findByIdAndUpdate(
-        userId,
-        {
-          $set: {
-            location: {
-              type: "Point",
-              coordinates: [longitude, latitude], // IMPORTANT: lng first
-            },
-            city: city
-          },
-        },
-        { new: true }
-      );
-
-      await updatedLive.save()
-      console.log(updatedLive)
-      res.json({ success: true })
-    
-
-    }
-
-
-}
-
-export const Address = async (req, res, next) => {
-
-  const id = req.Atoken.id
-  const { Fullname, FHBCA, ASSV, Landmark, pincode, cityTown, state } = req.body
-  const user = await usermodel.findOne({ _id: id })
-  try {
-    if (!id) {
-      return res.status(401).json({ message: `you don't have access key` })
-    }
-
-    console.log(Fullname, FHBCA, ASSV, Landmark, pincode, cityTown, state)
-
-    const address = await addressmodel.create({ authorID: user._id, Fullname, FHBCA, ASSV, Landmark, pincode, cityTown, state })
-    await address.save()
-
-    if (address) {
-      user.addressID.push(address._id)
-      await user.save()
-      console.log(address._id, "done")
-    }
-    res.status(200).json({ message: 'ok' })
-
-  } catch (error) {
-    res.json(error)
-  }
-}
-
-export const userFCMtoken = async (req, res) => {
-  try {
-    const number = req.Atoken.id
-    const { fcmToken } = req.body;
-    console.log('number :', number)
-
-    if (!fcmToken) {
-      return res.status(400).json({ success: false });
-
-    }
-
-    await usermodel.updateMany({ _id: number }, {
-      fcmToken: fcmToken
-    });
-
-  } catch (error) {
-    res.status(500).json(error)
-  }
-}
+//checking avilable location
 
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import user_model from '../model/user_model.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// getting location json file
 
 const serviceLocationsPath = path.join(
   __dirname,
@@ -107,6 +30,7 @@ const serviceLocations = JSON.parse(
   )
 );
 
+// get distance in km
 
 const getDistanceInKm = (
   lat1,
@@ -136,6 +60,8 @@ const getDistanceInKm = (
 
   return R * c;
 };
+
+// check service available
 
 export const checkServiceAvailability = (
   req,
@@ -238,10 +164,59 @@ export const checkServiceAvailability = (
   }
 };
 
+// user location update
 
+export const Locationupdate = async (req, res) => {
+  try {
+    const id = req.Atoken.id;
 
+    const { latitude, longitude, city } = req.body;
 
-// Haversine distance
+    const user = await user_model.findByIdAndUpdate(
+      id,     
+      {
+        city,
+        location: {
+          type: "Point",
+          coordinates: [Number(longitude), Number(latitude)],
+        },
+      },
+      { new: true }
+    );
+
+    res.json({
+      success: true,
+      user,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+
+// save FCM Token
+
+export const userFCMtoken = async (req, res) => {
+  try {
+    const number = req.Atoken.id
+    const { fcmToken } = req.body;
+    console.log('number :', number)
+
+    if (!fcmToken) {
+      return res.status(400).json({ success: false });
+
+    }
+
+    await usermodel.updateMany({ _id: number }, {
+      fcmToken: fcmToken
+    });
+
+  } catch (error) {
+    res.status(500).json(error)
+  }
+};
 
 export const AppserviceType = async (req, res) => {
   try {
@@ -546,6 +521,7 @@ export const Nimmasetting = async (req, res) => {
 };
 
 ///active 
+
 export const NimmagetActivePassengerAutoOrder = async (req, res) => {
   // try {
     const userId = req.Atoken.id;

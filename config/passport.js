@@ -4,8 +4,6 @@ const GoogleStrategy = Google.Strategy;
 import BranchData from '../model/branch_model.js'
 import user_model from "../model/user_model.js";
 import dotenv from 'dotenv'
-import admin_model from "../model/admin_model.js";
-import deliveryBoy_model from "../model/deliveryBoy_model.js";
 import parcelANDtransport from "../model/parcelANDtransport.js";
 dotenv.config()
  
@@ -13,8 +11,8 @@ passport.use(
   new GoogleStrategy(
     {      
       clientID: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: "https://serverside.kocart.online/auth/google/callback",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET, 
+      callbackURL: process.env.GOOGLE_CALLBACK_URL,
       passReqToCallback: true, // Important
     },
     async (req, accessToken, refreshToken, profile, done) => {
@@ -47,36 +45,6 @@ passport.use(
 
           if (!account) {
             account = await user_model.create({
-              googleId: profile.id,
-              name: profile.displayName,
-              email: profile.emails?.[0]?.value,
-              avatar: profile.photos?.[0]?.value,
-            });
-          }
-        }
-
-          if (role === "marchent") {
-          account = await admin_model.findOne({
-            googleId: profile.id,
-          }); 
-
-          if (!account) {
-            account = await admin_model.create({
-              googleId: profile.id,
-              name: profile.displayName,
-              email: profile.emails?.[0]?.value,
-              avatar: profile.photos?.[0]?.value,
-            });
-          }
-        }
-
-          if (role === "deliveryBoy") {
-          account = await deliveryBoy_model.findOne({
-            googleId: profile.id,
-          }); 
-
-          if (!account) {
-            account = await deliveryBoy_model.create({
               googleId: profile.id,
               name: profile.displayName,
               email: profile.emails?.[0]?.value,

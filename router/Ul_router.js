@@ -1,23 +1,17 @@
 import express from 'express';
 const router = express.Router()
-import {signat, authLocation, appAuth} from '../middleware/OGauth.js';
-import { home, setting, address, explore, cartdata, removecart, buy, order, addtocart, calculateDeliveryFee, nearby, updateLocation, merchantProducts, clearCart, mart, getmartMerchantVariants, martmerchantProducts, serviceType, createBikeParcelOrder, distanceToParcel, getBikeParcelOrders, createPassengerAutoOrder, getpassengerAutoOrders, createGoodsAutoOrder, getGoodsAutoOrders, getMyLocation, getPassengerAutoOrderStatus, getMonthlyAutoOrders, Kosetting } from '../controller/UI.controller.js';
+import {signat, appAuth} from '../middleware/user_auth.js';
+import { home, setting, address, explore, cartdata, removecart, buy, order, addtocart, calculateDeliveryFee, nearby, merchantProducts, clearCart, mart, getmartMerchantVariants, martmerchantProducts, serviceType, createBikeParcelOrder, distanceToParcel, getBikeParcelOrders, createPassengerAutoOrder, getpassengerAutoOrders, createGoodsAutoOrder, getGoodsAutoOrders, getMyLocation, getPassengerAutoOrderStatus, getMonthlyAutoOrders, Kosetting } from '../controller/UI_controller.js';
 // const event_post_model = require('../model/event_post_model.js')
 import user_model from '../model/user_model.js';
-import { appplaceCODOrder, checkout, placeCODOrder, verifyPayment } from '../controller/orderController.js';
-import { AppserviceType, liveupdate, NimmagetActivePassengerAutoOrder, NimmaupdateLocation } from '../controller/user_control.js';
-
-router.route('/liveupdate').post(liveupdate)
+import { AppserviceType, NimmagetActivePassengerAutoOrder, NimmaupdateLocation } from '../controller/user_control.js';
  
 router.route('/home').get( signat, home );
 //app
 router.route('/app/home').get( appAuth, home );
 
 router.route('/mart').get(signat, mart);
-//web   
-router.put("/user/location", signat, updateLocation);
-//ko app
-router.put("/app/user/location", appAuth, updateLocation);
+
 //web
 router.get("/merchant/:id", signat, merchantProducts);
 //app
@@ -67,14 +61,6 @@ router.post("/delivery-fee", signat, calculateDeliveryFee );
 //app
 router.post("/app/delivery-fee", appAuth, calculateDeliveryFee );
 
-// web
-router.route('/order/checkout').post(signat, checkout )
-router.route('/order/verify').post(signat, verifyPayment )
-
-//web
-router.route('/order/cod').post(signat, placeCODOrder )
-//app
-router.route('/app/order/cod').post(appAuth, appplaceCODOrder )
 
 // Buy (Checkout)
 router.route("/buy").post(signat, buy ) 
@@ -83,7 +69,7 @@ router.route("/app/buy").post(appAuth, buy )
 
 //web
 router.route("/order").get(signat, order )
-//app
+//app  
 router.route("/app/order").get(appAuth, order )
 
 //web
