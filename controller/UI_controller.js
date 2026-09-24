@@ -14,7 +14,7 @@ export const serviceType = async (req, res) => {
   try {
     const id = req.Atoken.id;
 
-    const user = await usermodelmain.findById(id).lean();
+    const user = await usermodel.findById(id).lean();
 
     if (!user) {
       return res.status(404).json({
