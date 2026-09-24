@@ -240,21 +240,18 @@ export const parcelBoyIsOnline = async (req, res) => {
       });
     }
 
-    /*
-     * If partner has an active/pending order,
-     * don't allow manually going offline.
-     */
-    if (
+    // Check whether partner currently has an active/pending order
+    const hasActiveOrder =
       admin.onPending?.Pending === true ||
-      admin.onPending?.orderId !== null ||
-      admin.isAvailable !== true
-    ) {
+      !!admin.onPending?.orderId;
+
+    // Do not allow offline while an order is active
+    if (admin.isOnline === true && hasActiveOrder) {
       return res.status(200).json({
         success: false,
-        message:
-          "You cannot go offline while an order is active.",
+        message: "You cannot go offline while an order is active.",
         isOnline: true,
-        isAvailable: false,
+        isAvailable: admin.isAvailable,
         onPending: admin.onPending,
       });
     }
@@ -263,7 +260,9 @@ export const parcelBoyIsOnline = async (req, res) => {
     admin.isOnline = !admin.isOnline;
 
     if (admin.isOnline) {
-      // Partner is going ONLINE
+      // =========================
+      // PARTNER GOING ONLINE
+      // =========================
       admin.isAvailable = true;
 
       admin.onPending = {
@@ -271,7 +270,9 @@ export const parcelBoyIsOnline = async (req, res) => {
         orderId: null,
       };
     } else {
-      // Partner is going OFFLINE
+      // =========================
+      // PARTNER GOING OFFLINE
+      // =========================
       admin.isAvailable = false;
 
       admin.onPending = {
@@ -293,8 +294,11 @@ export const parcelBoyIsOnline = async (req, res) => {
       admin.onPending
     );
 
-    return res.json({
+    return res.status(200).json({
       success: true,
+      message: admin.isOnline
+        ? "You are now online."
+        : "You are now offline.",
       isOnline: admin.isOnline,
       isAvailable: admin.isAvailable,
       onPending: admin.onPending,
@@ -304,7 +308,8 @@ export const parcelBoyIsOnline = async (req, res) => {
 
     return res.status(500).json({
       success: false,
-      message: error.message,
+      message: "Failed to update online status",
+      error: error.message,
     });
   }
 };
