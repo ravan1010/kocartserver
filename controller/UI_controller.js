@@ -310,32 +310,12 @@ export const serviceType = async (req, res) => {
       }
     );
 
-    // Find available shop categories
-    const category = await admin_model.distinct(
-      "category",
-      {
-        active: true,
-        open: true,
-
-        location: {
-          $near: {
-            $geometry: {
-              type: "Point",
-              coordinates: user.location.coordinates,
-            },
-            $maxDistance: 4000,
-          },
-        },
-      }
-    );
-
     return res.status(200).json({
       success: true,
 
       city: user.city || "",
 
-      serviceTypes,
-      category,  
+      serviceTypes,  
       user: true,
 
       update: 0,
