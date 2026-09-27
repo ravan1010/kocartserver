@@ -526,6 +526,8 @@ export const NimmagetActivePassengerAutoOrder = async (req, res) => {
   try {
     const userId = req.Atoken?.id;
 
+    console.log("AUTO ACTIVE USER:", userId);
+
     if (!userId) {
       return res.status(401).json({
         success: false,
@@ -535,7 +537,6 @@ export const NimmagetActivePassengerAutoOrder = async (req, res) => {
 
     const order = await BikeParcel_Order.findOne({
       customer: userId,
-
       status: {
         $in: [
           "pending",
@@ -553,14 +554,11 @@ export const NimmagetActivePassengerAutoOrder = async (req, res) => {
     });
 
   } catch (error) {
-    console.error(
-      "Get active passenger auto order error:",
-      error
-    );
+    console.error("AUTO ACTIVE ERROR:", error);
 
     return res.status(500).json({
       success: false,
-      message: "Server error",
+      message: error.message,
     });
   }
 };
