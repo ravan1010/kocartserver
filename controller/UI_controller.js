@@ -774,14 +774,16 @@ const transporter = nodemailer.createTransport({
 });
 
 export const setting = async (req, res) => {
-  console.log(req.Atoken);
-
-  const id = req.Atoken.id;
-  console.log("User ID:", id);
-
   try {
+    console.log(req.Atoken);
+
+    const id = req.Atoken?.id;
+
+    console.log("User ID:", id);
+
     if (!id) {
       return res.status(401).json({
+        success: false,
         message: "Unauthorized",
       });
     }
@@ -790,21 +792,34 @@ export const setting = async (req, res) => {
 
     if (!user) {
       return res.status(404).json({
+        success: false,
         message: "User not found",
       });
     }
 
-    const autobooking = await BikeParcel_Order.find({customer: req.Atoken.id})
+    const autobooking = await BikeParcel_Order.find({
+      customer: id,
+    });
 
-    res.json({
+    // If you have an Order model:
+    // const order = await Order.find({ customer: id });
+
+    return res.status(200).json({
+      success: true,
       number: user.email,
       user,
-      order: order.length,
+
+      // Change this according to your actual order model
+      order: 0,
+
       autobooking: autobooking.length,
     });
+
   } catch (error) {
-    console.log(error);
-    res.status(500).json({
+    console.error("SETTING ERROR:", error);
+
+    return res.status(500).json({
+      success: false,
       message: error.message,
     });
   }
