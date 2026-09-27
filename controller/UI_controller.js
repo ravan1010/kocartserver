@@ -825,6 +825,26 @@ export const setting = async (req, res) => {
   }
 };
 
+
+
+const getRoadDistanceKm = async (from, to) => {
+      const apiKey = process.env.GEOAPIFY_KEY;
+
+  const res = await axios.get(
+    "https://api.geoapify.com/v1/routing",
+    {
+      params: {
+        waypoints: `${from.lat},${from.lng}|${to.lat},${to.lng}`,
+        mode: "drive",
+        apiKey: apiKey,
+      },
+    }
+  );
+
+  return res.data.features[0].properties.distance / 1000; // meters → km
+};
+
+
 export const distanceToParcel = async (req, res) => {
   try {
     const { pickuplat, pickuplng, droplat, droplng } = req.body;
