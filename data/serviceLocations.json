@@ -23,4 +23,13 @@
     "radiusKm": 2,
     "availableAt": "2026-08-25T10:00:00+05:30"
   }
+  ,{
+    "id": "area_5",
+    "name": "rajajinagar",
+    "latitude": 12.9926,
+    "longitude": 77.5536,
+    "radiusKm": 5,
+    "availableAt": "2026-08-25T10:00:00+05:30"
+  }
+
 ]
