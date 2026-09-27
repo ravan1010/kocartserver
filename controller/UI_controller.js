@@ -858,7 +858,7 @@ export const getBookingDriverLocation = async (req, res) => {
   try {
     const { userId } = req.params;
 
-    const bookings = await parcelANDtransport.find({
+    const bookings = await BikeParcel_Order.find({
       user: userId,
       status: {
         $nin: ["cancelled", "completed"],
