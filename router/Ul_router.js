@@ -33,7 +33,7 @@ router.route('/parcel/distance').post(signat, distanceToParcel)
 router.route('/app/parcel/distance').post(appAuth, distanceToParcel)   
 
 ///web
-// router.route("/auto/active").get(signat, getActivePassengerAutoOrder ); 
+router.route("/auto/active").get(signat, NimmagetActivePassengerAutoOrder ); 
 //Nimma
 router.route("/app/auto/active").get(appAuth, NimmagetActivePassengerAutoOrder ); 
 
