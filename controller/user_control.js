@@ -524,28 +524,43 @@ export const Nimmasetting = async (req, res) => {
 
 export const NimmagetActivePassengerAutoOrder = async (req, res) => {
   try {
-    const userId = req.Atoken.id;
+    const userId = req.Atoken?.id;
+
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized",
+      });
+    }
 
     const order = await BikeParcel_Order.findOne({
-     customer : userId,
+      customer: userId,
+
       status: {
         $in: [
           "pending",
           "driver_assigned",
           "driver_arrived",
           "picked_up",
+          "in_transit",
         ],
       },
     }).sort({ createdAt: -1 });
 
-    res.json({
+    return res.status(200).json({
       success: true,
       order: order || null,
     });
+
   } catch (error) {
-    res.status(500).json({
+    console.error(
+      "Get active passenger auto order error:",
+      error
+    );
+
+    return res.status(500).json({
       success: false,
-      message: error.message,
+      message: "Server error",
     });
   }
 };
