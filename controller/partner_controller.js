@@ -1132,7 +1132,6 @@ export const verifyDeliveryOtp = async (req, res) => {
     order.status = "completed";
     order.deliveredAt = new Date(); // Optional
     await order.save();
-
     let commissionRate = 0.05;
     const platformCommission = order.amount * commissionRate;
     
