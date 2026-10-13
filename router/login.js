@@ -138,7 +138,6 @@ router.post("/app/google/user", async (req, res) => {
         expiresIn: "100d",
       }
     );
-
     res.json({
       success: true,
       token: jwtToken,
