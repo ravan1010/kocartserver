@@ -5,6 +5,7 @@ import BranchData from '../model/branch_model.js'
 import user_model from "../model/user_model.js";
 import dotenv from 'dotenv'
 import parcelANDtransport from "../model/parcelANDtransport.js";
+import busDriver from "../model/busDriver.js";
 dotenv.config()
  
 passport.use( 
@@ -23,7 +24,7 @@ passport.use(
 
         let account;
 
-         if (role === "branch") {
+        if (role === "branch") {
           account = await BranchData.findOne({
             googleId: profile.id,
           });
@@ -38,7 +39,7 @@ passport.use(
           }
         }
           
-          if (role === "client") {
+        if (role === "client") {
           account = await user_model.findOne({
             googleId: profile.id,
           }); 
@@ -60,6 +61,21 @@ passport.use(
 
           if (!account) {
             account = await parcelANDtransport.create({
+              googleId: profile.id,
+              name: profile.displayName,
+              email: profile.emails?.[0]?.value,
+              avatar: profile.photos?.[0]?.value,
+            });
+          }
+        }
+
+        if (role === "BusDriver") {
+          account = await busDriver.findOne({
+            googleId: profile.id,
+          }); 
+
+          if (!account) {
+            account = await busDriver.create({
               googleId: profile.id,
               name: profile.displayName,
               email: profile.emails?.[0]?.value,

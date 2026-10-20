@@ -9,6 +9,7 @@ import UI from './router/Ul_router.js';
 import owner from './router/owner_route.js';
 import log from './router/login.js'
 import parcel from './router/partner_route.js'
+import busDriver from './router/busdriver_route.js'
 import path from 'path'; 
    
 import { fileURLToPath } from "url";
@@ -71,6 +72,7 @@ app.use('/api', user)
 app.use('/api', UI)
 app.use('/api', owner)
 app.use('/api', parcel)
+app.use('/api', busDriver)
 
 
 const __filename = fileURLToPath(import.meta.url);

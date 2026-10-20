@@ -6,6 +6,7 @@ import dotenv from "dotenv"
 import { OAuth2Client } from 'google-auth-library'
 import user_model from "../model/user_model.js";
 import parcelANDtransport from "../model/parcelANDtransport.js";
+import busDriver from "../model/busDriver.js";
 dotenv.config()
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -114,6 +115,19 @@ router.post("/app/google/user", async (req, res) => {
 
         if (!account) {
           account = await parcelANDtransport.create({
+            googleId,
+            email,
+            name,
+            avatar,
+          });
+        }
+        break;
+
+         case "BusDriver":
+        account = await busDriver.findOne({ googleId });
+
+        if (!account) {
+          account = await busDriver.create({
             googleId,
             email,
             name,
@@ -231,6 +245,21 @@ router.get(
 
       return res.redirect(
         "https://www.kocart.online/client-auth-success"
+        // 'http://localhost:5173/client-auth-success'
+      );
+    }
+
+    if (role === "BusDriver") {
+      res.cookie("BusDriverToken", token, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "None",
+        maxAge: 100 * 24 * 60 * 60 * 1000, // 100 days
+        // domain: ".kocart.online",
+      });
+
+      return res.redirect(
+        "https://bus.kocart.online/client-auth-success"
         // 'http://localhost:5173/client-auth-success'
       );
     }
