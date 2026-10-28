@@ -9,7 +9,6 @@ import { sendPushNotification } from '../utils/firebase.js';
 
 dotenv.config();
 
-
 export const serviceType = async (req, res) => {
   try {
     const id = req.Atoken.id;

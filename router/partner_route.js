@@ -3,10 +3,13 @@ import { appAuth, parcelANDtransportAuth, signat } from '../middleware/user_auth
 import { acceptBikeParcelOrder, 
          assignSelectedDriver, 
          cancelParcelOrder, 
+         createPost, 
+         deletePost, 
          driverArrivedUpdate, 
          getAcceptedBikeParcelOrder, 
          getacceptedPendingOrders, 
          getArrivedOrder, 
+         getMyPost, 
          getNearbyPendingOrders, 
          getPickedUpOrder, 
          parcelandtransportFCMtoken, 
@@ -19,6 +22,7 @@ import { acceptBikeParcelOrder,
          updatePartnerDetails, 
          verifyDeliveryOtp, 
          verifyPickupOtp} from '../controller/partner_controller.js';
+import { admintoa } from '../middleware/admin_auth.js';
 
 const router = express.Router();
 
@@ -74,5 +78,15 @@ router.post(
   ratePartner
 );
 
+router.get('/adminmain', admintoa, (req, res) => {
+    res.json({user: req.admintoa})
+
+});
+
+router.post("/create", admintoa, createPost);
+
+router.get("/posts/my-post", admintoa, getMyPost);
+
+router.delete("/posts/:id", admintoa, deletePost);
 export default router;
 

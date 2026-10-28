@@ -1,7 +1,8 @@
 import parcelANDtransportDB from "../model/parcelANDtransport.js";
 import BikeParcel_Order from "../model/BikeParcel_Order.js";
 import mongoose from "mongoose";
-
+import admin_model from "../model/admin_model.js";
+import Post from "../model/post_model.js"
 import axios from "axios";
 import dotenv from 'dotenv'
 
@@ -1529,6 +1530,199 @@ export const ratePartner = async (req, res) => {
       success: false,
       message: "Failed to rate partner",
       error: error.message,
+    });
+  }
+};
+
+
+export const createPost = async (req, res) => {
+  try {
+    const token = req.admintoa.id;
+
+    
+
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        message: "Please login first",
+      });
+    }
+
+
+    // Change "id" if your JWT stores the admin ID under another key.
+    const adminId = token;
+
+    if (!adminId) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid authentication token",
+      });
+    }
+
+    const admin = await admin_model.findById(adminId);
+
+    if (!admin) {
+      return res.status(401).json({
+        success: false,
+        message: "Admin not found",
+      });
+    }
+
+    const existingPost = await Post.findOne({ author: admin._id });
+
+    if (existingPost) {
+      return res.status(409).json({
+        success: false,
+        message: "Your post already exists",
+        post: existingPost,
+      });
+    }
+
+    const { description, image, currentLocation } = req.body;
+
+    if (
+      !description?.trim() ||
+      !image ||
+      !Array.isArray(currentLocation?.coordinates) ||
+      currentLocation.coordinates.length !== 2
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Description, image and location are required",
+      });
+    }
+
+    const [longitude, latitude] = currentLocation.coordinates;
+
+    if (
+      !Number.isFinite(longitude) ||
+      !Number.isFinite(latitude) ||
+      longitude < -180 ||
+      longitude > 180 ||
+      latitude < -90 ||
+      latitude > 90
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid location coordinates",
+      });
+    }
+
+    const post = await Post.create({
+      author: admin._id,
+      description: description.trim(),
+      image,
+      currentLocation: {
+        type: "Point",
+        coordinates: [longitude, latitude],
+      },
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: "Post created successfully",
+      post,
+    });
+  } catch (error) {
+    if (error.code === 11000) {
+      return res.status(409).json({
+        success: false,
+        message: "Your post already exists",
+      });
+    }
+
+    if (
+      error.name === "JsonWebTokenError" ||
+      error.name === "TokenExpiredError"
+    ) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid or expired token",
+      });
+    }
+
+    console.error("Create post error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
+
+
+
+
+export const getMyPost = async (req, res) => {
+  try {
+    // Assumes your auth middleware sets req.admintoa.id
+    const adminId = req.admintoa?.id;
+
+    if (!adminId) {
+      return res.status(401).json({
+        success: false,
+        message: "Please login first",
+      });
+    }
+
+    const post = await Post.findOne({ author: adminId });
+
+    if (!post) {
+      return res.status(404).json({
+        success: false,
+        message: "No post found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      post,
+    });
+  } catch (error) {
+    console.error("Get my post error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch post",
+    });
+  }
+};
+
+
+
+export const deletePost = async (req, res) => {
+  try {
+    const adminId = req.admintoa?.id;
+
+    if (!adminId) {
+      return res.status(401).json({
+        success: false,
+        message: "Please login first",
+      });
+    }
+
+    const deletedPost = await Post.findOneAndDelete({
+      _id: req.params.id,
+      author: adminId,
+    });
+
+    if (!deletedPost) {
+      return res.status(404).json({
+        success: false,
+        message: "Post not found or you cannot delete it",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Post deleted successfully",
+    });
+  } catch (error) {
+    console.error("Delete post error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to delete post",
     });
   }
 };

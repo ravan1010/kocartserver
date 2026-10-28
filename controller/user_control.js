@@ -13,6 +13,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import user_model from '../model/user_model.js';
 import BikeParcel_Order from '../model/BikeParcel_Order.js';
+import Post from '../model/post_model.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -30,6 +31,8 @@ const serviceLocations = JSON.parse(
     "utf-8"
   )
 );
+
+
 
 // get distance in km
 
@@ -560,6 +563,130 @@ export const NimmagetActivePassengerAutoOrder = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: error.message,
+    });
+  }
+};
+
+
+
+// Called when the authenticated user sends their current location
+export const receiveNearbyPosts = async (req, res) => {
+  try {
+    const userId = req.Atoken?.id;
+
+    if (!userId || !mongoose.isValidObjectId(userId)) {
+      return res.status(401).json({
+        success: false,
+        message: "Please login first",
+      });
+    }
+
+    const latitude = Number(req.body.latitude);
+    const longitude = Number(req.body.longitude);
+
+    if (
+      !Number.isFinite(latitude) ||
+      !Number.isFinite(longitude) ||
+      latitude < -90 ||
+      latitude > 90 ||
+      longitude < -180 ||
+      longitude > 180
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid location coordinates",
+      });
+    }
+
+    const nearbyPosts = await Post.find({
+      currentLocation: {
+        $near: {
+          $geometry: {
+            type: "Point",
+            coordinates: [longitude, latitude],
+          },
+          $maxDistance: 200,
+        },
+      },
+      author: { $ne: userId },
+      receiverUser: { $ne: userId },
+    }).select("_id");
+
+    if (nearbyPosts.length > 0) {
+      const postIds = nearbyPosts.map((post) => post._id);
+
+      await Post.updateMany(
+        { _id: { $in: postIds } },
+        { $addToSet: { receiverUser: userId } }
+      );
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Nearby posts checked",
+      receivedCount: nearbyPosts.length,
+    });
+  } catch (error) {
+    console.error("Receive nearby posts error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to check nearby posts",
+    });
+  }
+};
+
+// Fetch received posts in pages of 15
+export const getReceivedPosts = async (req, res) => {
+  try {
+    const userId = req.Atoken?.id;
+
+    if (!userId || !mongoose.isValidObjectId(userId)) {
+      return res.status(401).json({
+        success: false,
+        message: "Please login first",
+      });
+    }
+
+    const requestedSkip = Number.parseInt(req.query.skip ?? "0", 10);
+
+    if (!Number.isInteger(requestedSkip) || requestedSkip < 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid pagination offset",
+      });
+    }
+
+    const skip = requestedSkip;
+    const limit = 15;
+
+    const posts = await Post.find({
+      receiverUser: userId,
+    })
+      .populate("author", "name")
+      .sort({ createdAt: -1, _id: -1 })
+      .skip(skip)
+      .limit(limit)
+      .lean();
+
+    const total = await Post.countDocuments({
+      receiverUser: userId,
+    });
+
+    return res.status(200).json({
+      success: true,
+      posts,
+      total,
+      skip,
+      limit,
+      hasMore: skip + posts.length < total,
+    });
+  } catch (error) {
+    console.error("Get received posts error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch received posts",
     });
   }
 };

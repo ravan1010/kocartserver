@@ -38,17 +38,17 @@ router.get("/client/cookie", (req, res) => {
 });
 
 // partner log
-router.get("/google/parcel", (req, res, next) => {
+router.get("/google/admin", (req, res, next) => {
   passport.authenticate("google", {
     scope: ["profile", "email"],
-    state: "parcel",
+    state: "admin",
   })(req, res, next);
 });
 
 // save partner cookie
-router.get("/parcelandtransport/cookie", (req, res) => {
+router.get("/admin/cookie", (req, res) => {
 
-  const token = req.cookies?.parcelandtransport;
+  const token = req.cookies?.toa;
 
   if (!token) {
     return res.json({ message: "No token" });
@@ -208,8 +208,8 @@ router.get(
       );
     }  
 
-    if (role === "auto") {
-      res.cookie("parcelandtransport", token, {
+    if (role === "admin") {
+      res.cookie("toa", token, {
         httpOnly: true,
         secure: true,
         sameSite: "None",
@@ -217,7 +217,7 @@ router.get(
       });
       return res.redirect(
         // "https://parcelandtransport.kocart.online/parcel-auth-success"
-        "https://localhost:5173/parcelANDtransport-auth-success"
+        "http://localhost:5173/admin-auth-success"
       );
     }  
 

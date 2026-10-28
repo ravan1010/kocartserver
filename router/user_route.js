@@ -1,5 +1,5 @@
 import express from 'express';
-import { checkServiceAvailability, Locationupdate } from '../controller/user_control.js';
+import { checkServiceAvailability, getReceivedPosts, Locationupdate, receiveNearbyPosts } from '../controller/user_control.js';
 import { appAuth, authLocation, signat } from '../middleware/user_auth.js';
 import user_model from '../model/user_model.js';
 const router = express.Router()
@@ -7,6 +7,19 @@ const router = express.Router()
 router.post( 
   "/check",
   checkServiceAvailability
+);
+
+
+router.post(
+  "/posts/nearby/receive",
+  signat,
+  receiveNearbyPosts
+);
+
+router.get(
+  "/posts/received",
+  signat,
+  getReceivedPosts
 );
 
 //web   

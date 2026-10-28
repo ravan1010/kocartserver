@@ -6,6 +6,7 @@ import user_model from "../model/user_model.js";
 import dotenv from 'dotenv'
 import parcelANDtransport from "../model/parcelANDtransport.js";
 import busDriver from "../model/busDriver.js";
+import admin_model from "../model/admin_model.js";
 dotenv.config()
  
 passport.use( 
@@ -54,13 +55,13 @@ passport.use(
           }
         }
 
-        if (role === "parcel") {
-          account = await parcelANDtransport.findOne({
+        if (role === "admin") {
+          account = await admin_model.findOne({
             googleId: profile.id,
           }); 
 
           if (!account) {
-            account = await parcelANDtransport.create({
+            account = await admin_model.create({
               googleId: profile.id,
               name: profile.displayName,
               email: profile.emails?.[0]?.value,
