@@ -38,6 +38,7 @@ passport.use(
               avatar: profile.photos?.[0]?.value,
             });
           }
+        }
   
           
         if (role === "client") {
@@ -91,5 +92,6 @@ passport.use(
           return done(error, null);
       }
     }
+  
   )
 );  
