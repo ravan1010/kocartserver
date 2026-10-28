@@ -1,7 +1,7 @@
 import usermodel from '../model/user_model.js';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
-
+import mongoose from "mongoose";
 import parcelANDtransport from "../model/parcelANDtransport.js"
 
 dotenv.config(); 
