@@ -580,6 +580,7 @@ export const receiveNearbyPosts = async (req, res) => {
         message: "Please login first",
       });
     }
+    console.log(userId)
 
     const latitude = Number(req.body.latitude);
     const longitude = Number(req.body.longitude);
@@ -631,7 +632,7 @@ export const receiveNearbyPosts = async (req, res) => {
 
     return res.status(500).json({
       success: false,
-      message: "Failed to check nearby posts",
+      message: "Failed to check nearby posts", 
     });
   }
 };

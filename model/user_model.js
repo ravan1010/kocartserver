@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import bcrypt from "bcrypt";
 
 
-const AdminSchema =  mongoose.Schema({
+const userSchema =  mongoose.Schema({
    
     googleId: String,
     name: String,
@@ -38,7 +38,7 @@ const AdminSchema =  mongoose.Schema({
 
 // AdminSchema.pre()
 
-AdminSchema.index({ currentLocation: "2dsphere" });
+userSchema.index({ currentLocation: "2dsphere" });
 
-export default new mongoose.model("admin", AdminSchema);
+export default new mongoose.model("user", userSchema);
 
