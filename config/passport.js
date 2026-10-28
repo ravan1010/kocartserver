@@ -14,7 +14,7 @@ passport.use(
     {      
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET, 
-      callbackURL: process.env.GOOGLE_CALLBACK_URL,
+      callbackURL: `https://serverside.kocart.online/auth/google/callback` || process.env.GOOGLE_CALLBACK_URL ,
       passReqToCallback: true, // Important
     },
     async (req, accessToken, refreshToken, profile, done) => {
@@ -38,7 +38,7 @@ passport.use(
               avatar: profile.photos?.[0]?.value,
             });
           }
-        }
+  
           
         if (role === "client") {
           account = await user_model.findOne({
