@@ -12,13 +12,13 @@ router.post(
 
 router.post(
   "/posts/nearby/receive",
-  signat,
+  appAuth,
   receiveNearbyPosts
 );
 
 router.get(
   "/posts/received",
-  signat,
+  appAuth,
   getReceivedPosts
 );
 
