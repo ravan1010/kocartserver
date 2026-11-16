@@ -1578,7 +1578,7 @@ export const createPost = async (req, res) => {
       });
     }
 
-    const { description, image, currentLocation } = req.body;
+    const { description, image, currentLocation, category} = req.body;
 
     if (
       !description?.trim() ||
@@ -1611,6 +1611,7 @@ export const createPost = async (req, res) => {
     const post = await Post.create({
       author: admin._id,
       description: description.trim(),
+      category: category,
       image,
       currentLocation: {
         type: "Point",
@@ -1655,7 +1656,6 @@ export const createPost = async (req, res) => {
 
 export const getMyPost = async (req, res) => {
   try {
-    // Assumes your auth middleware sets req.admintoa.id
     const adminId = req.admintoa?.id;
 
     if (!adminId) {
@@ -1665,7 +1665,9 @@ export const getMyPost = async (req, res) => {
       });
     }
 
-    const post = await Post.findOne({ author: adminId });
+    const post = await Post.findOne({
+      author: adminId,
+    }).lean();
 
     if (!post) {
       return res.status(404).json({
@@ -1674,10 +1676,19 @@ export const getMyPost = async (req, res) => {
       });
     }
 
+    // Count unique users who received this post
+    const reachCount = Array.isArray(post.receiverUser)
+      ? new Set(post.receiverUser.map(id => id.toString())).size
+      : 0;
+
     return res.status(200).json({
       success: true,
-      post,
+      post: {
+        ...post,
+        reachCount,
+      },
     });
+
   } catch (error) {
     console.error("Get my post error:", error);
 

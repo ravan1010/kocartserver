@@ -8,6 +8,10 @@ const PostSchema = new mongoose.Schema(
       required: true,
     },
 
+    category: { 
+      type: String
+    },
+
     description: {
       type: String,
       required: true,
