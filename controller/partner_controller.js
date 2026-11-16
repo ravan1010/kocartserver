@@ -1652,8 +1652,6 @@ export const createPost = async (req, res) => {
 };
 
 
-
-
 export const getMyPost = async (req, res) => {
   try {
     const adminId = req.admintoa?.id;

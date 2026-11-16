@@ -642,48 +642,48 @@ export const getReceivedPosts = async (req, res) => {
   try {
     const userId = req.Atoken?.id;
 
-    if (!userId || !mongoose.isValidObjectId(userId)) {
+    if (!userId) {
       return res.status(401).json({
         success: false,
         message: "Please login first",
       });
     }
 
-    const requestedSkip = Number.parseInt(req.query.skip ?? "0", 10);
+    const { category } = req.query;
 
-    if (!Number.isInteger(requestedSkip) || requestedSkip < 0) {
+    const skip = Math.max(0, Number(req.query.skip) || 0);
+    const limit = 15;
+
+    if (!category) {
       return res.status(400).json({
         success: false,
-        message: "Invalid pagination offset",
+        message: "Category is required",
       });
     }
 
-    const skip = requestedSkip;
-    const limit = 15;
-
     const posts = await Post.find({
       receiverUser: userId,
+      category: category,
     })
-      .populate("author", "name")
-      .sort({ createdAt: -1, _id: -1 })
+      .sort({ createdAt: -1 })
       .skip(skip)
-      .limit(limit)
+      .limit(limit + 1)
       .lean();
 
-    const total = await Post.countDocuments({
-      receiverUser: userId,
-    });
+    const hasMore = posts.length > limit;
+
+    if (hasMore) {
+      posts.pop();
+    }
 
     return res.status(200).json({
       success: true,
       posts,
-      total,
-      skip,
-      limit,
-      hasMore: skip + posts.length < total,
+      hasMore,
     });
+
   } catch (error) {
-    console.error("Get received posts error:", error);
+    console.error("Received posts error:", error);
 
     return res.status(500).json({
       success: false,
