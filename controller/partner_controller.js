@@ -1738,35 +1738,84 @@ export const deletePost = async (req, res) => {
 
 export const registerMerchant = async (req, res) => {
   try {
+    const adminId = req.admintoa?.id;
+
+    if (!adminId) {
+      return res.status(401).json({
+        success: false,
+        message: "Admin authentication required",
+      });
+    }
+
     const {
       merchantName,
       image,
       upiId,
-      fcmToken,
       latitude,
       longitude,
     } = req.body;
 
-    const merchant = await admin_model.create({
-      merchantName,
-      image,
-      upiId,
-      fcmToken,
-      currentLocation: {
-        type: "Point",
-        coordinates: [
-          Number(longitude),
-          Number(latitude),
-        ],
-      },
-    });
+    if (!merchantName || !upiId) {
+      return res.status(400).json({
+        success: false,
+        message: "Merchant name and UPI ID are required",
+      });
+    }
 
-    res.status(201).json({
+    const lat = Number(latitude);
+    const lng = Number(longitude);
+
+    if (
+      !Number.isFinite(lat) ||
+      !Number.isFinite(lng) ||
+      lat < -90 ||
+      lat > 90 ||
+      lng < -180 ||
+      lng > 180 ||
+      (lat === 0 && lng === 0)
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Valid merchant location is required",
+      });
+    }
+
+    const merchant = await admin_model.findByIdAndUpdate(
+      adminId,
+      {
+        $set: {
+          merchantName,
+          image,
+          upiId,
+          currentLocation: {
+            type: "Point",
+            coordinates: [lng, lat],
+          },
+        },
+      },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    if (!merchant) {
+      return res.status(404).json({
+        success: false,
+        message: "Admin account not found",
+      });
+    }
+
+    return res.status(200).json({
       success: true,
+      message: "Merchant details updated successfully",
       merchant,
     });
+
   } catch (error) {
-    res.status(500).json({
+    console.error("Merchant update error:", error);
+
+    return res.status(500).json({
       success: false,
       message: error.message,
     });
