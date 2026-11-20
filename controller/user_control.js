@@ -14,6 +14,7 @@ import { fileURLToPath } from "url";
 import user_model from '../model/user_model.js';
 import BikeParcel_Order from '../model/BikeParcel_Order.js';
 import Post from '../model/post_model.js';
+import admin_model from '../model/admin_model.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -691,3 +692,26 @@ export const getReceivedPosts = async (req, res) => {
     });
   }
 };
+
+//find near 100 meter marchent
+app.get("/nearby-merchants", async (req, res) => {
+  const { lat, lng } = req.query;
+
+  const merchants = await admin_model.find({
+    isActive: true,
+    currentLocation: {
+      $near: {
+        $geometry: {
+          type: "Point",
+          coordinates: [
+            Number(lng),
+            Number(lat)
+          ]
+        },
+        $maxDistance: 100
+      }
+    }
+  });
+
+  res.json(merchants);
+});  

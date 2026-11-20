@@ -1735,3 +1735,40 @@ export const deletePost = async (req, res) => {
     });
   }
 };
+
+export const registerMerchant = async (req, res) => {
+  try {
+    const {
+      merchantName,
+      image,
+      upiId,
+      fcmToken,
+      latitude,
+      longitude,
+    } = req.body;
+
+    const merchant = await admin_model.create({
+      merchantName,
+      image,
+      upiId,
+      fcmToken,
+      currentLocation: {
+        type: "Point",
+        coordinates: [
+          Number(longitude),
+          Number(latitude),
+        ],
+      },
+    });
+
+    res.status(201).json({
+      success: true,
+      merchant,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};

@@ -9,6 +9,10 @@ const AdminSchema = new mongoose.Schema(
     email: String,
     avatar: String,
 
+  merchantName: String,
+  image: String,
+  upiId: String,
+
     fcmToken: {
       type: String,
       default: null,
@@ -25,6 +29,10 @@ const AdminSchema = new mongoose.Schema(
         default: [0, 0],
       },
     },
+    isActive: {
+    type: Boolean,
+    default: true
+  },
 
     lastLogin: {
       type: Date,

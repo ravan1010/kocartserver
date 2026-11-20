@@ -17,6 +17,7 @@ import { acceptBikeParcelOrder,
          parceldashboard, 
          ratePartner, 
          ReassignParcelOrder, 
+         registerMerchant, 
          submitDriverAmount, 
          updateBikeParcelDriverLocation, 
          updatePartnerDetails, 
@@ -88,5 +89,8 @@ router.post("/create", admintoa, createPost);
 router.get("/posts/my-post", admintoa, getMyPost);
 
 router.delete("/posts/:id", admintoa, deletePost);
+
+router.post("/register",admintoa, registerMerchant);
+
 export default router;
 
