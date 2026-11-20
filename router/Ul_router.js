@@ -4,7 +4,7 @@ import {signat, appAuth} from '../middleware/user_auth.js';
 import { setting, serviceType, createBikeParcelOrder, distanceToParcel, getBikeParcelOrders, createPassengerAutoOrder, getpassengerAutoOrders, createGoodsAutoOrder, getGoodsAutoOrders, getMyLocation, getPassengerAutoOrderStatus, getMonthlyAutoOrders, getBookingDriverLocation } from '../controller/UI_controller.js';
 // const event_post_model = require('../model/event_post_model.js')
 import user_model from '../model/user_model.js';
-import { AppserviceType, NimmagetActivePassengerAutoOrder, NimmaupdateLocation } from '../controller/user_control.js';
+import { AppserviceType, getNearbyMerchants, NimmagetActivePassengerAutoOrder, NimmaupdateLocation } from '../controller/user_control.js';
  
 
 
@@ -68,7 +68,7 @@ router.get(
   getBookingDriverLocation
 );
 
-  
+router.get("/nearby-merchants", appAuth, getNearbyMerchants);
 
 export default router;
 
