@@ -694,24 +694,34 @@ export const getReceivedPosts = async (req, res) => {
 };
 
 //find near 100 meter marchent
-app.get("/nearby-merchants", async (req, res) => {
-  const { lat, lng } = req.query;
+// export const getNearbyMerchants = async (req, res) => {
+//   try {
+//     const { latitude, longitude } = req.query;
 
-  const merchants = await admin_model.find({
-    isActive: true,
-    currentLocation: {
-      $near: {
-        $geometry: {
-          type: "Point",
-          coordinates: [
-            Number(lng),
-            Number(lat)
-          ]
-        },
-        $maxDistance: 100
-      }
-    }
-  });
+//     const merchants = await Merchant.find({
+//       currentLocation: {
+//         $near: {
+//           $geometry: {
+//             type: "Point",
+//             coordinates: [
+//               Number(longitude),
+//               Number(latitude),
+//             ],
+//           },
+//           $maxDistance: 100,
+//         },
+//       },
+//     }).select("merchantName image upiId currentLocation");
 
-  res.json(merchants);
-});  
+//     res.status(200).json({
+//       success: true,
+//       merchants,
+//     });
+//   } catch (error) {
+//     res.status(500).json({
+//       success: false,
+//       message: error.message,
+//     });
+//   }
+// };
+
