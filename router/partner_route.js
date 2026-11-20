@@ -27,7 +27,7 @@ import { admintoa } from '../middleware/admin_auth.js';
 
 const router = express.Router();
 
-router.route('/parcelandtransport/fcmToken').post(parcelANDtransportAuth,parcelandtransportFCMtoken )
+router.route('/parcelandtransport/fcmToken').post(admintoa,parcelandtransportFCMtoken )
 
 router.route('/parcelandtransport/details').put(parcelANDtransportAuth, updatePartnerDetails )
 

@@ -138,7 +138,7 @@ export const updateBikeParcelDriverLocation = async (req, res) => {
 
 export const parcelandtransportFCMtoken = async (req, res) => {
   try {
-    const number = req.parcelandtransport.id
+    const number = req.admintoa?.id
     const { fcmToken } = req.body;
     console.log('number :', number)
 
@@ -147,7 +147,7 @@ export const parcelandtransportFCMtoken = async (req, res) => {
 
     }
 
-    await parcelANDtransportDB.updateMany({ _id: number }, {
+    await admin_model.updateMany({ _id: number }, {
       fcmToken: fcmToken
     });
 
